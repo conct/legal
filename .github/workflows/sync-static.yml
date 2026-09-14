@@ -1,0 +1,71 @@
+name: Statische Seiten synchronisieren
+
+# Seiten ohne Build-Step (feif.space) können das Paket nicht als Dependency
+# einbinden. Dieser Workflow rendert ihre HTML-Dateien neu und öffnet dort
+# einen Pull Request — gemergt wird von Hand.
+#
+# Voraussetzung: Repository-Secret SYNC_TOKEN, ein Personal Access Token mit
+# Schreibrecht auf die Ziel-Repos (Fine-grained: Contents + Pull requests).
+# Das Standard-GITHUB_TOKEN reicht nicht, es gilt nur für dieses Repo.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      site:
+        description: 'Nur diese Seite synchronisieren (leer = alle)'
+        required: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - site: feif.space
+            repo: conct/feif.space
+    steps:
+      - name: legal auschecken
+        uses: actions/checkout@v4
+        with:
+          path: legal
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Paket bauen
+        working-directory: legal
+        run: npm ci && npm run build
+
+      - name: Zielseite auschecken
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ matrix.repo }}
+          token: ${{ secrets.SYNC_TOKEN }}
+          path: site
+
+      - name: Rechtstexte rendern
+        working-directory: legal
+        run: node scripts/sync-static.mjs "$GITHUB_WORKSPACE/site" "${{ matrix.site }}"
+
+      - name: Pull Request öffnen
+        uses: peter-evans/create-pull-request@v7
+        with:
+          path: site
+          token: ${{ secrets.SYNC_TOKEN }}
+          branch: legal-sync
+          commit-message: 'Rechtstexte aus @conct/legal aktualisieren'
+          title: 'Rechtstexte aktualisieren (@conct/legal ${{ github.event.release.tag_name || github.sha }})'
+          body: |
+            Automatisch erzeugt aus [conct/legal](https://github.com/conct/legal).
+
+            Geändert wurde ausschließlich der Inhalt von
+            `<section class="legal">` in `impressum.html` und `datenschutz.html`.
+            Layout, Header und Footer bleiben unberührt.
+
+            Inhaltliche Korrekturen gehören nach `conct/legal`, nicht in diesen PR —
+            sonst werden sie beim nächsten Sync überschrieben.
+          delete-branch: true

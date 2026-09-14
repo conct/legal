@@ -1,0 +1,60 @@
+{
+  "name": "@conct/legal",
+  "version": "1.0.0",
+  "description": "Zentrale Quelle für Impressum und Datenschutzerklärung aller conct-Projekte",
+  "license": "UNLICENSED",
+  "author": "Daniel von Lühmann",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/conct/legal.git"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./html": {
+      "types": "./dist/render/html.d.ts",
+      "default": "./dist/render/html.js"
+    },
+    "./react": {
+      "types": "./dist/render/react.d.ts",
+      "default": "./dist/render/react.js"
+    },
+    "./text": {
+      "types": "./dist/render/text.d.ts",
+      "default": "./dist/render/text.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepare": "npm run build",
+    "check": "tsc -p tsconfig.json --noEmit",
+    "smoke": "node scripts/smoke.mjs",
+    "sync": "node scripts/sync-static.mjs"
+  },
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^18.3.0",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

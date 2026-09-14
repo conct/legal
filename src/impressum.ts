@@ -1,0 +1,136 @@
+import { type Anbieter, anschrift, kontakt } from './anbieter.js';
+import type { Site } from './sites.js';
+import { type LegalDoc, type Section, aufzaehlung, link, lines, p, txt } from './types.js';
+
+export interface ImpressumOptions {
+  /**
+   * Zusätzliche Abschnitte, die vor "Haftung für Inhalte" eingefügt werden —
+   * z.B. berufsrechtliche Angaben oder eine Aufsichtsbehörde.
+   */
+  zusatz?: Section[];
+  /**
+   * Bereit zur Teilnahme an einem Verbraucherschlichtungsverfahren?
+   * Default: false.
+   */
+  schlichtungsbereit?: boolean;
+}
+
+/**
+ * Baut das Impressum nach § 5 DDG und § 18 Abs. 2 MStV.
+ *
+ * Der Anbieter wird bewusst übergeben statt importiert: Seiten mit fremden
+ * Betreibern (unteruns.io/g/[slug]) nutzen dieselben Textbausteine.
+ */
+export function impressum(
+  a: Anbieter,
+  s: Site,
+  opts: ImpressumOptions = {},
+): LegalDoc {
+  const sections: Section[] = [];
+
+  sections.push({
+    title: 'Angaben gemäß § 5 DDG',
+    blocks: [anschrift(a)],
+  });
+
+  sections.push({
+    title: 'Kontakt',
+    blocks: [kontakt(a)],
+  });
+
+  if (a.registergericht) {
+    sections.push({
+      title: 'Registereintrag',
+      blocks: [
+        lines(
+          `Registergericht: ${a.registergericht.gericht}`,
+          `Registernummer: ${a.registergericht.nummer}`,
+        ),
+      ],
+    });
+  }
+
+  if (a.ustId) {
+    sections.push({
+      title: 'Umsatzsteuer',
+      blocks: [
+        p(
+          txt(
+            'Umsatzsteuer-Identifikationsnummer gemäß § 27a Umsatzsteuergesetz: ',
+          ),
+          txt(a.ustId),
+        ),
+      ],
+    });
+  } else if (a.steuernummer) {
+    sections.push({
+      title: 'Umsatzsteuer',
+      blocks: [p(txt(`Steuernummer: ${a.steuernummer}`))],
+    });
+  }
+
+  sections.push({
+    title: 'Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV',
+    blocks: [
+      a.medienVerantwortlich
+        ? lines(a.medienVerantwortlich, a.strasse, `${a.plz} ${a.ort}`)
+        : anschrift(a),
+    ],
+  });
+
+  if (opts.zusatz) sections.push(...opts.zusatz);
+
+  sections.push({
+    title: 'EU-Streitschlichtung',
+    blocks: [
+      p(
+        txt(
+          'Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: ',
+        ),
+        link(
+          'https://ec.europa.eu/consumers/odr/',
+          'https://ec.europa.eu/consumers/odr/',
+          true,
+        ),
+      ),
+      p(
+        txt(
+          opts.schlichtungsbereit
+            ? 'Wir sind bereit, an einem Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.'
+            : 'Zur Teilnahme an einem Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle sind wir nicht verpflichtet und nicht bereit.',
+        ),
+      ),
+    ],
+  });
+
+  sections.push({
+    title: 'Haftung für Inhalte',
+    blocks: [
+      p(
+        txt(
+          'Als Diensteanbieter sind wir gemäß § 7 Abs. 1 DDG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. ' +
+            'Nach §§ 8 bis 10 DDG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen ' +
+            'zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen.',
+        ),
+      ),
+    ],
+  });
+
+  const links = s.externeLinks?.length
+    ? ` (u.a. ${aufzaehlung(s.externeLinks)})`
+    : '';
+  sections.push({
+    title: 'Haftung für Links',
+    blocks: [
+      p(
+        txt(
+          `Unser Angebot enthält Links zu externen Webseiten Dritter${links}, auf deren Inhalte wir keinen Einfluss haben. ` +
+            'Deshalb können wir für diese fremden Inhalte auch keine Gewähr übernehmen. Für die Inhalte der verlinkten Seiten ' +
+            'ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich.',
+        ),
+      ),
+    ],
+  });
+
+  return { title: 'Impressum', numbered: false, sections };
+}

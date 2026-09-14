@@ -1,0 +1,282 @@
+import { type Anbieter, anschriftMitKontakt } from './anbieter.js';
+import type { Site } from './sites.js';
+import { type LegalDoc, type Section, type Tone, aufzaehlung, p, txt, ul } from './types.js';
+
+export interface DsContext {
+  anbieter: Anbieter;
+  site: Site;
+  tone: Tone;
+}
+
+/** Ein wiederverwendbarer Baustein der Datenschutzerklärung. */
+export type Modul = (ctx: DsContext) => Section;
+
+/** Wählt zwischen formeller und persönlicher Fassung. */
+const v = (ctx: DsContext, formell: string, persoenlich: string): string =>
+  ctx.tone === 'formell' ? formell : persoenlich;
+
+// --- Bausteine ---
+
+export const verantwortlicher: Modul = (ctx) => ({
+  title: 'Verantwortlicher',
+  blocks: [anschriftMitKontakt(ctx.anbieter)],
+});
+
+export const hosting: Modul = (ctx) => ({
+  title: 'Hosting und Server-Logfiles',
+  blocks: [
+    p(
+      txt(
+        (ctx.site.hoster
+          ? `Diese Website wird bei ${ctx.site.hoster} gehostet. `
+          : '') +
+          'Beim Aufruf der Website erhebt der Hosting-Provider automatisch technische Zugriffsdaten (sog. Server-Logfiles), ' +
+          v(
+            ctx,
+            'die Ihr Browser automatisch übermittelt',
+            'die dein Browser automatisch übermittelt',
+          ) +
+          ': IP-Adresse, Datum und Uhrzeit der Anfrage, aufgerufene Seite, übertragene Datenmenge, Browsertyp und -version, ' +
+          'verwendetes Betriebssystem sowie die zuvor besuchte Seite (Referrer-URL).',
+      ),
+    ),
+    p(
+      txt(
+        'Diese Daten dienen ausschließlich der technischen Bereitstellung und Absicherung der Website und lassen keine ' +
+          v(ctx, 'Rückschlüsse auf Ihre Person zu.', 'Rückschlüsse auf dich zu.') +
+          ' Rechtsgrundlage ist unser berechtigtes Interesse an einem sicheren und stabilen Betrieb der Website ' +
+          '(Art. 6 Abs. 1 lit. f DSGVO). Die Logfiles werden aus Sicherheitsgründen für einen begrenzten Zeitraum ' +
+          'gespeichert und anschließend gelöscht.',
+      ),
+    ),
+  ],
+});
+
+export interface KontaktformularOptions {
+  /** Honeypot-Feld gegen Spam-Bots erwähnen. Default: true. */
+  honeypot?: boolean;
+}
+
+export const kontaktformular =
+  (opts: KontaktformularOptions = {}): Modul =>
+  (ctx) => {
+    const blocks = [
+      p(
+        txt(
+          v(
+            ctx,
+            'Wenn Sie uns über das Kontaktformular eine Nachricht senden, verarbeiten wir die von Ihnen angegebenen Daten ' +
+              '(Name, E-Mail-Adresse, Nachrichtentext) ausschließlich zum Zweck der Bearbeitung Ihrer Anfrage.',
+            'Wenn du uns über das Kontaktformular eine Nachricht schickst, verarbeiten wir die von dir angegebenen Daten ' +
+              '(Name, E-Mail-Adresse, Nachrichtentext) ausschließlich, um deine Anfrage zu bearbeiten.',
+          ) +
+            ' Die Nachricht wird per E-Mail an unser Postfach zugestellt. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO ' +
+            '(Anbahnung bzw. Erfüllung eines Vertrags oder vorvertragliche Maßnahme) bzw. Art. 6 Abs. 1 lit. f DSGVO ' +
+            '(berechtigtes Interesse an der Beantwortung von Anfragen), sofern kein Vertragsbezug besteht.',
+        ),
+      ),
+    ];
+
+    if (opts.honeypot !== false) {
+      blocks.push(
+        p(
+          txt(
+            'Zum Schutz vor automatisierten Spam-Einsendungen enthält das Formular ein für Menschen unsichtbares Feld ' +
+              '(Honeypot). Wird dieses Feld befüllt, wird die Übermittlung als Bot-Zugriff gewertet und nicht weiterverarbeitet.',
+          ),
+        ),
+      );
+    }
+
+    blocks.push(
+      p(
+        txt(
+          v(
+            ctx,
+            'Ihre Angaben werden gelöscht, sobald Ihre Anfrage abschließend bearbeitet ist, sofern keine gesetzlichen ' +
+              'Aufbewahrungspflichten entgegenstehen.',
+            'Deine Angaben werden gelöscht, sobald deine Anfrage abschließend bearbeitet ist, sofern keine gesetzlichen ' +
+              'Aufbewahrungspflichten entgegenstehen.',
+          ),
+        ),
+      ),
+    );
+
+    return { title: 'Kontaktformular', blocks };
+  };
+
+export const keineCookies: Modul = (ctx) => ({
+  title: 'Cookies und Tracking',
+  blocks: [
+    p(
+      txt(
+        'Diese Website verwendet keine Cookies und keine Analyse- oder Tracking-Dienste. Es findet keine Auswertung ' +
+          v(ctx, 'Ihres Nutzungsverhaltens statt.', 'deines Nutzungsverhaltens statt.'),
+      ),
+    ),
+  ],
+});
+
+export interface TechnischeCookiesOptions {
+  /** Wofür die Cookies nötig sind, z.B. "die Anmeldung und die Sitzungsverwaltung". */
+  zweck: string;
+}
+
+export const technischeCookies =
+  (opts: TechnischeCookiesOptions): Modul =>
+  (ctx) => ({
+    title: 'Cookies und Tracking',
+    blocks: [
+      p(
+        txt(
+          `Wir setzen ausschließlich technisch notwendige Cookies ein, die für ${opts.zweck} erforderlich sind. ` +
+            'Sie enthalten keine Profilbildungsdaten und werden nicht für Werbezwecke ausgewertet. Rechtsgrundlage ist ' +
+            '§ 25 Abs. 2 Nr. 2 TDDDG sowie unser berechtigtes Interesse am technischen Betrieb des Angebots ' +
+            '(Art. 6 Abs. 1 lit. f DSGVO).',
+        ),
+      ),
+      p(
+        txt(
+          'Analyse- oder Tracking-Dienste Dritter setzen wir nicht ein. Es findet keine Auswertung ' +
+            v(ctx, 'Ihres Nutzungsverhaltens statt.', 'deines Nutzungsverhaltens statt.'),
+        ),
+      ),
+    ],
+  });
+
+export interface KontoOptions {
+  /** Welche Daten beim Anlegen des Kontos erhoben werden. */
+  daten: string;
+}
+
+export const nutzerkonto =
+  (opts: KontoOptions): Modul =>
+  (ctx) => ({
+    title: 'Nutzerkonto',
+    blocks: [
+      p(
+        txt(
+          v(
+            ctx,
+            `Wenn Sie ein Nutzerkonto anlegen, verarbeiten wir die dabei angegebenen Daten (${opts.daten}), um Ihnen das Angebot bereitzustellen.`,
+            `Wenn du ein Nutzerkonto anlegst, verarbeiten wir die dabei angegebenen Daten (${opts.daten}), um dir das Angebot bereitzustellen.`,
+          ) + ' Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO (Erfüllung des Nutzungsvertrags).',
+        ),
+      ),
+      p(
+        txt(
+          v(
+            ctx,
+            'Ihr Konto können Sie jederzeit löschen. Mit der Löschung werden die zugehörigen Daten entfernt, sofern keine gesetzlichen Aufbewahrungspflichten entgegenstehen.',
+            'Dein Konto kannst du jederzeit löschen. Mit der Löschung werden die zugehörigen Daten entfernt, sofern keine gesetzlichen Aufbewahrungspflichten entgegenstehen.',
+          ),
+        ),
+      ),
+    ],
+  });
+
+export const externeLinks: Modul = (ctx) => {
+  const liste = ctx.site.externeLinks?.length
+    ? ` (u.a. ${aufzaehlung(ctx.site.externeLinks)})`
+    : '';
+  return {
+    title: 'Externe Links',
+    blocks: [
+      p(
+        txt(
+          `Diese Seite verlinkt auf externe Angebote${liste}. Diese Links führen aus unserer Website heraus; ` +
+            'erst mit dem Anklicken werden Daten an den jeweiligen Anbieter übertragen. Für die Datenverarbeitung auf ' +
+            'diesen externen Seiten gelten die Datenschutzerklärungen der jeweiligen Anbieter, auf die wir keinen Einfluss haben.',
+        ),
+      ),
+    ],
+  };
+};
+
+export const betroffenenrechte: Modul = (ctx) => ({
+  title: v(ctx, 'Ihre Rechte', 'Deine Rechte'),
+  blocks: [
+    p(
+      txt(
+        v(
+          ctx,
+          'Ihnen stehen als betroffene Person nach der DSGVO folgende Rechte zu:',
+          'Dir stehen als betroffene Person nach der DSGVO folgende Rechte zu:',
+        ),
+      ),
+    ),
+    ul(
+      v(
+        ctx,
+        'Auskunft über die zu Ihrer Person gespeicherten Daten (Art. 15 DSGVO)',
+        'Auskunft über die zu deiner Person gespeicherten Daten (Art. 15 DSGVO)',
+      ),
+      'Berichtigung unrichtiger Daten (Art. 16 DSGVO)',
+      v(ctx, 'Löschung Ihrer Daten (Art. 17 DSGVO)', 'Löschung deiner Daten (Art. 17 DSGVO)'),
+      'Einschränkung der Verarbeitung (Art. 18 DSGVO)',
+      'Datenübertragbarkeit (Art. 20 DSGVO)',
+      'Widerspruch gegen die Verarbeitung (Art. 21 DSGVO)',
+    ),
+    p(
+      txt(
+        v(
+          ctx,
+          'Wenden Sie sich dazu einfach an die oben genannte Kontaktadresse. Ihnen steht zudem ein Beschwerderecht bei einer Datenschutz-Aufsichtsbehörde zu',
+          'Wende dich dazu einfach an die oben genannte Kontaktadresse. Dir steht zudem ein Beschwerderecht bei einer Datenschutz-Aufsichtsbehörde zu',
+        ) +
+          (ctx.anbieter.aufsichtsbehoerde ? ` (${ctx.anbieter.aufsichtsbehoerde})` : '') +
+          '.',
+      ),
+    ),
+  ],
+});
+
+export const aktualitaet: Modul = () => ({
+  title: 'Aktualität dieser Erklärung',
+  blocks: [
+    p(
+      txt(
+        'Diese Datenschutzerklärung kann bei Bedarf angepasst werden, etwa bei Weiterentwicklung der Website oder ' +
+          'neuen rechtlichen Vorgaben.',
+      ),
+    ),
+  ],
+});
+
+/** Der Satz Bausteine, den fast jede Seite braucht. */
+export const STANDARD_MODULE: Modul[] = [
+  verantwortlicher,
+  hosting,
+  keineCookies,
+  betroffenenrechte,
+  aktualitaet,
+];
+
+export interface DatenschutzOptions {
+  /** Default: 'formell'. */
+  tone?: Tone;
+  /** Default: STANDARD_MODULE. */
+  module?: Modul[];
+}
+
+/**
+ * Setzt die Datenschutzerklärung aus Bausteinen zusammen.
+ * Die Abschnitte werden beim Rendern automatisch durchnummeriert.
+ */
+export function datenschutz(
+  a: Anbieter,
+  s: Site,
+  opts: DatenschutzOptions = {},
+): LegalDoc {
+  const ctx: DsContext = {
+    anbieter: a,
+    site: s,
+    tone: opts.tone ?? 'formell',
+  };
+  const module = opts.module ?? STANDARD_MODULE;
+  return {
+    title: 'Datenschutzerklärung',
+    numbered: true,
+    sections: module.map((m) => m(ctx)),
+  };
+}
