@@ -25,7 +25,9 @@ npm i git+https://github.com/conct/legal.git#v1.0.0
 > `git config --global url."https://github.com/".insteadOf ssh://git@github.com/`
 
 Das Paket baut sich beim Installieren selbst (`prepare`-Script), es wird also
-kein `dist/` eingecheckt.
+kein `dist/` eingecheckt. In Umgebungen, die Install-Scripts abschalten
+(`npm ci --ignore-scripts`, gehärtete CI-Images), fehlt dadurch `dist/` —
+dort einmalig `npm rebuild @conct/legal` nachschieben.
 
 ## Konzept: Blöcke statt Markup
 
