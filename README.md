@@ -16,7 +16,7 @@ Domain — jede Domain trägt ihr eigenes.
 ## Installation
 
 ```bash
-npm i git+https://github.com/conct/legal.git#v1.0.1
+npm i git+https://github.com/conct/legal.git#v1.1.0
 ```
 
 > Das npm-Kürzel `github:conct/legal` löst auf `ssh://git@github.com/…` auf und
@@ -126,13 +126,19 @@ const doc = datenschutz(CONCT, SITES['choozy.io'], {
 });
 ```
 
-Ohne `module` gilt `STANDARD_MODULE`: Verantwortlicher, Hosting, keine Cookies,
-Betroffenenrechte, Aktualität.
+Ohne `module` gilt `STANDARD_MODULE`: Verantwortlicher, Datenschutzbeauftragter,
+Hosting, Auftragsverarbeitung, keine Cookies, Betroffenenrechte, Aktualität.
+
+Bausteine, für die keine Daten hinterlegt sind, geben `null` zurück und
+entfallen samt Abschnittsnummer — `datenschutzbeauftragter` und
+`auftragsverarbeitung` stehen deshalb gefahrlos im Standardsatz.
 
 | Baustein | Parameter |
 |---|---|
 | `verantwortlicher` | — |
-| `hosting` | — (nutzt `site.hoster`) |
+| `datenschutzbeauftragter` | — (nutzt `anbieter.datenschutzbeauftragter`) |
+| `hosting` | — (nutzt `site.hoster` und `site.art`) |
+| `auftragsverarbeitung` | — (nutzt `site.drittdienste`) |
 | `kontaktformular({ honeypot })` | Honeypot erwähnen, Default `true` |
 | `keineCookies` | — |
 | `technischeCookies({ zweck })` | wofür die Cookies nötig sind |
@@ -145,6 +151,33 @@ Betroffenenrechte, Aktualität.
 Datenschutz — das Impressum ist durchgängig sachlich formuliert und enthält
 keine Anrede.
 
+## Presets: eine Seite, ein Aufruf
+
+Damit die Modulliste nicht in jeder App erneut steht — bei velvet und
+rechnungswerk sonst zweimal, für Web und App — liegt sie pro Seite in
+[`src/presets.ts`](src/presets.ts):
+
+```ts
+import { impressumFuer, datenschutzFuer } from '@conct/legal';
+
+impressumFuer('choozy.io');
+datenschutzFuer('choozy.io');              // nimmt Tonlage + Module aus dem Preset
+datenschutzFuer('choozy.io', CONCT, { tone: 'formell' });  // punktuell abweichen
+```
+
+Die Presets liegen bewusst nicht in `sites.ts`: die Registry darf die
+Bausteine nicht importieren, sonst entsteht ein Import-Zyklus.
+
+### Die `geprueft`-Flagge
+
+Jedes Preset trägt `geprueft: boolean`. `false` heißt: die Bausteine sind eine
+Vermutung aus dem Baukasten, niemand hat gegen die tatsächliche
+Datenverarbeitung der Seite geprüft. Aktuell ist nur `feif.space` auf `true` —
+das ist gegen die Live-Seite abgeglichen und rendert wortgleich.
+
+`ungeprueft()` listet die offenen Seiten, der Sync-Workflow warnt bei ihnen.
+Vor dem Livegang einer Seite: Module durchgehen, dann die Flagge setzen.
+
 ## Fremde Anbieter
 
 `impressum()` und `datenschutz()` bekommen den Anbieter übergeben statt ihn zu
@@ -155,6 +188,40 @@ anderen Stammdaten:
 ```ts
 impressum({ name: gruppe.betreiber, strasse: …, email: … }, site);
 ```
+
+## Die Interfaces erweitern
+
+`Anbieter` und `Site` sind offene Interfaces. Neue Felder **immer optional**
+anlegen — dann ist es ein Minor-Release und kein Konsument muss nachziehen.
+Ein Pflichtfeld ist ein Breaking Change.
+
+Das Muster: Feld ergänzen, Abschnitt nur rendern, wenn es gesetzt ist. Die
+Renderer bleiben unberührt, sie kennen nur Blöcke.
+
+`Anbieter` — neben den Stammdaten:
+
+| Feld | Wofür |
+|---|---|
+| `rechtsform`, `land` | Firmierung |
+| `ustId` / `steuernummer` / `wirtschaftsId` | § 27a UStG, § 139c AO |
+| `registergericht` | Handels-/Vereinsregister |
+| `medienVerantwortlich` | § 18 Abs. 2 MStV, falls abweichend |
+| `berufsrecht` | § 5 Abs. 1 Nr. 5 DDG, nur bei reglementierten Berufen |
+| `berufshaftpflicht` | § 2 Abs. 1 Nr. 11 DL-InfoV |
+| `datenschutzbeauftragter` | ab 20 ständig mit Verarbeitung befassten Personen |
+| `aufsichtsbehoerde` | falls konkret benannt |
+
+`Site`:
+
+| Feld | Wofür |
+|---|---|
+| `art` | `'website'` (Default) \| `'app'` \| `'angebot'` — steuert die Formulierung |
+| `hoster` | Baustein `hosting` |
+| `externeLinks` | Haftung für Links, Externe Links |
+| `drittdienste` | Baustein `auftragsverarbeitung` (Name, Zweck, Ort) |
+
+`art: 'app'` formuliert um, wo Web-Sprache falsch wäre: „Die Server dieser App
+werden bei … betrieben", „die dein **Gerät** automatisch übermittelt".
 
 ## Neue Seite eintragen
 

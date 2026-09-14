@@ -9,24 +9,18 @@
  */
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { CONCT, SITES, impressum, datenschutz, ds } from '../dist/index.js';
+import { SITES, impressumFuer, datenschutzFuer, PRESETS } from '../dist/index.js';
 import { toHtml } from '../dist/render/html.js';
 
-/** Welche Datenschutz-Bausteine die jeweilige statische Seite braucht. */
-// Weitere statische Seiten hier eintragen, sobald sie legal-Seiten im
-// gleichen Template-Aufbau haben (pip-boy/docs/landing hat noch keine).
+/**
+ * Welche Dateien die jeweilige statische Seite hat. Die Datenschutz-Bausteine
+ * stehen in src/presets.ts, nicht hier — sonst gäbe es sie zweimal.
+ *
+ * Weitere Seiten eintragen, sobald sie legal-Seiten im gleichen
+ * Template-Aufbau haben (pip-boy/docs/landing hat noch keine).
+ */
 const STATIC_SITES = {
   'feif.space': {
-    module: [
-      ds.verantwortlicher,
-      ds.hosting,
-      ds.kontaktformular(),
-      ds.keineCookies,
-      ds.externeLinks,
-      ds.betroffenenrechte,
-      ds.aktualitaet,
-    ],
-    tone: 'formell',
     dateien: { impressum: 'impressum.html', datenschutz: 'datenschutz.html' },
   },
 };
@@ -80,9 +74,16 @@ if (!cfg || !site) {
   process.exit(1);
 }
 
+if (!PRESETS[siteKey].geprueft) {
+  console.warn(
+    `Warnung: Das Datenschutz-Preset für ${siteKey} ist in src/presets.ts noch ` +
+      'nicht als geprüft markiert.',
+  );
+}
+
 const docs = {
-  impressum: impressum(CONCT, site),
-  datenschutz: datenschutz(CONCT, site, { tone: cfg.tone, module: cfg.module }),
+  impressum: impressumFuer(siteKey),
+  datenschutz: datenschutzFuer(siteKey),
 };
 
 let geaendert = 0;

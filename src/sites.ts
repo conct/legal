@@ -11,6 +11,27 @@ export interface Site {
   externeLinks?: string[];
   /** Hoster, erscheint im Datenschutz-Baustein `hosting`. */
   hoster?: string;
+  /**
+   * Was das Angebot ist. Steuert die Formulierung ("Diese Website" /
+   * "Diese App" / "Dieses Angebot"). Default: 'website'.
+   */
+  art?: Angebotsart;
+  /**
+   * Dienstleister, die personenbezogene Daten im Auftrag verarbeiten
+   * (Art. 28 DSGVO). Speist den Baustein `auftragsverarbeitung`.
+   */
+  drittdienste?: Drittdienst[];
+}
+
+export type Angebotsart = 'website' | 'app' | 'angebot';
+
+export interface Drittdienst {
+  /** Name des Dienstes, z.B. "Stripe". */
+  name: string;
+  /** Wofür er eingesetzt wird, z.B. "Zahlungsabwicklung". */
+  zweck: string;
+  /** Sitz bzw. Verarbeitungsort, z.B. "Irland" oder "USA". */
+  ort?: string;
 }
 
 const geschwister = [

@@ -69,6 +69,45 @@ export function impressum(
     });
   }
 
+  if (a.wirtschaftsId) {
+    sections.push({
+      title: 'Wirtschafts-Identifikationsnummer',
+      blocks: [p(txt(`Wirtschafts-Identifikationsnummer: ${a.wirtschaftsId}`))],
+    });
+  }
+
+  if (a.berufsrecht) {
+    const b = a.berufsrecht;
+    const zeilen: (string | ReturnType<typeof link>)[] = [
+      `Berufsbezeichnung: ${b.bezeichnung}`,
+      `Verliehen in: ${b.verleihungsstaat}`,
+      `Zuständige Kammer: ${b.kammer}`,
+    ];
+    if (b.regelungen) zeilen.push(`Berufsrechtliche Regelungen: ${b.regelungen}`);
+    const blocks = [lines(...zeilen)];
+    if (b.regelungenUrl) {
+      blocks.push(
+        p(
+          txt('Einsehbar unter: '),
+          link(b.regelungenUrl, b.regelungenUrl, true),
+        ),
+      );
+    }
+    sections.push({ title: 'Berufsrechtliche Angaben', blocks });
+  }
+
+  if (a.berufshaftpflicht) {
+    sections.push({
+      title: 'Berufshaftpflichtversicherung',
+      blocks: [
+        lines(
+          `Versicherer: ${a.berufshaftpflicht.versicherer}`,
+          `Räumlicher Geltungsbereich: ${a.berufshaftpflicht.geltungsraum}`,
+        ),
+      ],
+    });
+  }
+
   sections.push({
     title: 'Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV',
     blocks: [

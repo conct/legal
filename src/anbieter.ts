@@ -22,6 +22,34 @@ export interface Anbieter {
   medienVerantwortlich?: string;
   /** Zuständige Datenschutz-Aufsichtsbehörde, falls konkret benannt. */
   aufsichtsbehoerde?: string;
+  /** Wirtschafts-Identifikationsnummer nach § 139c AO. */
+  wirtschaftsId?: string;
+  /**
+   * Angaben zu reglementierten Berufen nach § 5 Abs. 1 Nr. 5 DDG.
+   * Nur ausfüllen, wenn der Beruf tatsächlich reglementiert ist —
+   * IT-Dienstleistung ist es nicht.
+   */
+  berufsrecht?: {
+    bezeichnung: string;
+    verleihungsstaat: string;
+    kammer: string;
+    /** Bezeichnung der einschlägigen berufsrechtlichen Regelungen. */
+    regelungen?: string;
+    /** Wo die Regelungen einsehbar sind. */
+    regelungenUrl?: string;
+  };
+  /** Berufshaftpflicht nach § 2 Abs. 1 Nr. 11 DL-InfoV. */
+  berufshaftpflicht?: {
+    versicherer: string;
+    /** Räumlicher Geltungsbereich, z.B. "Deutschland" oder "EU". */
+    geltungsraum: string;
+  };
+  /** Datenschutzbeauftragter — ab 20 ständig mit Verarbeitung befassten Personen Pflicht. */
+  datenschutzbeauftragter?: {
+    name: string;
+    email: string;
+    telefon?: string;
+  };
 }
 
 /** Anschrift als Zeilenblock. */

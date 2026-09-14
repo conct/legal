@@ -1,6 +1,18 @@
 import { type Anbieter, anschriftMitKontakt } from './anbieter.js';
-import type { Site } from './sites.js';
-import { type LegalDoc, type Section, type Tone, aufzaehlung, p, txt, ul } from './types.js';
+import type { Angebotsart, Site } from './sites.js';
+import {
+  type Inline,
+  type LegalDoc,
+  type Section,
+  type Tone,
+  aufzaehlung,
+  br,
+  mail,
+  p,
+  tel,
+  txt,
+  ul,
+} from './types.js';
 
 export interface DsContext {
   anbieter: Anbieter;
@@ -8,12 +20,66 @@ export interface DsContext {
   tone: Tone;
 }
 
-/** Ein wiederverwendbarer Baustein der Datenschutzerklärung. */
-export type Modul = (ctx: DsContext) => Section;
+/**
+ * Ein wiederverwendbarer Baustein der Datenschutzerklärung.
+ * `null` bedeutet: für diese Seite nicht einschlägig — der Abschnitt
+ * entfällt samt Nummer, statt leer dazustehen.
+ */
+export type Modul = (ctx: DsContext) => Section | null;
 
 /** Wählt zwischen formeller und persönlicher Fassung. */
 const v = (ctx: DsContext, formell: string, persoenlich: string): string =>
   ctx.tone === 'formell' ? formell : persoenlich;
+
+/**
+ * Formulierungen je Angebotsart. Die 'website'-Zeile ist so gewählt, dass
+ * bestehende Seiten wortgleich bleiben.
+ */
+const ANGEBOT: Record<
+  Angebotsart,
+  {
+    dies: string;
+    beiNutzung: string;
+    genitiv: string;
+    verlinkt: string;
+    /** Dativ mit Possessiv: "aus unserer Website heraus". */
+    unser: string;
+    /** Was die Zugriffsdaten übermittelt — eine native App hat keinen Browser. */
+    client: string;
+    hostSatz: (hoster: string) => string;
+  }
+> = {
+  website: {
+    dies: 'Diese Website',
+    beiNutzung: 'Beim Aufruf der Website',
+    genitiv: 'der Website',
+    verlinkt: 'Diese Seite',
+    unser: 'unserer Website',
+    client: 'Browser',
+    hostSatz: (h) => `Diese Website wird bei ${h} gehostet. `,
+  },
+  app: {
+    dies: 'Diese App',
+    beiNutzung: 'Bei der Nutzung der App',
+    genitiv: 'der App',
+    verlinkt: 'Diese App',
+    unser: 'unserer App',
+    client: 'Gerät',
+    hostSatz: (h) => `Die Server dieser App werden bei ${h} betrieben. `,
+  },
+  angebot: {
+    dies: 'Dieses Angebot',
+    beiNutzung: 'Bei der Nutzung des Angebots',
+    genitiv: 'des Angebots',
+    verlinkt: 'Dieses Angebot',
+    unser: 'unserem Angebot',
+    client: 'Gerät',
+    hostSatz: (h) => `Dieses Angebot wird bei ${h} gehostet. `,
+  },
+};
+
+/** Die Formulierungen für die Angebotsart dieser Seite. */
+const art = (ctx: DsContext) => ANGEBOT[ctx.site.art ?? 'website'];
 
 // --- Bausteine ---
 
@@ -27,14 +93,12 @@ export const hosting: Modul = (ctx) => ({
   blocks: [
     p(
       txt(
-        (ctx.site.hoster
-          ? `Diese Website wird bei ${ctx.site.hoster} gehostet. `
-          : '') +
-          'Beim Aufruf der Website erhebt der Hosting-Provider automatisch technische Zugriffsdaten (sog. Server-Logfiles), ' +
+        (ctx.site.hoster ? art(ctx).hostSatz(ctx.site.hoster) : '') +
+          `${art(ctx).beiNutzung} erhebt der Hosting-Provider automatisch technische Zugriffsdaten (sog. Server-Logfiles), ` +
           v(
             ctx,
-            'die Ihr Browser automatisch übermittelt',
-            'die dein Browser automatisch übermittelt',
+            `die Ihr ${art(ctx).client} automatisch übermittelt`,
+            `die dein ${art(ctx).client} automatisch übermittelt`,
           ) +
           ': IP-Adresse, Datum und Uhrzeit der Anfrage, aufgerufene Seite, übertragene Datenmenge, Browsertyp und -version, ' +
           'verwendetes Betriebssystem sowie die zuvor besuchte Seite (Referrer-URL).',
@@ -42,9 +106,9 @@ export const hosting: Modul = (ctx) => ({
     ),
     p(
       txt(
-        'Diese Daten dienen ausschließlich der technischen Bereitstellung und Absicherung der Website und lassen keine ' +
+        `Diese Daten dienen ausschließlich der technischen Bereitstellung und Absicherung ${art(ctx).genitiv} und lassen keine ` +
           v(ctx, 'Rückschlüsse auf Ihre Person zu.', 'Rückschlüsse auf dich zu.') +
-          ' Rechtsgrundlage ist unser berechtigtes Interesse an einem sicheren und stabilen Betrieb der Website ' +
+          ` Rechtsgrundlage ist unser berechtigtes Interesse an einem sicheren und stabilen Betrieb ${art(ctx).genitiv} ` +
           '(Art. 6 Abs. 1 lit. f DSGVO). Die Logfiles werden aus Sicherheitsgründen für einen begrenzten Zeitraum ' +
           'gespeichert und anschließend gelöscht.',
       ),
@@ -110,7 +174,7 @@ export const keineCookies: Modul = (ctx) => ({
   blocks: [
     p(
       txt(
-        'Diese Website verwendet keine Cookies und keine Analyse- oder Tracking-Dienste. Es findet keine Auswertung ' +
+        `${art(ctx).dies} verwendet keine Cookies und keine Analyse- oder Tracking-Dienste. Es findet keine Auswertung ` +
           v(ctx, 'Ihres Nutzungsverhaltens statt.', 'deines Nutzungsverhaltens statt.'),
       ),
     ),
@@ -184,7 +248,7 @@ export const externeLinks: Modul = (ctx) => {
     blocks: [
       p(
         txt(
-          `Diese Seite verlinkt auf externe Angebote${liste}. Diese Links führen aus unserer Website heraus; ` +
+          `${art(ctx).verlinkt} verlinkt auf externe Angebote${liste}. Diese Links führen aus ${art(ctx).unser} heraus; ` +
             'erst mit dem Anklicken werden Daten an den jeweiligen Anbieter übertragen. Für die Datenverarbeitung auf ' +
             'diesen externen Seiten gelten die Datenschutzerklärungen der jeweiligen Anbieter, auf die wir keinen Einfluss haben.',
         ),
@@ -243,10 +307,48 @@ export const aktualitaet: Modul = () => ({
   ],
 });
 
+export const datenschutzbeauftragter: Modul = (ctx) => {
+  const d = ctx.anbieter.datenschutzbeauftragter;
+  if (!d) return null;
+
+  const v: Inline[] = [txt(d.name), br, txt('E-Mail: '), mail(d.email)];
+  if (d.telefon) v.push(br, txt('Telefon: '), tel(d.telefon));
+
+  return {
+    title: 'Datenschutzbeauftragter',
+    blocks: [{ t: 'p', v }],
+  };
+};
+
+export const auftragsverarbeitung: Modul = (ctx) => {
+  const dienste = ctx.site.drittdienste;
+  if (!dienste?.length) return null;
+
+  return {
+    title: 'Auftragsverarbeiter',
+    blocks: [
+      p(
+        txt(
+          `Für den Betrieb ${art(ctx).genitiv} setzen wir Dienstleister ein, die personenbezogene Daten ` +
+            'in unserem Auftrag und nach unserer Weisung verarbeiten. Mit ihnen bestehen Verträge zur ' +
+            'Auftragsverarbeitung nach Art. 28 DSGVO.',
+        ),
+      ),
+      ul(
+        ...dienste.map((d) =>
+          `${d.name} — ${d.zweck}${d.ort ? ` (${d.ort})` : ''}`,
+        ),
+      ),
+    ],
+  };
+};
+
 /** Der Satz Bausteine, den fast jede Seite braucht. */
 export const STANDARD_MODULE: Modul[] = [
   verantwortlicher,
+  datenschutzbeauftragter,
   hosting,
+  auftragsverarbeitung,
   keineCookies,
   betroffenenrechte,
   aktualitaet,
@@ -277,6 +379,8 @@ export function datenschutz(
   return {
     title: 'Datenschutzerklärung',
     numbered: true,
-    sections: module.map((m) => m(ctx)),
+    sections: module
+      .map((m) => m(ctx))
+      .filter((s): s is Section => s !== null),
   };
 }
