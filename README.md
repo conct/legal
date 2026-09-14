@@ -16,7 +16,7 @@ Domain — jede Domain trägt ihr eigenes.
 ## Installation
 
 ```bash
-npm i git+https://github.com/conct/legal.git#v1.0.0
+npm i git+https://github.com/conct/legal.git#v1.0.1
 ```
 
 > Das npm-Kürzel `github:conct/legal` löst auf `ssh://git@github.com/…` auf und
