@@ -26,7 +26,7 @@ export interface Site {
   /**
    * Abweichende Stammdaten für diese Seite, über CONCT gelegt.
    * Ein Feld mit `undefined` entfernt die Angabe — so bleibt etwa die
-   * Steuernummer auf einer Seite weg, ohne sie überall zu streichen.
+   * Telefonnummer auf einer Seite weg, ohne sie überall zu streichen.
    */
   anbieter?: Partial<Anbieter>;
 }
@@ -81,9 +81,6 @@ export const SITES = {
       // Bestellmail von einer Adresse, die im Impressum nicht steht, ist für
       // den Empfänger schwer von einer Fälschung zu unterscheiden.
       email: 'mail@conct.de',
-      // § 5 DDG verlangt die Steuernummer nicht, und sie geht Dritte nichts an.
-      // Auf rechnungswerk bewusst entfernt (26.08.2026).
-      steuernummer: undefined,
       marke: 'feif.space',
       land: 'Deutschland',
       rechtlicheStellung: 'Einzelunternehmen. Nicht im Handelsregister eingetragen.',

@@ -16,7 +16,7 @@ Domain — jede Domain trägt ihr eigenes.
 ## Installation
 
 ```bash
-npm i git+https://github.com/conct/legal.git#v1.2.0
+npm i git+https://github.com/conct/legal.git#v1.3.0
 ```
 
 > `github:conct/legal#v1.2.0` funktioniert genauso — npm schreibt es beim
@@ -35,7 +35,7 @@ dort einmalig `npm rebuild @conct/legal` nachschieben.
 Das Paket enthält den **gesamten Stammdatensatz** aller Seiten. Wer es in Code
 importiert, der im Browser läuft, liefert diesen Datensatz mit aus — auch
 Felder, die eine Seite über `Site.anbieter` bewusst ausblendet. Ein
-`steuernummer: undefined` blendet die Angabe im gerenderten Text aus, aber das
+`telefon: undefined` blendet die Angabe im gerenderten Text aus, aber das
 Literal in `CONCT` steht trotzdem im Skript.
 
 So passiert bei rechnungswerk: Ein Widerrufsformular, das im Browser läuft,
@@ -48,6 +48,19 @@ als `data-`Attribut.
 
 React-Native-Apps bündeln das Paket zwangsläufig. Dort gilt: was in `CONCT`
 steht, steht in jeder App.
+
+## Was nicht ins Paket gehört
+
+Dieses Repo ist öffentlich, und jedes Feld in `CONCT` landet in jedem Bundle,
+das das Paket einbindet. Hier steht nur, was ohnehin öffentlich sein muss.
+**Nicht hierher:** Steuernummer, steuerliche Identifikationsnummer (§ 139b AO),
+Bankverbindung, Zugangsdaten. Die USt-IdNr. dagegen gehört ins Impressum und
+damit hierher, sobald sie vorliegt.
+
+Die Steuernummer stand bis v1.2.0 in `CONCT` und ist in der Git-Historie
+weiterhin sichtbar. Sie steht allerdings auch auf jeder ausgestellten Rechnung
+(§ 14 Abs. 4 UStG) und ist damit kein Geheimnis im engeren Sinn — die
+Historie wurde deshalb nicht umgeschrieben.
 
 ## Konzept: Blöcke statt Markup
 
@@ -253,7 +266,6 @@ Nicht jede Seite zeigt dieselben Stammdaten. `Site.anbieter` legt Abweichungen
 'rechnungswerk.conct.de': {
   anbieter: {
     email: 'mail@conct.de',   // Kaufmails kommen von hier
-    steuernummer: undefined,  // von § 5 DDG nicht verlangt
     marke: 'feif.space',
   },
 },

@@ -105,7 +105,9 @@ export const CONCT: Anbieter = {
   ort: 'Dürrröhrsdorf-Dittersbach',
   email: 'mail@feif.space',
   telefon: '+49 (0) 611 9458 4300',
-  steuernummer: '210/246/14465',
+  // Keine Steuernummer: § 5 DDG verlangt sie nicht, und dieses Repo ist
+  // öffentlich. Was hier steht, liegt auf GitHub und in jedem Bundle, das das
+  // Paket einbindet — unabhängig davon, ob ein Impressum es anzeigt.
   // Amtliche Bezeichnung seit 2023; Umzug aus der Devrientstraße im April 2025
   // (Medieninformation vom 03.04.2025, datenschutz.sachsen.de/kontakt.html).
   aufsichtsbehoerde:
