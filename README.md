@@ -19,15 +19,35 @@ Domain — jede Domain trägt ihr eigenes.
 npm i git+https://github.com/conct/legal.git#v1.2.0
 ```
 
-> Das npm-Kürzel `github:conct/legal` löst auf `ssh://git@github.com/…` auf und
-> scheitert ohne hinterlegten SSH-Key. Entweder die `git+https`-Form oben
-> benutzen, oder einmalig global umschreiben:
-> `git config --global url."https://github.com/".insteadOf ssh://git@github.com/`
+> `github:conct/legal#v1.2.0` funktioniert genauso — npm schreibt es beim
+> Installieren ohnehin in diese Kurzform, und die Lockdatei vermerkt
+> `git+ssh://`. Ein SSH-Key ist trotzdem nicht nötig: npm weicht bei GitHub auf
+> HTTPS aus. Geprüft mit blockiertem SSH und leerem Cache, für `npm install`
+> und `npm ci`.
 
 Das Paket baut sich beim Installieren selbst (`prepare`-Script), es wird also
 kein `dist/` eingecheckt. In Umgebungen, die Install-Scripts abschalten
 (`npm ci --ignore-scripts`, gehärtete CI-Images), fehlt dadurch `dist/` —
 dort einmalig `npm rebuild @conct/legal` nachschieben.
+
+## Nicht ins Browser-Bundle importieren
+
+Das Paket enthält den **gesamten Stammdatensatz** aller Seiten. Wer es in Code
+importiert, der im Browser läuft, liefert diesen Datensatz mit aus — auch
+Felder, die eine Seite über `Site.anbieter` bewusst ausblendet. Ein
+`steuernummer: undefined` blendet die Angabe im gerenderten Text aus, aber das
+Literal in `CONCT` steht trotzdem im Skript.
+
+So passiert bei rechnungswerk: Ein Widerrufsformular, das im Browser läuft,
+importierte `anbieterFuer()`, und die Steuernummer stand im Seitenquelltext.
+
+Deshalb: **nur zur Build-Zeit oder serverseitig importieren** — in Astro im
+Frontmatter, in Next in Server Components. Braucht ein Browser-Skript einzelne
+Angaben, löst die Seite sie beim Bauen auf und reicht nur diese weiter, etwa
+als `data-`Attribut.
+
+React-Native-Apps bündeln das Paket zwangsläufig. Dort gilt: was in `CONCT`
+steht, steht in jeder App.
 
 ## Konzept: Blöcke statt Markup
 
