@@ -56,6 +56,9 @@ export const PRESETS: Record<SiteKey, Preset> = {
     geprueft: false,
     module: ds.STANDARD_MODULE,
   },
+  // Nutzt dieses Preset nicht: der Datenschutztext von rechnungswerk ist am
+  // Quelltext belegt und bleibt im Repo. Von hier kommen nur die Stammdaten
+  // (anbieterFuer). Steht hier für den Fall, dass sich das ändert.
   'rechnungswerk.conct.de': {
     tone: 'formell',
     geprueft: false,
@@ -78,13 +81,22 @@ function siteOf(key: SiteKey): Site {
 }
 
 /**
+ * Stammdaten für eine Seite: CONCT, überlagert mit den Abweichungen aus der
+ * Registry. Auch für Texte außerhalb von Impressum und Datenschutz gedacht —
+ * Widerrufsformular, Bestellmails, Verantwortlicher im eigenen Datenschutztext.
+ */
+export function anbieterFuer(key: SiteKey, basis: Anbieter = CONCT): Anbieter {
+  return { ...basis, ...siteOf(key).anbieter };
+}
+
+/**
  * Impressum für eine registrierte Seite.
  *
  *   impressumFuer('choozy.io')
  */
 export function impressumFuer(
   key: SiteKey,
-  anbieter: Anbieter = CONCT,
+  anbieter: Anbieter = anbieterFuer(key),
   opts?: ImpressumOptions,
 ): LegalDoc {
   return impressum(anbieter, siteOf(key), opts);
@@ -99,7 +111,7 @@ export function impressumFuer(
  */
 export function datenschutzFuer(
   key: SiteKey,
-  anbieter: Anbieter = CONCT,
+  anbieter: Anbieter = anbieterFuer(key),
   overrides: DatenschutzOptions = {},
 ): LegalDoc {
   const preset = PRESETS[key];

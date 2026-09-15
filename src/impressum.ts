@@ -30,7 +30,9 @@ export function impressum(
 
   sections.push({
     title: 'Angaben gemäß § 5 DDG',
-    blocks: [anschrift(a)],
+    blocks: a.rechtlicheStellung
+      ? [anschrift(a), p(txt(a.rechtlicheStellung))]
+      : [anschrift(a)],
   });
 
   sections.push({
@@ -119,24 +121,17 @@ export function impressum(
 
   if (opts.zusatz) sections.push(...opts.zusatz);
 
+  // Die OS-Plattform der EU ist seit dem 20.07.2025 abgeschaltet
+  // (VO (EU) 2024/3228). Link und Begleittext müssen seither entfallen —
+  // ein stehengebliebener Verweis ist abmahnfähig.
   sections.push({
-    title: 'EU-Streitschlichtung',
+    title: 'Verbraucherstreitbeilegung',
     blocks: [
       p(
         txt(
-          'Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: ',
-        ),
-        link(
-          'https://ec.europa.eu/consumers/odr/',
-          'https://ec.europa.eu/consumers/odr/',
-          true,
-        ),
-      ),
-      p(
-        txt(
           opts.schlichtungsbereit
-            ? 'Wir sind bereit, an einem Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.'
-            : 'Zur Teilnahme an einem Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle sind wir nicht verpflichtet und nicht bereit.',
+            ? 'Wir sind bereit, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.'
+            : 'Wir sind nicht bereit und nicht verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.',
         ),
       ),
     ],

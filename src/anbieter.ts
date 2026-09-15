@@ -8,6 +8,10 @@ import { type Block, type Inline, br, lines, mail, tel, txt } from './types.js';
 export interface Anbieter {
   name: string;
   rechtsform?: string;
+  /** Marke, unter der das Angebot auftritt, z.B. "feif.space". Keine eigene Gesellschaft. */
+  marke?: string;
+  /** Kurze Angabe zur Unternehmensform, z.B. "Einzelunternehmen. Nicht im Handelsregister eingetragen." */
+  rechtlicheStellung?: string;
   strasse: string;
   plz: string;
   ort: string;
@@ -57,6 +61,7 @@ export function anschrift(a: Anbieter): Block {
   const items: string[] = [];
   if (a.rechtsform) items.push(`${a.name} ${a.rechtsform}`);
   else items.push(a.name);
+  if (a.marke) items.push(a.marke);
   items.push(a.strasse, `${a.plz} ${a.ort}`);
   if (a.land) items.push(a.land);
   return lines(...items);
@@ -83,6 +88,7 @@ export function anschriftMitKontakt(a: Anbieter): Block {
     out.push(...parts);
   };
   zeile(txt(a.rechtsform ? `${a.name} ${a.rechtsform}` : a.name));
+  if (a.marke) zeile(txt(a.marke));
   zeile(txt(a.strasse));
   zeile(txt(`${a.plz} ${a.ort}`));
   if (a.land) zeile(txt(a.land));
@@ -100,4 +106,8 @@ export const CONCT: Anbieter = {
   email: 'mail@feif.space',
   telefon: '+49 (0) 611 9458 4300',
   steuernummer: '210/246/14465',
+  // Amtliche Bezeichnung seit 2023; Umzug aus der Devrientstraße im April 2025
+  // (Medieninformation vom 03.04.2025, datenschutz.sachsen.de/kontakt.html).
+  aufsichtsbehoerde:
+    'Sächsische Datenschutz- und Transparenzbeauftragte, Maternistraße 17, 01067 Dresden',
 };

@@ -16,7 +16,7 @@ Domain — jede Domain trägt ihr eigenes.
 ## Installation
 
 ```bash
-npm i git+https://github.com/conct/legal.git#v1.1.0
+npm i git+https://github.com/conct/legal.git#v1.2.0
 ```
 
 > Das npm-Kürzel `github:conct/legal` löst auf `ssh://git@github.com/…` auf und
@@ -202,7 +202,7 @@ Renderer bleiben unberührt, sie kennen nur Blöcke.
 
 | Feld | Wofür |
 |---|---|
-| `rechtsform`, `land` | Firmierung |
+| `rechtsform`, `land`, `marke`, `rechtlicheStellung` | Firmierung |
 | `ustId` / `steuernummer` / `wirtschaftsId` | § 27a UStG, § 139c AO |
 | `registergericht` | Handels-/Vereinsregister |
 | `medienVerantwortlich` | § 18 Abs. 2 MStV, falls abweichend |
@@ -219,9 +219,37 @@ Renderer bleiben unberührt, sie kennen nur Blöcke.
 | `hoster` | Baustein `hosting` |
 | `externeLinks` | Haftung für Links, Externe Links |
 | `drittdienste` | Baustein `auftragsverarbeitung` (Name, Zweck, Ort) |
+| `anbieter` | abweichende Stammdaten nur für diese Seite, siehe unten |
 
 `art: 'app'` formuliert um, wo Web-Sprache falsch wäre: „Die Server dieser App
 werden bei … betrieben", „die dein **Gerät** automatisch übermittelt".
+
+## Abweichende Stammdaten pro Seite
+
+Nicht jede Seite zeigt dieselben Stammdaten. `Site.anbieter` legt Abweichungen
+über `CONCT`; ein Feld mit `undefined` entfernt die Angabe:
+
+```ts
+'rechnungswerk.conct.de': {
+  anbieter: {
+    email: 'mail@conct.de',   // Kaufmails kommen von hier
+    steuernummer: undefined,  // von § 5 DDG nicht verlangt
+    marke: 'feif.space',
+  },
+},
+```
+
+`impressumFuer` und `datenschutzFuer` wenden das automatisch an. Für Texte
+außerhalb der beiden Seiten — Widerrufsformular, Bestellmails, ein eigener
+Datenschutztext — liefert `anbieterFuer('rechnungswerk.conct.de')` dieselben
+zusammengeführten Stammdaten.
+
+## Keine OS-Plattform mehr
+
+Die EU-Plattform zur Online-Streitbeilegung ist seit dem 20.07.2025
+abgeschaltet (VO (EU) 2024/3228). Seit v1.2.0 rendert das Impressum nur noch
+den Abschnitt „Verbraucherstreitbeilegung" ohne Link. Seiten, die noch einen
+älteren Stand ausliefern, zeigen einen toten und abmahnfähigen Verweis.
 
 ## Neue Seite eintragen
 
