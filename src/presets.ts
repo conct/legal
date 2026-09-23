@@ -70,7 +70,7 @@ export const PRESETS: Record<SiteKey, Preset> = {
     geprueft: false,
     module: [
       ds.verantwortlicher,
-      ds.datenschutzbeauftragter,
+      ds.keinDatenschutzbeauftragter,
       ds.hostingMit({ logsTage: 7, adresseGekuerzt: true }),
       ds.keineCookies,
       ds.drittland,

@@ -367,14 +367,11 @@ export const aktualitaet: Modul = () => ({
 
 export const datenschutzbeauftragter: Modul = (ctx) => {
   const d = ctx.anbieter.datenschutzbeauftragter;
-  // Kein Beauftragter eingetragen? Dann steht das da, statt dass der
-  // Abschnitt verschwindet. Für den Leser ist eine fehlende Ueberschrift
-  // dieselbe Leerstelle wie eine fehlende Angabe - er weiss nicht, ob keiner
-  // bestellt ist oder ob es vergessen wurde, und an wen er sich wendet,
-  // steht nirgends. Der Verantwortliche kann uebrigens nicht sein eigener
-  // Beauftragter sein: Er müsste sich selbst kontrollieren
-  // (Art. 38 Abs. 6 DSGVO).
-  if (!d) return keinDatenschutzbeauftragter(ctx);
+  // null heisst hier wie ueberall: fuer diese Seite nicht einschlaegig. Wer
+  // stattdessen ausdruecklich schreiben will, dass keiner bestellt ist,
+  // nimmt keinDatenschutzbeauftragter in sein Preset auf - beides zugleich
+  // waere ein Abschnitt, der mal Inhalt hat und mal eine Verlegenheit.
+  if (!d) return null;
 
   const v: Inline[] = [txt(d.name), br, txt('E-Mail: '), mail(d.email)];
   if (d.telefon) v.push(br, txt('Telefon: '), tel(d.telefon));
