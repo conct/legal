@@ -26,6 +26,8 @@ jobs:
         include:
           - site: feif.space
             repo: conct/feif.space
+          - site: conct.de
+            repo: conct/conct.de
     steps:
       - name: legal auschecken
         uses: actions/checkout@v4
@@ -63,8 +65,10 @@ jobs:
             Automatisch erzeugt aus [conct/legal](https://github.com/conct/legal).
 
             Geändert wurde ausschließlich der Inhalt von
-            `<section class="legal">` in `impressum.html` und `datenschutz.html`.
-            Layout, Header und Footer bleiben unberührt.
+            `<section class="legal">` in den Rechtstext-Seiten sowie die
+            Anschrift zwischen `<!--legal:anschrift-->` und
+            `<!--/legal:anschrift-->`, wo eine Seite diese Marken trägt.
+            Layout, Header und alles Unmarkierte bleiben unberührt.
 
             Inhaltliche Korrekturen gehören nach `conct/legal`, nicht in diesen PR —
             sonst werden sie beim nächsten Sync überschrieben.

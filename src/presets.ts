@@ -67,7 +67,13 @@ export const PRESETS: Record<SiteKey, Preset> = {
   // einschlaegig waeren.
   'conct.de': {
     tone: 'formell',
-    geprueft: false,
+    // Am 23.09.2026 durchgegangen: Die Bausteine bilden ab, was auf der Seite
+    // tatsaechlich passiert - keine Cookies, keine Analyse, keine fremden
+    // Ressourcen; Logfiles beim Hoster mit gekuerzter Adresse und sieben
+    // Tagen Aufbewahrung, beides am Server nachgemessen; die Uebergabe an
+    // audit.conct.de steht im seitenspezifischen Abschnitt, der im Repo der
+    // Seite bleibt.
+    geprueft: true,
     module: [
       ds.verantwortlicher,
       ds.keinDatenschutzbeauftragter,
