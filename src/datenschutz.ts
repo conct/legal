@@ -88,33 +88,91 @@ export const verantwortlicher: Modul = (ctx) => ({
   blocks: [anschriftMitKontakt(ctx.anbieter)],
 });
 
-export const hosting: Modul = (ctx) => ({
-  title: 'Hosting und Server-Logfiles',
-  blocks: [
-    p(
-      txt(
-        (ctx.site.hoster ? art(ctx).hostSatz(ctx.site.hoster) : '') +
-          `${art(ctx).beiNutzung} erhebt der Hosting-Provider automatisch technische Zugriffsdaten (sog. Server-Logfiles), ` +
-          v(
-            ctx,
-            `die Ihr ${art(ctx).client} automatisch übermittelt`,
-            `die dein ${art(ctx).client} automatisch übermittelt`,
-          ) +
-          ': IP-Adresse, Datum und Uhrzeit der Anfrage, aufgerufene Seite, übertragene Datenmenge, Browsertyp und -version, ' +
-          'verwendetes Betriebssystem sowie die zuvor besuchte Seite (Referrer-URL).',
+export interface HostingOptions {
+  /**
+   * Nach wie vielen Tagen der Hoster die Protokolldateien löscht.
+   *
+   * Ohne Angabe bleibt es bei "fuer einen begrenzten Zeitraum" - das ist
+   * keine Speicherdauer im Sinne von Art. 13 Abs. 2 lit. a DSGVO, und das
+   * eigene Prüfwerkzeug meldet es zu Recht. Die Zahl gehört nachgeschlagen
+   * und nicht geschätzt: Bei Uberspace stehen sieben Tage im Handbuch, und
+   * die logrotate-Konfiguration auf dem Server sagt dasselbe.
+   */
+  logsTage?: number;
+  /**
+   * Speichert der Hoster die Adresse nur gekürzt?
+   *
+   * Bei Uberspace am 23.09.2026 an 3000 Protokollzeilen nachgemessen:
+   * ausnahmslos IPv4 endend auf .0.0 und IPv6 mit nur zwei nicht-leeren
+   * Gruppen. Wer das nicht schreibt, nennt in der eigenen Erklaerung mehr
+   * Daten, als tatsächlich anfallen.
+   */
+  adresseGekuerzt?: boolean;
+}
+
+export const hostingMit =
+  (opt: HostingOptions = {}): Modul =>
+  (ctx) => ({
+    title: 'Hosting und Server-Logfiles',
+    blocks: [
+      p(
+        txt(
+          (ctx.site.hoster ? art(ctx).hostSatz(ctx.site.hoster) : '') +
+            `${art(ctx).beiNutzung} erhebt der Hosting-Provider automatisch technische Zugriffsdaten (sog. Server-Logfiles), ` +
+            v(
+              ctx,
+              `die Ihr ${art(ctx).client} automatisch übermittelt`,
+              `die dein ${art(ctx).client} automatisch übermittelt`,
+            ) +
+            ': ' +
+            (opt.adresseGekuerzt ? 'eine gekürzte IP-Adresse' : 'IP-Adresse') +
+            ', Datum und Uhrzeit der Anfrage, aufgerufene Seite, übertragene Datenmenge, Browsertyp und -version, ' +
+            'verwendetes Betriebssystem sowie die zuvor besuchte Seite (Referrer-URL).',
+        ),
       ),
-    ),
-    p(
-      txt(
-        `Diese Daten dienen ausschließlich der technischen Bereitstellung und Absicherung ${art(ctx).genitiv} und lassen keine ` +
-          v(ctx, 'Rückschlüsse auf Ihre Person zu.', 'Rückschlüsse auf dich zu.') +
-          ` Rechtsgrundlage ist unser berechtigtes Interesse an einem sicheren und stabilen Betrieb ${art(ctx).genitiv} ` +
-          '(Art. 6 Abs. 1 lit. f DSGVO). Die Logfiles werden aus Sicherheitsgründen für einen begrenzten Zeitraum ' +
-          'gespeichert und anschließend gelöscht.',
+      ...(opt.adresseGekuerzt
+        ? [
+            p(
+              txt(
+                'Die Adresse wird bereits vor dem Schreiben gekürzt: Bei IPv4 werden nur die ersten ' +
+                  '16 Bit gespeichert, bei IPv6 die ersten 32 Bit; der Rest wird auf Null gesetzt. ' +
+                  'Ein Rückschluss auf einen einzelnen Anschluss ist daraus nicht möglich.',
+              ),
+            ),
+          ]
+        : []),
+      p(
+        txt(
+          `Diese Daten dienen ausschließlich der technischen Bereitstellung und Absicherung ${art(ctx).genitiv}` +
+            (opt.adresseGekuerzt
+              ? '.'
+              : ' und lassen keine ' +
+                v(ctx, 'Rückschlüsse auf Ihre Person zu.', 'Rückschlüsse auf dich zu.')) +
+            ` Rechtsgrundlage ist unser berechtigtes Interesse an einem sicheren und stabilen Betrieb ${art(ctx).genitiv} ` +
+            '(Art. 6 Abs. 1 lit. f DSGVO).' +
+            // Entweder die Zahl oder die vage Wendung - nie beides. Wer beides
+            // schreibt, laesst den Leser raten, welche Angabe gilt.
+            (opt.logsTage
+              ? ''
+              : ' Die Logfiles werden aus Sicherheitsgründen für einen begrenzten Zeitraum ' +
+                'gespeichert und anschließend gelöscht.'),
+        ),
       ),
-    ),
-  ],
-});
+      ...(opt.logsTage
+        ? [
+            p(
+              txt(
+                'Speicherdauer: Die Protokolldateien werden täglich gewechselt und nach ' +
+                  `${opt.logsTage} Tagen gelöscht.`,
+              ),
+            ),
+          ]
+        : []),
+    ],
+  });
+
+/** Ohne Angaben zum Hoster — die Vorgabe, wortgleich wie bisher. */
+export const hosting: Modul = hostingMit();
 
 export interface KontaktformularOptions {
   /** Honeypot-Feld gegen Spam-Bots erwähnen. Default: true. */
@@ -309,7 +367,14 @@ export const aktualitaet: Modul = () => ({
 
 export const datenschutzbeauftragter: Modul = (ctx) => {
   const d = ctx.anbieter.datenschutzbeauftragter;
-  if (!d) return null;
+  // Kein Beauftragter eingetragen? Dann steht das da, statt dass der
+  // Abschnitt verschwindet. Für den Leser ist eine fehlende Ueberschrift
+  // dieselbe Leerstelle wie eine fehlende Angabe - er weiss nicht, ob keiner
+  // bestellt ist oder ob es vergessen wurde, und an wen er sich wendet,
+  // steht nirgends. Der Verantwortliche kann uebrigens nicht sein eigener
+  // Beauftragter sein: Er müsste sich selbst kontrollieren
+  // (Art. 38 Abs. 6 DSGVO).
+  if (!d) return keinDatenschutzbeauftragter(ctx);
 
   const v: Inline[] = [txt(d.name), br, txt('E-Mail: '), mail(d.email)];
   if (d.telefon) v.push(br, txt('Telefon: '), tel(d.telefon));
@@ -344,11 +409,106 @@ export const auftragsverarbeitung: Modul = (ctx) => {
 };
 
 /** Der Satz Bausteine, den fast jede Seite braucht. */
+/**
+ * Übermittlung in Drittländer - oder eben ausdruecklich keine.
+ *
+ * Art. 13 Abs. 1 lit. f DSGVO verlangt die Angabe, wenn übermittelt wird.
+ * Wird nicht übermittelt, verlangt sie niemand - und trotzdem fehlt die
+ * Aussage dann an der Stelle, an der jeder Leser sie sucht. Ein Satz, der
+ * sagt "findet nicht statt", beantwortet die Frage; Schweigen tut es nicht.
+ */
+export const drittland: Modul = (ctx) => {
+  const auslaendisch = (ctx.site.drittdienste ?? []).filter(
+    (d) => d.ort && !/deutschland|österreich|schweiz|\bEU\b|europ/i.test(d.ort),
+  );
+  if (auslaendisch.length) {
+    return {
+      title: 'Übermittlung in Drittländer',
+      blocks: [
+        p(
+          txt(
+            'Einzelne der oben genannten Dienstleister verarbeiten Daten außerhalb der ' +
+              'Europäischen Union: ' +
+              auslaendisch.map((d) => `${d.name} (${d.ort})`).join(', ') +
+              '. Grundlage sind die Standardvertragsklauseln der EU-Kommission.',
+          ),
+        ),
+      ],
+    };
+  }
+  return {
+    title: 'Übermittlung in Drittländer',
+    blocks: [
+      p(
+        txt(
+          `Die Server stehen in Deutschland. Eine Übermittlung personenbezogener Daten in ` +
+            'Länder außerhalb der Europäischen Union findet nicht statt.',
+        ),
+      ),
+    ],
+  };
+};
+
+/**
+ * Widerruf einer Einwilligung.
+ *
+ * Auch dort einschlägig, wo gar keine Einwilligung eingeholt wird: Dann ist
+ * die Auskunft, dass es nichts zu widerrufen gibt, die Antwort auf die Frage.
+ * Art. 7 Abs. 3 DSGVO.
+ */
+export const einwilligungWiderruf: Modul = (ctx) => ({
+  title: 'Widerruf einer Einwilligung',
+  blocks: [
+    p(
+      txt(
+        v(
+          ctx,
+          'Soweit eine Verarbeitung auf Ihrer Einwilligung beruht, können Sie diese jederzeit ' +
+            'mit Wirkung für die Zukunft widerrufen (Art. 7 Abs. 3 DSGVO). Die Rechtmäßigkeit ' +
+            'der bis dahin erfolgten Verarbeitung bleibt davon unberührt.',
+          'Soweit eine Verarbeitung auf deiner Einwilligung beruht, kannst du sie jederzeit mit ' +
+            'Wirkung für die Zukunft widerrufen (Art. 7 Abs. 3 DSGVO). Was bis dahin verarbeitet ' +
+            'wurde, bleibt davon unberührt.',
+        ),
+      ),
+    ),
+  ],
+});
+
+/**
+ * Kein Datenschutzbeauftragter — und warum keiner nötig ist.
+ *
+ * Der Verantwortliche kann nicht sein eigener Beauftragter sein: Er muesste
+ * sich selbst kontrollieren (Art. 38 Abs. 6 DSGVO). Wo keiner bestellt ist,
+ * gehört stattdessen ein Ansprechpartner benannt - sonst weiss der Leser
+ * nicht, an wen er sich wendet.
+ */
+export const keinDatenschutzbeauftragter: Modul = (ctx) => ({
+  title: 'Ansprechpartner für den Datenschutz',
+  blocks: [
+    p(
+      txt(
+        'Ein Datenschutzbeauftragter ist nicht bestellt; die Voraussetzungen des Art. 37 DSGVO ' +
+          'und des § 38 BDSG liegen nicht vor. Ansprechpartner für alle Fragen zum Datenschutz ' +
+          `ist der oben genannte Verantwortliche, ${ctx.anbieter.name}, erreichbar unter `,
+      ),
+      mail(ctx.anbieter.email),
+      txt('.'),
+    ),
+  ],
+});
+
 export const STANDARD_MODULE: Modul[] = [
   verantwortlicher,
   datenschutzbeauftragter,
   hosting,
   auftragsverarbeitung,
+  // Beide am 23.09.2026 aufgenommen: Das eigene Prüfwerkzeug hat sie auf
+  // jeder erzeugten Erklaerung vermisst. Art. 13 Abs. 1 lit. f und
+  // Art. 7 Abs. 3 DSGVO - und beide sind auch dann eine Auskunft, wenn die
+  // Antwort "findet nicht statt" lautet.
+  drittland,
+  einwilligungWiderruf,
   keineCookies,
   betroffenenrechte,
   aktualitaet,

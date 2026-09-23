@@ -56,6 +56,31 @@ export const PRESETS: Record<SiteKey, Preset> = {
     geprueft: false,
     module: ds.STANDARD_MODULE,
   },
+  // conct.de traegt einen eigenen Datenschutztext im Repo: Er beschreibt den
+  // Schnellcheck und die Uebergabe an audit.conct.de, und er nennt die
+  // Speicherdauer und die Kuerzung der Adressen, die am 23.09.2026 am Server
+  // nachgemessen wurden. Von hier kommen die Stammdaten - Anschrift,
+  // Telefon, E-Mail - damit eine Adressaenderung ein Commit bleibt.
+  //
+  // Das Preset steht trotzdem hier: Es ist die Vorlage, falls der Text
+  // spaeter doch erzeugt werden soll, und es zeigt, welche Bausteine
+  // einschlaegig waeren.
+  'conct.de': {
+    tone: 'formell',
+    geprueft: false,
+    module: [
+      ds.verantwortlicher,
+      ds.datenschutzbeauftragter,
+      ds.hostingMit({ logsTage: 7, adresseGekuerzt: true }),
+      ds.keineCookies,
+      ds.drittland,
+      ds.einwilligungWiderruf,
+      ds.externeLinks,
+      ds.betroffenenrechte,
+      ds.aktualitaet,
+    ],
+  },
+
   // Nutzt dieses Preset nicht: der Datenschutztext von rechnungswerk ist am
   // Quelltext belegt und bleibt im Repo. Von hier kommen nur die Stammdaten
   // (anbieterFuer). Steht hier für den Fall, dass sich das ändert.

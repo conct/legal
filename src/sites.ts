@@ -72,6 +72,24 @@ export const SITES = {
     name: 'unteruns',
     hoster: 'Uberspace Entwicklungen GbR',
   },
+  'conct.de': {
+    domain: 'conct.de',
+    name: 'conct',
+    hoster: 'Uberspace Entwicklungen GbR',
+    // Das Formular der Startseite uebergibt an audit.conct.de - einen
+    // eigenen Dienst auf demselben Hoster. Er gehoert in "Externe Links",
+    // weil der Besucher die Domain dabei verlaesst.
+    externeLinks: ['audit.conct.de'],
+    anbieter: {
+      // Wie bei rechnungswerk: Die Seite tritt unter conct.de auf, also
+      // nennt sie auch eine conct.de-Adresse. Eine Auskunft, die von einer
+      // Adresse kommt, die im Impressum nicht steht, ist fuer den Empfaenger
+      // schwer von einer Faelschung zu unterscheiden.
+      email: 'mail@conct.de',
+      land: 'Deutschland',
+      rechtlicheStellung: 'Einzelunternehmen. Nicht im Handelsregister eingetragen.',
+    },
+  },
   'rechnungswerk.conct.de': {
     domain: 'rechnungswerk.conct.de',
     name: 'Rechnungswerk',
