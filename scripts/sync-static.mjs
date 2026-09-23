@@ -34,6 +34,10 @@ const STATIC_SITES = {
       impressum: 'website/impressum/index.html',
       datenschutz: 'website/datenschutz/index.html',
     },
+    // Die Seite bringt ihre Ueberschrift selbst mit (Seitenkopf im Template).
+    // Ohne diese Angabe stuende "Impressum" zweimal als h1 auf der Seite -
+    // fuer einen Screenreader zwei gleichrangige Dokumentanfaenge.
+    eigeneUeberschrift: true,
     // Die Anschrift steht in der Fußzeile jeder Seite — also in jeder Datei
     // unter diesem Ordner, die eine Marke trägt. Ohne Marke wird nichts
     // angefasst; eine Datei ohne Fußzeile bleibt damit von selbst außen vor.
@@ -166,7 +170,10 @@ const docs = {
 let geaendert = 0;
 for (const [art, datei] of Object.entries(cfg.dateien)) {
   const pfad = join(checkout, datei);
-  if (patchen(pfad, toHtml(docs[art]))) {
+  const fragment = toHtml(docs[art], {
+    includeTitle: !cfg.eigeneUeberschrift,
+  });
+  if (patchen(pfad, fragment)) {
     console.log(`aktualisiert: ${datei}`);
     geaendert++;
   } else {
