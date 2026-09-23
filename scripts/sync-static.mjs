@@ -30,9 +30,13 @@ const STATIC_SITES = {
     dateien: { impressum: 'impressum.html', datenschutz: 'datenschutz.html' },
   },
   'conct.de': {
+    // Je Art mehrere Dateien: Die englischen Seiten tragen dieselben
+    // deutschen Rechtstexte - ein Impressum nach § 5 DDG ist auf Deutsch zu
+    // fuehren. Sie standen bisher nicht im Sync und waren entsprechend
+    // veraltet: sechs Abschnitte im Datenschutz statt zehn.
     dateien: {
-      impressum: 'website/impressum/index.html',
-      datenschutz: 'website/datenschutz/index.html',
+      impressum: ['website/impressum/index.html', 'website/en/imprint/index.html'],
+      datenschutz: ['website/datenschutz/index.html', 'website/en/privacy/index.html'],
     },
     // Die Seite bringt ihre Ueberschrift selbst mit (Seitenkopf im Template).
     // Ohne diese Angabe stuende "Impressum" zweimal als h1 auf der Seite -
@@ -168,16 +172,19 @@ const docs = {
 };
 
 let geaendert = 0;
-for (const [art, datei] of Object.entries(cfg.dateien)) {
-  const pfad = join(checkout, datei);
-  const fragment = toHtml(docs[art], {
-    includeTitle: !cfg.eigeneUeberschrift,
-  });
-  if (patchen(pfad, fragment)) {
-    console.log(`aktualisiert: ${datei}`);
-    geaendert++;
-  } else {
-    console.log(`unverändert:  ${datei}`);
+for (const [art, wert] of Object.entries(cfg.dateien)) {
+  // Eine Datei oder mehrere - dieselbe Fassung, mehrere Ziele.
+  for (const datei of Array.isArray(wert) ? wert : [wert]) {
+    const pfad = join(checkout, datei);
+    const fragment = toHtml(docs[art], {
+      includeTitle: !cfg.eigeneUeberschrift,
+    });
+    if (patchen(pfad, fragment)) {
+      console.log(`aktualisiert: ${datei}`);
+      geaendert++;
+    } else {
+      console.log(`unverändert:  ${datei}`);
+    }
   }
 }
 
