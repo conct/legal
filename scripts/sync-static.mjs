@@ -6,6 +6,8 @@
  *   - den Inhalt von <section class="legal">…</section> (mit oder ohne
  *     innerem <div class="wrap">, mit oder ohne weitere Klassen)
  *   - den Text zwischen <!--legal:anschrift--> und <!--/legal:anschrift-->,
+ *     bzw. <!--legal:postanschrift--> fuer die Anschrift ohne Telefon
+ *     und E-Mail (fuer Seiten, die beides ohnehin einzeln nennen),
  *     wo immer er steht — in der Regel in der Fußzeile jeder Seite
  *
  * Header, Footer, Styles und alles andere im Template bleiben unangetastet.
@@ -67,6 +69,12 @@ const SECTIONS = [
 const anschriftMarke =
   /(<!--\s*legal:anschrift\s*-->)([\s\S]*?)(<!--\s*\/legal:anschrift\s*-->)/;
 
+// Zweite Marke: nur die Postanschrift, ohne Telefon und E-Mail. Gedacht fuer
+// Seiten, die beide Wege ohnehin einzeln und beschriftet nennen - auf der
+// Kontaktseite stand sonst alles doppelt.
+const postMarke =
+  /(<!--\s*legal:postanschrift\s*-->)([\s\S]*?)(<!--\s*\/legal:postanschrift\s*-->)/;
+
 /** Rückt das Fragment auf die Einrücktiefe des Templates ein. */
 function einruecken(fragment, tiefe) {
   const pad = ' '.repeat(tiefe);
@@ -118,11 +126,16 @@ function htmlDateien(wurzel) {
  * Das Element samt Klassen bleibt im Template der Seite: Wie eine Fußzeile
  * aussieht, ist Sache der Seite, was in ihr steht, ist Sache dieses Pakets.
  */
-function anschriftFragment(siteKey) {
+function postFragment(siteKey) {
   const a = anbieterFuer(siteKey);
   const zeilen = [a.name, a.strasse, `${a.plz} ${a.ort}`];
   if (a.land) zeilen.push(a.land);
-  const html = zeilen.map((z) => escapeHtml(z)).join('<br>');
+  return zeilen.map((z) => escapeHtml(z)).join('<br>');
+}
+
+function anschriftFragment(siteKey) {
+  const a = anbieterFuer(siteKey);
+  const html = postFragment(siteKey);
   const tel = a.telefon
     ? // Die (0) ist die nationale Verkehrsausscheidungsziffer: Sie entfaellt,
       // sobald die Landesvorwahl davorsteht. Bliebe sie stehen, waehlte das
@@ -136,10 +149,10 @@ function anschriftFragment(siteKey) {
 const escapeHtml = (s) =>
   String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-function anschriftPatchen(pfad, fragment) {
+function markePatchen(pfad, marke, fragment) {
   const alt = readFileSync(pfad, 'utf8');
-  if (!anschriftMarke.test(alt)) return false;
-  const neu = alt.replace(anschriftMarke, (_, auf, __, zu) => `${auf}${fragment}${zu}`);
+  if (!marke.test(alt)) return false;
+  const neu = alt.replace(marke, (_, auf, __, zu) => `${auf}${fragment}${zu}`);
   if (neu === alt) return false;
   writeFileSync(pfad, neu, 'utf8');
   return true;
@@ -189,19 +202,24 @@ for (const [art, wert] of Object.entries(cfg.dateien)) {
 }
 
 if (cfg.anschriftIn) {
-  const fragment = anschriftFragment(siteKey);
-  let mitMarke = 0;
-  for (const pfad of htmlDateien(join(checkout, cfg.anschriftIn))) {
-    if (anschriftPatchen(pfad, fragment)) {
-      geaendert++;
-      mitMarke++;
+  const formen = [
+    ['Anschrift', anschriftMarke, anschriftFragment(siteKey)],
+    ['Postanschrift', postMarke, postFragment(siteKey)],
+  ];
+  for (const [name, marke, fragment] of formen) {
+    let mitMarke = 0;
+    for (const pfad of htmlDateien(join(checkout, cfg.anschriftIn))) {
+      if (markePatchen(pfad, marke, fragment)) {
+        geaendert++;
+        mitMarke++;
+      }
     }
+    console.log(
+      mitMarke > 0
+        ? `${name} in ${mitMarke} Datei(en) erneuert.`
+        : `${name}: keine Datei geändert (Marken fehlen oder Text ist aktuell).`,
+    );
   }
-  console.log(
-    mitMarke > 0
-      ? `Anschrift in ${mitMarke} Datei(en) erneuert.`
-      : 'Anschrift: keine Datei geändert (Marken fehlen oder Text ist aktuell).',
-  );
 }
 
 console.log(geaendert > 0 ? `${geaendert} Datei(en) geändert.` : 'Nichts zu tun.');
