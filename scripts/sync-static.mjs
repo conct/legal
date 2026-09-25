@@ -9,6 +9,8 @@
  *     bzw. <!--legal:postanschrift--> fuer die Anschrift ohne Telefon
  *     und E-Mail (fuer Seiten, die beides ohnehin einzeln nennen),
  *     wo immer er steht — in der Regel in der Fußzeile jeder Seite
+ *   - die Liste `sameAs` im JSON-LD-Knoten, der sich als #organization
+ *     ausweist (siehe sameAsPatchen)
  *
  * Header, Footer, Styles und alles andere im Template bleiben unangetastet.
  * Die Marken sind der Vertrag: Was nicht markiert ist, wird nicht angefasst.
@@ -48,6 +50,10 @@ const STATIC_SITES = {
     // unter diesem Ordner, die eine Marke trägt. Ohne Marke wird nichts
     // angefasst; eine Datei ohne Fußzeile bleibt damit von selbst außen vor.
     anschriftIn: 'website',
+    // Dieselbe Wurzel: Die Betriebsauszeichnung steht nur auf den beiden
+    // Startseiten, und genau die tragen den #organization-Knoten. Alle
+    // anderen Dateien bleiben von selbst aussen vor.
+    sameAsIn: 'website',
   },
 };
 
@@ -149,6 +155,65 @@ function anschriftFragment(siteKey) {
 const escapeHtml = (s) =>
   String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
+/**
+ * Die Liste `sameAs` in der Betriebsauszeichnung setzen.
+ *
+ * Für Anschrift und Rechtstexte gibt es eine Marke im HTML. In JSON-LD gibt es
+ * keine, also übernimmt die `@id` ihre Rolle: Angefasst wird nur ein Knoten,
+ * der sich selbst als `…#organization` ausweist. Wer diese Kennung setzt, sagt
+ * damit, welcher Knoten den Betrieb beschreibt.
+ *
+ * Geschrieben wird außerdem nur, wenn der Block unverändert wieder
+ * herauskommt, wie er hereinkam — sonst schriebe der Sync die Formatierung
+ * fremder Blöcke um, und "was nicht markiert ist, bleibt" wäre gebrochen. Ein
+ * Block in anderer Form wird gemeldet, nicht stillschweigend übergangen.
+ */
+const LD_BLOCK = /(<script type="application\/ld\+json">)(\s*)([\s\S]*?)(\s*)(<\/script>)/g;
+
+function sameAsPatchen(pfad, profile) {
+  const alt = readFileSync(pfad, 'utf8');
+  let neu = alt;
+  let getan = false;
+  const uebergangen = [];
+
+  for (const m of [...alt.matchAll(LD_BLOCK)]) {
+    const roh = m[3];
+    let daten;
+    try {
+      daten = JSON.parse(roh);
+    } catch {
+      continue;
+    }
+    const liste = Array.isArray(daten) ? daten : [daten];
+    const org = liste.find(
+      (o) => o && typeof o === 'object' && String(o['@id'] ?? '').endsWith('#organization'),
+    );
+    if (!org) continue;
+    if (JSON.stringify(daten) !== roh) {
+      uebergangen.push(pfad);
+      continue;
+    }
+    const vorher = JSON.stringify(org.sameAs ?? null);
+    if (profile && profile.length > 0) org.sameAs = profile;
+    else delete org.sameAs;
+    if (JSON.stringify(org.sameAs ?? null) === vorher) continue;
+    // Eine Funktion als Ersetzung: In einem String würden $& und $' gedeutet.
+    const gesetzt = JSON.stringify(daten);
+    neu = neu.replace(roh, () => gesetzt);
+    getan = true;
+  }
+
+  for (const pf of uebergangen) {
+    console.warn(
+      `Hinweis: ${pf} trägt einen #organization-Knoten in anderer Formatierung — ` +
+        'sameAs wurde dort nicht gesetzt, um den Block nicht umzuschreiben.',
+    );
+  }
+  if (!getan) return false;
+  writeFileSync(pfad, neu, 'utf8');
+  return true;
+}
+
 function markePatchen(pfad, marke, fragment) {
   const alt = readFileSync(pfad, 'utf8');
   if (!marke.test(alt)) return false;
@@ -220,6 +285,22 @@ if (cfg.anschriftIn) {
         : `${name}: keine Datei geändert (Marken fehlen oder Text ist aktuell).`,
     );
   }
+}
+
+if (cfg.sameAsIn) {
+  const profile = anbieterFuer(siteKey).profile ?? [];
+  let mit = 0;
+  for (const pfad of htmlDateien(join(checkout, cfg.sameAsIn))) {
+    if (sameAsPatchen(pfad, profile)) {
+      geaendert++;
+      mit++;
+    }
+  }
+  console.log(
+    mit > 0
+      ? `sameAs in ${mit} Datei(en) erneuert.`
+      : 'sameAs: keine Datei geändert (kein #organization-Knoten oder Liste ist aktuell).',
+  );
 }
 
 console.log(geaendert > 0 ? `${geaendert} Datei(en) geändert.` : 'Nichts zu tun.');
