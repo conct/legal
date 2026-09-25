@@ -3,6 +3,31 @@
 Zentrale Quelle für Impressum und Datenschutzerklärung aller conct-Projekte.
 Eine Adressänderung ist ein Commit hier — nicht acht Commits in acht Repos.
 
+## Offen, aber für eigene Projekte
+
+Dieses Repository ist absichtlich öffentlich. Die Texte, die es erzeugt, stehen
+ohnehin auf jeder Seite, und die Angaben darin — Name, Anschrift, Telefon,
+E-Mail, USt-IdNr. — muss ein Impressum nach § 5 DDG nennen. Wer nachsehen will,
+ob auf einer Seite das steht, was hier drin steht, soll das können; für eine
+Prüf-Dienstleistung ist das keine Nebensache.
+
+Was daraus **nicht** folgt:
+
+- **Keine Rechtsberatung.** Die Bausteine sind fachlich zusammengetragen, nicht
+  anwaltlich geprüft. Sie ordnen ein, sie entscheiden nichts.
+- **Nicht jeder Text ist abgenommen.** `PRESETS` führt pro Seite ein Feld
+  `geprueft`. Für `feif.space` und `conct.de` steht es auf `true`, weil beide
+  gegen die Live-Seite abgeglichen wurden. Für die übrigen steht es auf `false`
+  — das sind Baukasten-Vermutungen, die vor einem Livegang durchzugehen sind.
+  `ungeprueft()` gibt sie aus, und der Sync warnt bei jedem Lauf.
+- **Für die eigenen Projekte gebaut.** Wer das Paket für ein fremdes Angebot
+  einsetzt, übernimmt die Verantwortung für den Text, den es erzeugt — samt der
+  Frage, ob die gewählten Bausteine den Sachverhalt dort überhaupt abbilden.
+
+Die Steuernummer steht deshalb nicht in den Stammdaten: § 5 DDG verlangt sie
+nicht, die USt-IdNr. erfüllt denselben Zweck, und was hier liegt, liegt auf
+GitHub und in jedem Bundle, das das Paket einbindet.
+
 ## Warum kein Runtime-Fetch
 
 Das Impressum muss nach § 5 DDG **ständig verfügbar** sein. Ein Impressum, das
