@@ -119,11 +119,12 @@ export const CONCT: Anbieter = {
   // Erteilt am 23.09.2026. Sie gehört ins Impressum (§ 5 Abs. 1 Nr. 6 DDG)
   // und ist damit ohnehin öffentlich — anders als die Steuernummer.
   ustId: 'DE339476714',
-  // Stand 25.09.2026 nennt das Profil sechsmal feif.space und conct.de nicht.
+  // Stand 25.09.2026 nennt das Profil sechsmal feif.space, conct.de kein
+  // einziges Mal — dafür dreizehnmal „cocnt.de“, mit vertauschten Buchstaben.
   // Für feif.space ist die Zuordnung damit in beide Richtungen belegt, für
   // conct.de nur in eine. Sie gilt trotzdem — derselbe Inhaber —, trägt aber
-  // weniger. Wer sie auch dort tragfähig machen will, ergänzt conct.de im
-  // Xing-Profil; hier ist dann nichts zu ändern.
+  // weniger. Tragfähig wird sie, sobald der Schreibfehler im Profil behoben
+  // ist; hier ist dann nichts zu ändern.
   profile: ['https://www.xing.com/profile/Daniel_vonLuehmann'],
   // Keine Steuernummer: § 5 DDG verlangt sie nicht, und dieses Repo ist
   // öffentlich. Was hier steht, liegt auf GitHub und in jedem Bundle, das das
