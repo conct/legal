@@ -135,15 +135,36 @@ function patchen(pfad, fragment) {
   const ersteZeile = treffer[2].split('\n').find((z) => z.trim() !== '') ?? '';
   const tiefe = ersteZeile.length - ersteZeile.trimStart().length;
 
-  const neu = alt.replace(
-    SECTION,
-    (_, auf, __, zu) => `${auf}\n${einruecken(fragment, tiefe)}\n${' '.repeat(Math.max(tiefe - 2, 0))}${zu}`,
+  const eol = zeilenende(alt);
+  const neu = alt.replace(SECTION, (_, auf, __, zu) =>
+    aufZeilenende(
+      `${auf}\n${einruecken(fragment, tiefe)}\n${' '.repeat(Math.max(tiefe - 2, 0))}${zu}`,
+      eol,
+    ),
   );
 
   if (neu === alt) return false;
   writeFileSync(pfad, neu, 'utf8');
   return true;
 }
+
+/**
+ * Das Zeilenende, das in dieser Datei ueberwiegt.
+ *
+ * Der Sync setzt Text in fremde Dateien ein, und die Vorlagen sind nicht alle
+ * gleich: conct.de liegt mit CRLF im Repo, die erzeugten Fragmente tragen LF.
+ * Ohne diese Ruecksicht wuerde aus einer CRLF-Datei eine gemischte, und der
+ * erste Pull Request zeigte den ganzen Abschnitt als geaendert, obwohl kein
+ * Wort anders lautet. Ein Diff, der Rauschen anzeigt, wird nicht gelesen.
+ */
+function zeilenende(text) {
+  const crlf = (text.match(/\r\n/g) ?? []).length;
+  const lf = (text.match(/\n/g) ?? []).length - crlf;
+  return crlf > lf ? '\r\n' : '\n';
+}
+
+/** Einen Textbaustein auf das Zeilenende der Zieldatei bringen. */
+const aufZeilenende = (text, eol) => (eol === '\r\n' ? text.replace(/\r?\n/g, '\r\n') : text);
 
 /** Alle .html-Dateien unterhalb eines Ordners, ohne Abhängigkeit. */
 function htmlDateien(wurzel) {
@@ -359,10 +380,13 @@ function sameAsPatchen(pfad, profile, kennung = '#organization') {
       if (wunsch) {
         ersetzt = block.slice(0, wertVon) + JSON.stringify(wunsch) + block.slice(wertBis);
       } else {
-        // Ohne Profile faellt die ganze Zeile weg, samt Komma und Umbruch.
+        // Ohne Profile faellt die ganze Zeile weg, samt Komma und Umbruch —
+        // bei CRLF auch dem \r, sonst bliebe eine Zeile aus einem einzelnen
+        // Wagenruecklauf stehen.
         const zeileVon = block.lastIndexOf('\n', schluessel) + 1;
         const nachKomma = block[wertBis] === ',' ? wertBis + 1 : wertBis;
-        const zeileBis = block[nachKomma] === '\n' ? nachKomma + 1 : nachKomma;
+        const nachCr = block[nachKomma] === '\r' ? nachKomma + 1 : nachKomma;
+        const zeileBis = block[nachCr] === '\n' ? nachCr + 1 : nachKomma;
         ersetzt = block.slice(0, zeileVon) + block.slice(zeileBis);
       }
     } else if (wunsch) {
@@ -376,10 +400,13 @@ function sameAsPatchen(pfad, profile, kennung = '#organization') {
         uebergangen.push([pfad, 'hinter der @id war keine Stelle zum Einfuegen']);
         continue;
       }
+      // Das Zeilenende der Datei uebernehmen, nicht das eigene: Eine
+      // CRLF-Datei bekaeme sonst eine einzelne LF-Zeile eingeschoben.
+      const eol = zeile.endsWith('\r') ? '\r\n' : '\n';
       const einzug = zeile.match(/^\s*/)[0];
       ersetzt =
         block.slice(0, zeileBis + 1) +
-        `${einzug}"sameAs": ${JSON.stringify(wunsch)},\n` +
+        `${einzug}"sameAs": ${JSON.stringify(wunsch)},${eol}` +
         block.slice(zeileBis + 1);
     } else {
       continue;
