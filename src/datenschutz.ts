@@ -495,6 +495,36 @@ export const keinDatenschutzbeauftragter: Modul = (ctx) => ({
   ],
 });
 
+export interface FreitextOptions {
+  titel: string;
+  /** Die Absätze, wörtlich. Ein Eintrag je Absatz. */
+  absaetze: string[];
+}
+
+/**
+ * Ein Abschnitt, der wörtlich so erscheint, wie er hier steht.
+ *
+ * Nicht als Hintertür gedacht, sondern für Abschnitte, die genau eine Seite
+ * betreffen und deren Text schon gewachsen ist. Bei fibel.uber.space sind das
+ * die Beispiel-Anwendungen und die Übermittlung an die Fibel-KI: Ein Baustein
+ * dafür müsste alles parametrisieren, was daran besonders ist, und hätte am
+ * Ende einen einzigen Aufrufer.
+ *
+ * Der Gewinn liegt trotzdem hier und nicht in der Zielseite: Der Abschnitt
+ * wird mitgezählt, mitgerendert und steht neben den übrigen an einer Stelle.
+ * Bleibt er in der Zielseite, kann der Sync ihn nicht anfassen — und dann
+ * erreicht eine Änderung hier ihn nie, so wie bei feif.space.
+ *
+ * Was hier steht, hat der Baukasten nicht geprüft: Es ist der Text, den
+ * jemand geschrieben hat. Die Verantwortung dafür bleibt bei der Seite.
+ */
+export const freitext =
+  ({ titel, absaetze }: FreitextOptions): Modul =>
+  () => ({
+    title: titel,
+    blocks: absaetze.map((absatz) => p(txt(absatz))),
+  });
+
 export const STANDARD_MODULE: Modul[] = [
   verantwortlicher,
   datenschutzbeauftragter,

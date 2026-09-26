@@ -124,13 +124,62 @@ export const PRESETS: Record<SiteKey, Preset> = {
   // umgekehrt. Dieselbe Reihenfolge wie bei feif.space.
   'fibel.uber.space': {
     tone: 'formell',
+    // Bleibt false: Fibels Quelltext vermerkt den Abschnitt zur Fibel-KI selbst
+    // als nicht rechtlich geprueft, und ihn hierher zu verschieben prueft ihn
+    // nicht. Was hier steht, ist der Text, der dort stand — abschnittsweise
+    // gegen die Live-Seite abgeglichen, nicht anwaltlich abgenommen.
     geprueft: false,
     module: [
       ds.verantwortlicher,
-      ds.hosting,
-      // Die Seite setzt eine Formularmarke, und nur auf Seiten mit Formular.
-      ds.technischeCookies({ zweck: 'die Marke gegen Formulare von fremden Seiten' }),
+      // Derselbe Hoster wie conct.de, also dieselben nachgemessenen Angaben:
+      // gekuerzte Adresse und sieben Tage. Die Seite schrieb bisher "IP-Adresse"
+      // und "fuer einen begrenzten Zeitraum" — letzteres ist keine Speicherdauer
+      // im Sinne von Art. 13 Abs. 2 lit. a DSGVO, und das eigene Pruefwerkzeug
+      // meldet es zu Recht.
+      ds.hostingMit({ logsTage: 7, adresseGekuerzt: true }),
+      /* Woertlich uebernommen, weil die Seite genauer ist als der Baustein: Sie
+         nennt die Kekse beim Namen, ihre Laufzeit und den Speicher fuer die
+         Hell-Dunkel-Wahl. technischeCookies() sagt stattdessen allgemein
+         "technisch notwendige Cookies" — nicht falsch, aber eine Formel statt
+         einer Auskunft. */
+      ds.freitext({
+        titel: 'Cookies und Speicher im Browser',
+        absaetze: [
+          'Diese Website setzt ein technisch notwendiges Cookie namens „fibel_marke“. Es enthält nur eine zufällige Kennung und schützt Formulare davor, von fremden Seiten aus abgeschickt zu werden. Es wird nach 30 Tagen gelöscht.',
+          'Wer sich in einem der Beispiele anmeldet, erhält zusätzlich das Cookie „fibel_sitzung“ für die Dauer der Anmeldung. Auch dieses enthält nur eine zufällige Kennung.',
+          'Wählen Sie über den Knopf oben rechts die helle oder dunkle Darstellung, speichert Ihr Browser diese Wahl („hell“ oder „dunkel“) auf Ihrem Gerät. Sie wird nicht an uns übertragen.',
+          'Für technisch notwendige Cookies und Speicher ist keine Einwilligung erforderlich (§ 25 Abs. 2 TDDDG). Analyse- oder Tracking-Dienste werden nicht eingesetzt; es findet keine Auswertung Ihres Nutzungsverhaltens statt.',
+        ],
+      }),
+      /* Nur diese Seite hat Beispiel-Anwendungen zum Ausprobieren. Ein Baustein
+         dafuer muesste die Pfade, die Konten, die Felder und die Frage, welche
+         App im Browser rechnet, parametrisieren — und haette einen Aufrufer. */
+      ds.freitext({
+        titel: 'Die Beispiele',
+        absaetze: [
+          'Unter /karat, /zwitscher, /lieferung, /merker und /notes laufen Beispiel-Anwendungen zum Ausprobieren. Sie sind öffentliche Vorführungen — tragen Sie dort nichts ein, was privat bleiben soll.',
+          'Wer in einem Beispiel ein Konto anlegt, gibt einen Namen an und wählt ein Passwort; in Zwitscher kann freiwillig eine E-Mail-Adresse, ein Text über sich und ein Profilbild hinzukommen. Das Passwort wird niemals im Klartext gespeichert, sondern nur als kryptografischer Hashwert. Inhalte, die Sie dort anlegen — etwa Beiträge, Nachrichten, Bilder, Bestellungen oder Unterschriften —, werden auf dem Server gespeichert und sind je nach Beispiel auch für andere Nutzer sichtbar.',
+          'Merker und Notes rechnen ganz in Ihrem Browser: Die Listen bleiben auf Ihrem Gerät und werden nicht an uns übertragen.',
+          'Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO, da die Verarbeitung für die Nutzung des Kontos erforderlich ist. Konten und Inhalte werden gelöscht, sobald Sie es verlangen.',
+        ],
+      }),
+      /* Dieser Abschnitt traegt Drittland UND Widerruf fuer die Fibel-KI. Genau
+         deshalb stehen ds.drittland und ds.einwilligungWiderruf nicht in dieser
+         Liste: Sie sind "auch dann eine Auskunft, wenn die Antwort findet nicht
+         statt lautet" — hier findet sie aber statt, und die generische Fassung
+         behauptete das Gegenteil dessen, was hier steht. */
+      ds.freitext({
+        titel: 'Spielwiese und Fibel-KI',
+        absaetze: [
+          'Die Spielwiese unter /spielwiese rechnet in Ihrem Browser. Das Programm, das Sie dort schreiben, und die Einträge in der Vorschau speichert Ihr Browser auf Ihrem Gerät; sie werden nicht an uns übertragen.',
+          'Nutzen Sie „Mit der Fibel-KI schreiben“, überträgt Ihr Browser Ihren Wunsch und das Programm im Editor an unseren Server. Dort liegen beide höchstens zehn Minuten im Arbeitsspeicher und werden nicht dauerhaft gespeichert.',
+          'Die Fibel-KI ist bis auf Weiteres kein eigenes KI-Modell. Solange wir keine eigene KI betreiben, geben wir Wunsch und Programm zur Bearbeitung an einen externen KI-Dienst weiter, der Standorte auch außerhalb der EU haben kann — derzeit Claude der Anthropic mit Sitz in den USA. Dabei können Daten in die USA übermittelt werden. Ihre IP-Adresse, Cookies oder andere Angaben über Sie geben wir nicht weiter. Für die Verarbeitung bei Anthropic gilt deren Datenschutzerklärung: https://www.anthropic.com/legal/privacy. Wechselt der Dienst, passen wir diesen Abschnitt an.',
+          'Die Übermittlung geschieht nur, wenn Sie „Schreiben lassen“ betätigen. Rechtsgrundlage ist Ihre Einwilligung durch diese Handlung (Art. 6 Abs. 1 lit. a DSGVO), für die Übermittlung in die USA Art. 49 Abs. 1 lit. a DSGVO. Sie können sie jederzeit für die Zukunft widerrufen, indem Sie die Funktion nicht mehr nutzen. Geben Sie in Wunsch und Programm keine personenbezogenen Daten ein.',
+        ],
+      }),
       ds.externeLinks,
+      // Nennt die Aufsichtsbehoerde und fuehrt die Rechte als Liste. Die Seite
+      // hatte beides als einen Satz ohne die Behoerde.
       ds.betroffenenrechte,
       ds.aktualitaet,
     ],
