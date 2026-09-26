@@ -446,6 +446,7 @@ function sameAsPatchen(pfad, profile, kennung = '#organization') {
   const alt = readFileSync(pfad, 'utf8');
   let neu = alt;
   let getan = false;
+  let knotenGesehen = false;
   const uebergangen = [];
 
   for (const m of [...alt.matchAll(LD_BLOCK)]) {
@@ -465,6 +466,9 @@ function sameAsPatchen(pfad, profile, kennung = '#organization') {
       (o) => o && typeof o === 'object' && String(o['@id'] ?? '').endsWith(kennung),
     );
     if (!knoten) continue;
+    // Gesehen heisst noch nicht geaendert — aber es unterscheidet "hier gibt es
+    // nichts zu pflegen" von "hier stimmt schon alles".
+    knotenGesehen = true;
 
     const wunsch = profile && profile.length > 0 ? profile : null;
     if (JSON.stringify(knoten.sameAs ?? null) === JSON.stringify(wunsch)) continue;
@@ -561,9 +565,12 @@ function sameAsPatchen(pfad, profile, kennung = '#organization') {
         'sameAs wurde dort nicht gesetzt.',
     );
   }
-  if (!getan) return false;
+  /* Wie bei markePatchen: Was geschehen ist, nicht bloss ob. Ohne den
+     Unterschied hiess es "kein Knoten oder Liste ist aktuell" — und wer eine
+     Seite neu anhaengt, braucht genau diese Unterscheidung. */
+  if (!getan) return knotenGesehen ? 'aktuell' : 'ohne-knoten';
   writeFileSync(pfad, neu, 'utf8');
-  return true;
+  return 'erneuert';
 }
 
 /**
@@ -576,11 +583,19 @@ function sameAsPatchen(pfad, profile, kennung = '#organization') {
  *
  * `lastIndex` wird zurueckgesetzt: Die Fibel-Marken sind global, und `test()`
  * merkt sich bei einem globalen Ausdruck die Fundstelle.
+ *
+ * Zurueck kommt, WAS geschehen ist: 'erneuert', 'aktuell' (Marke da, Text
+ * stimmte schon), 'ohne-marke' oder 'ausgelassen' (die Daten fehlen). Vorher
+ * war es true/false, also "geaendert oder nicht" — und die Meldung musste
+ * daraus "Marken fehlen oder Text ist aktuell" machen: zwei sehr verschiedene
+ * Lagen in einem Satz. Genau dieser Unterschied ist der wichtigste, wenn
+ * jemand den Sync fuer eine Seite einrichtet. Eine Marke, die nicht gefunden
+ * wird, sah im Log aus wie Erfolg.
  */
 function markePatchen(pfad, marke, bauen) {
   const alt = readFileSync(pfad, 'utf8');
   marke.lastIndex = 0;
-  if (!marke.test(alt)) return false;
+  if (!marke.test(alt)) return 'ohne-marke';
   marke.lastIndex = 0;
   const eol = zeilenende(alt);
   let ausgelassen = false;
@@ -598,9 +613,9 @@ function markePatchen(pfad, marke, bauen) {
         'der Bereich blieb unverändert.',
     );
   }
-  if (neu === alt) return false;
+  if (neu === alt) return ausgelassen ? 'ausgelassen' : 'aktuell';
   writeFileSync(pfad, neu, 'utf8');
-  return true;
+  return 'erneuert';
 }
 
 const [checkout, siteKey] = process.argv.slice(2);
@@ -660,17 +675,23 @@ if (cfg.anschriftIn) {
     ? cfg.anschriftIn.map((datei) => join(checkout, datei))
     : htmlDateien(join(checkout, cfg.anschriftIn));
   for (const [name, marke, bauen] of MARKEN[cfg.format ?? 'html']) {
-    let mitMarke = 0;
+    const zaehler = { erneuert: 0, aktuell: 0, ausgelassen: 0, 'ohne-marke': 0 };
     for (const pfad of pfade) {
-      if (markePatchen(pfad, marke, bauen(siteKey))) {
-        geaendert++;
-        mitMarke++;
-      }
+      const stand = markePatchen(pfad, marke, bauen(siteKey));
+      zaehler[stand]++;
+      if (stand === 'erneuert') geaendert++;
     }
+    /* Dateien ohne Marke werden nicht gezaehlt: Bei einer Wurzel mit vielen
+       Dateien tragen die meisten keine, und das ist der Normalfall. Traegt
+       KEINE eine, ist das die Auskunft, auf die es ankommt. */
+    const teile = [];
+    if (zaehler.erneuert) teile.push(`${zaehler.erneuert} erneuert`);
+    if (zaehler.aktuell) teile.push(`${zaehler.aktuell} schon aktuell`);
+    if (zaehler.ausgelassen) teile.push(`${zaehler.ausgelassen} ohne Daten übersprungen`);
     console.log(
-      mitMarke > 0
-        ? `${name} in ${mitMarke} Datei(en) erneuert.`
-        : `${name}: keine Datei geändert (Marken fehlen oder Text ist aktuell).`,
+      teile.length > 0
+        ? `${name}: ${teile.join(', ')}.`
+        : `${name}: keine Marke gefunden — dieser Bereich wird nicht gepflegt.`,
     );
   }
 }
@@ -683,17 +704,19 @@ if (cfg.sameAsIn) {
   const pfade = Array.isArray(cfg.sameAsIn)
     ? cfg.sameAsIn.map((datei) => join(checkout, datei))
     : htmlDateien(join(checkout, cfg.sameAsIn));
-  let mit = 0;
+  const zaehler = { erneuert: 0, aktuell: 0, 'ohne-knoten': 0 };
   for (const pfad of pfade) {
-    if (sameAsPatchen(pfad, profile, kennung)) {
-      geaendert++;
-      mit++;
-    }
+    const stand = sameAsPatchen(pfad, profile, kennung);
+    zaehler[stand]++;
+    if (stand === 'erneuert') geaendert++;
   }
+  const teile = [];
+  if (zaehler.erneuert) teile.push(`${zaehler.erneuert} erneuert`);
+  if (zaehler.aktuell) teile.push(`${zaehler.aktuell} schon aktuell`);
   console.log(
-    mit > 0
-      ? `sameAs in ${mit} Datei(en) erneuert.`
-      : `sameAs: keine Datei geändert (kein ${kennung}-Knoten oder Liste ist aktuell).`,
+    teile.length > 0
+      ? `sameAs: ${teile.join(', ')}.`
+      : `sameAs: kein ${kennung}-Knoten gefunden — nichts zu pflegen.`,
   );
 }
 
