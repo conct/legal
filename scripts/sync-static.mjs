@@ -2,6 +2,10 @@
  * Rendert Impressum und Datenschutz in die HTML-Dateien statischer Seiten,
  * die das Paket nicht als Dependency einbinden können (kein Build-Step).
  *
+ * Eine Seite kann dabei auch nur einen Teil beziehen: Wer kein `dateien`
+ * einträgt, behält seine Rechtstexte selbst und bekommt nur, was er sonst
+ * angibt (heute: feif.space, dort nur `sameAs`).
+ *
  * Ersetzt ausschließlich:
  *   - den Inhalt von <section class="legal">…</section> (mit oder ohne
  *     innerem <div class="wrap">, mit oder ohne weitere Klassen)
@@ -9,8 +13,9 @@
  *     bzw. <!--legal:postanschrift--> fuer die Anschrift ohne Telefon
  *     und E-Mail (fuer Seiten, die beides ohnehin einzeln nennen),
  *     wo immer er steht — in der Regel in der Fußzeile jeder Seite
- *   - die Liste `sameAs` im JSON-LD-Knoten, der sich als #organization
- *     ausweist (siehe sameAsPatchen)
+ *   - die Liste `sameAs` in dem JSON-LD-Knoten, den die Seite dafuer benennt
+ *     (Default #organization, je Seite ueber sameAsId anders; siehe
+ *     sameAsPatchen)
  *
  * Header, Footer, Styles und alles andere im Template bleiben unangetastet.
  * Die Marken sind der Vertrag: Was nicht markiert ist, wird nicht angefasst.
@@ -31,7 +36,31 @@ import { toHtml } from '../dist/render/html.js';
  */
 const STATIC_SITES = {
   'feif.space': {
-    dateien: { impressum: 'impressum.html', datenschutz: 'datenschutz.html' },
+    // Kein `dateien`, und das ist eine Entscheidung, kein Versehen: Impressum
+    // und Datenschutz stehen dort von Hand im Template und sind ausfuehrlicher
+    // als das, was das Preset hier erzeugt — im Impressum ein Absatz zu
+    // Urheberrecht und einer, der Pip-Boy als Fanprojekt einordnet; im
+    // Datenschutz sechs Abschnitte mehr (Datenschutzbeauftragter, Anfragen per
+    // E-Mail und Telefon, Schriftarten, Verschluesselung, Drittlaender,
+    // Widerruf), dazu die Du-Form. Ein Sync wuerde den laengeren Text durch den
+    // kuerzeren ersetzen. Wer das aendern will, gleicht erst das Preset in
+    // src/presets.ts an den Live-Text an und traegt `dateien` danach wieder
+    // ein — nicht umgekehrt.
+    //
+    // Der Preis steht dabei: Eine Adressaenderung hier erreicht feif.space
+    // nicht. Sie ist dort von Hand nachzuziehen.
+    //
+    // Nur die Startseite traegt eine Auszeichnung — deshalb hier eine Liste
+    // von Dateien statt einer Wurzel. Ein Ordner waere hier die Wurzel des
+    // Checkouts, und der Sync liefe durch .git, server/ und werkzeug/, um am
+    // Ende dieselbe eine Datei anzufassen.
+    sameAsIn: ['index.html'],
+    // Anders als conct.de: Die Startseite handelt von der Person (mainEntity
+    // ist #person), und das hinterlegte Profil ist ein Personenprofil. Die
+    // Profile gehoeren deshalb an #person, nicht an den Betriebsknoten
+    // #betrieb — der beschreibt hier dieselbe Einzelunternehmung, aber ein
+    // Xing-Profil ist kein Betriebsprofil.
+    sameAsId: '#person',
   },
   'conct.de': {
     // Je Art mehrere Dateien: Die englischen Seiten tragen dieselben
@@ -54,6 +83,7 @@ const STATIC_SITES = {
     // Startseiten, und genau die tragen den #organization-Knoten. Alle
     // anderen Dateien bleiben von selbst aussen vor.
     sameAsIn: 'website',
+    // sameAsId fehlt: #organization ist der Default.
   },
 };
 
@@ -156,21 +186,127 @@ const escapeHtml = (s) =>
   String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 /**
- * Die Liste `sameAs` in der Betriebsauszeichnung setzen.
+ * Die Liste `sameAs` in dem Knoten setzen, den die Seite dafür benennt.
  *
  * Für Anschrift und Rechtstexte gibt es eine Marke im HTML. In JSON-LD gibt es
  * keine, also übernimmt die `@id` ihre Rolle: Angefasst wird nur ein Knoten,
- * der sich selbst als `…#organization` ausweist. Wer diese Kennung setzt, sagt
- * damit, welcher Knoten den Betrieb beschreibt.
+ * dessen `@id` auf die vereinbarte Kennung endet — `#organization`, wenn die
+ * Seite nichts anderes sagt. Wer diese Kennung setzt, sagt damit, welcher
+ * Knoten gemeint ist.
  *
- * Geschrieben wird außerdem nur, wenn der Block unverändert wieder
- * herauskommt, wie er hereinkam — sonst schriebe der Sync die Formatierung
- * fremder Blöcke um, und "was nicht markiert ist, bleibt" wäre gebrochen. Ein
- * Block in anderer Form wird gemeldet, nicht stillschweigend übergangen.
+ * Gesucht wird auf oberster Ebene **und** in `@graph`. Beide Formen sind
+ * gebräuchlich: conct.de liefert ein Array von Knoten, feif.space einen
+ * Wrapper mit `@context` und `@graph`. Vorher sah der Sync nur die erste
+ * Form und übersprang die zweite wortlos — der Knoten stand da, nur eine
+ * Ebene tiefer.
+ *
+ * Geschrieben wird **nur die Liste**, nicht der Block. Ein `JSON.stringify`
+ * des ganzen Blocks wäre einfacher, presst aber eine von Hand gesetzte
+ * Einrückung in eine Zeile, und "was nicht markiert ist, bleibt" wäre
+ * gebrochen. Stattdessen wird die Textstelle des Knotens gesucht und darin
+ * genau der Wert von `sameAs` ersetzt; fehlt er, kommt er als eigene Zeile
+ * hinter die `@id` mit deren Einrückung. Was der Sync nicht sicher findet,
+ * meldet er, statt zu raten.
  */
 const LD_BLOCK = /(<script type="application\/ld\+json">)(\s*)([\s\S]*?)(\s*)(<\/script>)/g;
 
-function sameAsPatchen(pfad, profile) {
+/**
+ * Die innerste geschweifte Klammer, die `pos` einschließt — als [start, ende).
+ *
+ * Ein Zähler über den Rohtext, der Zeichenketten und Escapes achtet: Eine
+ * geschweifte Klammer in einer URL oder Beschreibung darf nicht mitzählen.
+ * Der erste Block, der nach `pos` schließt und vor `pos` geöffnet wurde, ist
+ * der innerste — deshalb genügt der erste Treffer.
+ */
+function objektSpanne(text, pos) {
+  const offen = [];
+  let inText = false;
+  let esc = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (esc) {
+      esc = false;
+      continue;
+    }
+    if (c === '\\') {
+      if (inText) esc = true;
+      continue;
+    }
+    if (c === '"') {
+      inText = !inText;
+      continue;
+    }
+    if (inText) continue;
+    if (c === '{') offen.push(i);
+    else if (c === '}') {
+      const auf = offen.pop();
+      if (auf !== undefined && auf <= pos && i >= pos) return [auf, i + 1];
+    }
+  }
+  return null;
+}
+
+/**
+ * Das Ende des JSON-Werts, der bei `von` beginnt. Deckt ab, was als `sameAs`
+ * vorkommen kann: eine Liste oder eine einzelne Zeichenkette.
+ */
+function wertEnde(text, von) {
+  const c = text[von];
+  let inText = c === '"';
+  let esc = false;
+  let tiefe = c === '[' ? 1 : 0;
+  if (c !== '[' && c !== '"') return -1;
+  for (let i = von + 1; i < text.length; i++) {
+    const z = text[i];
+    if (esc) {
+      esc = false;
+      continue;
+    }
+    if (z === '\\') {
+      if (inText) esc = true;
+      continue;
+    }
+    if (z === '"') {
+      inText = !inText;
+      if (!inText && tiefe === 0) return i + 1;
+      continue;
+    }
+    if (inText) continue;
+    if (z === '[') tiefe++;
+    else if (z === ']') {
+      tiefe--;
+      if (tiefe === 0) return i + 1;
+    }
+  }
+  return -1;
+}
+
+/**
+ * Die Textstelle eines Knotens als [von, bis, idStelleImBlock).
+ *
+ * Gesucht wird ueber die `@id`, aber nicht ueber ihr erstes Vorkommen: Eine
+ * `@id` steht auch in jedem Verweis auf den Knoten ("publisher": {"@id": …}),
+ * und der kann frueher stehen als der Knoten selbst. Genommen wird die
+ * Fundstelle, deren umschliessendes Objekt nach dem Parsen genau dieser Knoten
+ * ist — das ist eindeutig, weil zwei Knoten nicht dieselbe `@id` tragen.
+ */
+function knotenSpanne(roh, knoten) {
+  const nadel = `"${knoten['@id']}"`;
+  const soll = JSON.stringify(knoten);
+  for (let ab = roh.indexOf(nadel); ab !== -1; ab = roh.indexOf(nadel, ab + 1)) {
+    const spanne = objektSpanne(roh, ab);
+    if (!spanne) continue;
+    const [von, bis] = spanne;
+    try {
+      if (JSON.stringify(JSON.parse(roh.slice(von, bis))) === soll) return [von, bis, ab - von];
+    } catch {
+      // Kein vollstaendiges Objekt an dieser Stelle — naechste Fundstelle.
+    }
+  }
+  return null;
+}
+
+function sameAsPatchen(pfad, profile, kennung = '#organization') {
   const alt = readFileSync(pfad, 'utf8');
   let neu = alt;
   let getan = false;
@@ -184,29 +320,103 @@ function sameAsPatchen(pfad, profile) {
     } catch {
       continue;
     }
-    const liste = Array.isArray(daten) ? daten : [daten];
-    const org = liste.find(
-      (o) => o && typeof o === 'object' && String(o['@id'] ?? '').endsWith('#organization'),
+    const liste = Array.isArray(daten)
+      ? daten
+      : Array.isArray(daten?.['@graph'])
+        ? daten['@graph']
+        : [daten];
+    const knoten = liste.find(
+      (o) => o && typeof o === 'object' && String(o['@id'] ?? '').endsWith(kennung),
     );
-    if (!org) continue;
-    if (JSON.stringify(daten) !== roh) {
-      uebergangen.push(pfad);
+    if (!knoten) continue;
+
+    const wunsch = profile && profile.length > 0 ? profile : null;
+    if (JSON.stringify(knoten.sameAs ?? null) === JSON.stringify(wunsch)) continue;
+
+    // Die Textstelle des Knotens. Die @id allein genuegt dafuer nicht: Sie
+    // steht auch in jedem Verweis auf den Knoten, und bei conct.de kommt der
+    // erste davon frueher als der Knoten selbst ("publisher":{"@id":…}). Also
+    // jede Fundstelle durchgehen und die nehmen, deren umschliessendes Objekt
+    // wirklich dieser Knoten ist.
+    const spanne = knotenSpanne(roh, knoten);
+    if (!spanne) {
+      uebergangen.push([pfad, 'die Textstelle des Knotens war nicht auffindbar']);
       continue;
     }
-    const vorher = JSON.stringify(org.sameAs ?? null);
-    if (profile && profile.length > 0) org.sameAs = profile;
-    else delete org.sameAs;
-    if (JSON.stringify(org.sameAs ?? null) === vorher) continue;
+    const [von, bis, idStelle] = spanne;
+    const block = roh.slice(von, bis);
+
+    let ersetzt = null;
+    const schluessel = block.search(/"sameAs"\s*:/);
+    if (schluessel !== -1) {
+      const doppelpunkt = block.indexOf(':', schluessel);
+      const wertVon = block.slice(doppelpunkt + 1).search(/\S/) + doppelpunkt + 1;
+      const wertBis = wertEnde(block, wertVon);
+      if (wertBis === -1) {
+        uebergangen.push([pfad, 'der bestehende Wert von sameAs war nicht lesbar']);
+        continue;
+      }
+      if (wunsch) {
+        ersetzt = block.slice(0, wertVon) + JSON.stringify(wunsch) + block.slice(wertBis);
+      } else {
+        // Ohne Profile faellt die ganze Zeile weg, samt Komma und Umbruch.
+        const zeileVon = block.lastIndexOf('\n', schluessel) + 1;
+        const nachKomma = block[wertBis] === ',' ? wertBis + 1 : wertBis;
+        const zeileBis = block[nachKomma] === '\n' ? nachKomma + 1 : nachKomma;
+        ersetzt = block.slice(0, zeileVon) + block.slice(zeileBis);
+      }
+    } else if (wunsch) {
+      // Neu anlegen: hinter die @id-Zeile, mit deren Einrückung. Die Zeile
+      // muss auf ein Komma enden — sonst waere die @id die letzte Angabe des
+      // Knotens, und ein eingeschobenes Komma stuende an der falschen Stelle.
+      const zeileVon = block.lastIndexOf('\n', idStelle) + 1;
+      const zeileBis = block.indexOf('\n', idStelle);
+      const zeile = zeileBis === -1 ? block.slice(zeileVon) : block.slice(zeileVon, zeileBis);
+      if (zeileBis === -1 || !zeile.trimEnd().endsWith(',')) {
+        uebergangen.push([pfad, 'hinter der @id war keine Stelle zum Einfuegen']);
+        continue;
+      }
+      const einzug = zeile.match(/^\s*/)[0];
+      ersetzt =
+        block.slice(0, zeileBis + 1) +
+        `${einzug}"sameAs": ${JSON.stringify(wunsch)},\n` +
+        block.slice(zeileBis + 1);
+    } else {
+      continue;
+    }
+
+    // Gegenprobe: Der Block muss danach noch dasselbe bedeuten wie die
+    // Daten, die wir gesetzt haben. Ein Textersatz, der JSON zerlegt, faellt
+    // hier auf, bevor er in die Datei kommt.
+    const rohNeu = roh.slice(0, von) + ersetzt + roh.slice(bis);
+    try {
+      const probe = JSON.parse(rohNeu);
+      const pListe = Array.isArray(probe)
+        ? probe
+        : Array.isArray(probe?.['@graph'])
+          ? probe['@graph']
+          : [probe];
+      const pKnoten = pListe.find(
+        (o) => o && typeof o === 'object' && String(o['@id'] ?? '').endsWith(kennung),
+      );
+      if (JSON.stringify(pKnoten?.sameAs ?? null) !== JSON.stringify(wunsch)) {
+        uebergangen.push([pfad, 'die Gegenprobe ergab eine andere Liste']);
+        continue;
+      }
+    } catch {
+      uebergangen.push([pfad, 'nach dem Ersetzen war der Block kein gueltiges JSON']);
+      continue;
+    }
+
     // Eine Funktion als Ersetzung: In einem String würden $& und $' gedeutet.
-    const gesetzt = JSON.stringify(daten);
-    neu = neu.replace(roh, () => gesetzt);
+    neu = neu.replace(roh, () => rohNeu);
     getan = true;
   }
 
-  for (const pf of uebergangen) {
+  for (const [pf, grund] of uebergangen) {
     console.warn(
-      `Hinweis: ${pf} trägt einen #organization-Knoten in anderer Formatierung — ` +
-        'sameAs wurde dort nicht gesetzt, um den Block nicht umzuschreiben.',
+      `Hinweis: ${pf} trägt einen ${kennung}-Knoten, aber ${grund} — ` +
+        'sameAs wurde dort nicht gesetzt.',
     );
   }
   if (!getan) return false;
@@ -237,33 +447,39 @@ if (!cfg || !site) {
   process.exit(1);
 }
 
-if (!PRESETS[siteKey].geprueft) {
+// Nur wenn die Seite ihre Rechtstexte auch von hier bezieht. Wo sie das nicht
+// tut, sagt das Preset nichts ueber den Text, der dort steht — und eine
+// Warnung dazu waere ein Hinweis auf etwas, das niemanden betrifft.
+if (cfg.dateien && !PRESETS[siteKey].geprueft) {
   console.warn(
     `Warnung: Das Datenschutz-Preset für ${siteKey} ist in src/presets.ts noch ` +
       'nicht als geprüft markiert.',
   );
 }
 
-const docs = {
-  impressum: impressumFuer(siteKey),
-  datenschutz: datenschutzFuer(siteKey),
-};
-
 let geaendert = 0;
-for (const [art, wert] of Object.entries(cfg.dateien)) {
-  // Eine Datei oder mehrere - dieselbe Fassung, mehrere Ziele.
-  for (const datei of Array.isArray(wert) ? wert : [wert]) {
-    const pfad = join(checkout, datei);
-    const fragment = toHtml(docs[art], {
-      includeTitle: !cfg.eigeneUeberschrift,
-    });
-    if (patchen(pfad, fragment)) {
-      console.log(`aktualisiert: ${datei}`);
-      geaendert++;
-    } else {
-      console.log(`unverändert:  ${datei}`);
+if (cfg.dateien) {
+  const docs = {
+    impressum: impressumFuer(siteKey),
+    datenschutz: datenschutzFuer(siteKey),
+  };
+  for (const [art, wert] of Object.entries(cfg.dateien)) {
+    // Eine Datei oder mehrere - dieselbe Fassung, mehrere Ziele.
+    for (const datei of Array.isArray(wert) ? wert : [wert]) {
+      const pfad = join(checkout, datei);
+      const fragment = toHtml(docs[art], {
+        includeTitle: !cfg.eigeneUeberschrift,
+      });
+      if (patchen(pfad, fragment)) {
+        console.log(`aktualisiert: ${datei}`);
+        geaendert++;
+      } else {
+        console.log(`unverändert:  ${datei}`);
+      }
     }
   }
+} else {
+  console.log('Rechtstexte: diese Seite pflegt sie selbst — nicht angefasst.');
 }
 
 if (cfg.anschriftIn) {
@@ -289,9 +505,15 @@ if (cfg.anschriftIn) {
 
 if (cfg.sameAsIn) {
   const profile = anbieterFuer(siteKey).profile ?? [];
+  const kennung = cfg.sameAsId ?? '#organization';
+  // Eine Wurzel, unter der gesucht wird — oder gleich die Dateien, wenn die
+  // Seite weiss, welche es sind.
+  const pfade = Array.isArray(cfg.sameAsIn)
+    ? cfg.sameAsIn.map((datei) => join(checkout, datei))
+    : htmlDateien(join(checkout, cfg.sameAsIn));
   let mit = 0;
-  for (const pfad of htmlDateien(join(checkout, cfg.sameAsIn))) {
-    if (sameAsPatchen(pfad, profile)) {
+  for (const pfad of pfade) {
+    if (sameAsPatchen(pfad, profile, kennung)) {
       geaendert++;
       mit++;
     }
@@ -299,7 +521,7 @@ if (cfg.sameAsIn) {
   console.log(
     mit > 0
       ? `sameAs in ${mit} Datei(en) erneuert.`
-      : 'sameAs: keine Datei geändert (kein #organization-Knoten oder Liste ist aktuell).',
+      : `sameAs: keine Datei geändert (kein ${kennung}-Knoten oder Liste ist aktuell).`,
   );
 }
 

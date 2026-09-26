@@ -16,10 +16,11 @@ Was daraus **nicht** folgt:
 - **Keine Rechtsberatung.** Die Bausteine sind fachlich zusammengetragen, nicht
   anwaltlich geprüft. Sie ordnen ein, sie entscheiden nichts.
 - **Nicht jeder Text ist abgenommen.** `PRESETS` führt pro Seite ein Feld
-  `geprueft`. Für `feif.space` und `conct.de` steht es auf `true`, weil beide
-  gegen die Live-Seite abgeglichen wurden. Für die übrigen steht es auf `false`
-  — das sind Baukasten-Vermutungen, die vor einem Livegang durchzugehen sind.
-  `ungeprueft()` gibt sie aus, und der Sync warnt bei jedem Lauf.
+  `geprueft`. Auf `true` steht es nur bei `conct.de`, weil dort gegen die
+  Live-Seite abgeglichen wurde. Für die übrigen steht es auf `false` — das sind
+  Baukasten-Vermutungen, die vor einem Livegang durchzugehen sind.
+  `ungeprueft()` gibt sie aus, und der Sync warnt bei jeder Seite, die ihre
+  Rechtstexte von hier bezieht.
 - **Für die eigenen Projekte gebaut.** Wer das Paket für ein fremdes Angebot
   einsetzt, übernimmt die Verantwortung für den Text, den es erzeugt — samt der
   Frage, ob die gewählten Bausteine den Sachverhalt dort überhaupt abbilden.
@@ -156,11 +157,31 @@ const native: Adapters = {
 <Legal doc={impressum(CONCT, SITES['velvet-network.app'])} adapters={native} />
 ```
 
-### Statische Seiten ohne Build (feif.space, pip-boy/docs/landing)
+### Statische Seiten ohne Build (conct.de, feif.space, pip-boy/docs/landing)
 
 Diese Seiten konsumieren das Paket nicht direkt. Stattdessen rendert der
 Workflow [`sync-static.yml`](.github/workflows/sync-static.yml) bei jedem
 Release die HTML-Dateien neu und öffnet einen Pull Request im Ziel-Repo.
+
+Was eine Seite bezieht, steht in `STATIC_SITES` in
+[`scripts/sync-static.mjs`](scripts/sync-static.mjs) — und es muss nicht alles
+sein:
+
+| Seite | Rechtstexte | Anschrift in der Fußzeile | `sameAs` |
+|---|---|---|---|
+| conct.de | ja, deutsch und englisch | ja | ja, am `#organization`-Knoten |
+| feif.space | **nein**, von Hand gepflegt | — | ja, am `#person`-Knoten |
+
+feif.space hat seine Rechtstexte von Hand im Template, und sie sind
+ausführlicher als das, was das Preset heute erzeugt. Deshalb steht dort kein
+`dateien`-Eintrag. Der Preis dafür ist ausdrücklich: **eine Adressänderung hier
+erreicht feif.space nicht** und ist dort nachzuziehen. Wer das umdrehen will,
+gleicht erst `PRESETS['feif.space']` an den Live-Text an und trägt `dateien`
+danach ein.
+
+Welcher JSON-LD-Knoten `sameAs` bekommt, sagt `sameAsId` (Default
+`#organization`). Geschrieben wird nur die Liste selbst — die Formatierung des
+Blocks bleibt, wie die Seite sie gesetzt hat.
 
 ## Datenschutz: Bausteine und Tonlage
 
@@ -230,11 +251,18 @@ Bausteine nicht importieren, sonst entsteht ein Import-Zyklus.
 
 Jedes Preset trägt `geprueft: boolean`. `false` heißt: die Bausteine sind eine
 Vermutung aus dem Baukasten, niemand hat gegen die tatsächliche
-Datenverarbeitung der Seite geprüft. Aktuell ist nur `feif.space` auf `true` —
-das ist gegen die Live-Seite abgeglichen und rendert wortgleich.
+Datenverarbeitung der Seite geprüft. Aktuell steht nur `conct.de` auf `true`.
 
-`ungeprueft()` listet die offenen Seiten, der Sync-Workflow warnt bei ihnen.
-Vor dem Livegang einer Seite: Module durchgehen, dann die Flagge setzen.
+`feif.space` stand bis zum 26.09.2026 ebenfalls auf `true`, mit dem Vermerk
+„rendert wortgleich". Nachgemessen stimmte das nicht: 13 Abschnitte live gegen
+7 aus dem Preset, Du-Form gegen Sie-Form. Aufgefallen war es nicht, weil der
+Sync die Rechtstexte dieser Seite ohnehin nicht anfasst — eine Flagge, die
+niemand einlöst, wird auch von niemandem widerlegt. Sie steht jetzt auf
+`false`.
+
+`ungeprueft()` listet die offenen Seiten, der Sync warnt bei jeder, die ihre
+Rechtstexte von hier bezieht. Vor dem Livegang einer Seite: Module durchgehen,
+dann die Flagge setzen.
 
 ## Fremde Anbieter
 

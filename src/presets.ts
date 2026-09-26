@@ -25,10 +25,18 @@ export interface Preset {
 }
 
 export const PRESETS: Record<SiteKey, Preset> = {
-  // Gegen die Live-Seite abgeglichen — rendert wortgleich.
+  // Nicht gegen die Live-Seite abgeglichen — der Vermerk „rendert wortgleich"
+  // stand hier, traf aber nie zu und ist am 26.09.2026 nachgemessen worden:
+  // feif.space führt 13 Abschnitte in der Du-Form, dieses Preset erzeugt 7 in
+  // der Sie-Form, und im Impressum fehlen hier Urheberrecht und der Hinweis
+  // zum Fanprojekt. Aufgefallen ist es nie, weil der Sync die Rechtstexte dort
+  // gar nicht anfasst (siehe scripts/sync-static.mjs, Eintrag feif.space).
+  //
+  // Damit ist dieses Preset heute ein Entwurf wie die übrigen: Wer feif.space
+  // an die zentrale Quelle hängen will, gleicht es erst an den Live-Text an.
   'feif.space': {
     tone: 'formell',
-    geprueft: true,
+    geprueft: false,
     module: [
       ds.verantwortlicher,
       ds.hosting,
