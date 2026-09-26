@@ -109,6 +109,23 @@ export const SITES = {
     name: 'Pip-Boy',
     hoster: 'Uberspace Entwicklungen GbR',
   },
+  'fibel.uber.space': {
+    domain: 'fibel.uber.space',
+    name: 'Fibel',
+    hoster: 'Uberspace Entwicklungen GbR',
+    // Kein `drittdienste`, obwohl die Spielwiese Wunsch und Programm an einen
+    // KI-Dienst weitergibt: Das Feld speist den Baustein
+    // `auftragsverarbeitung` (Art. 28 DSGVO), die Seite stuetzt die
+    // Uebermittlung aber auf die Einwilligung des Besuchers (Art. 6 Abs. 1
+    // lit. a, fuer die USA Art. 49 Abs. 1 lit. a DSGVO) — er betaetigt
+    // "Schreiben lassen". Ein Eintrag hier behauptete eine Rechtsgrundlage,
+    // die dort nicht gilt.
+    //
+    // Auch kein `externeLinks`: Die Rechtstexte dieser Seite werden heute
+    // nicht von hier gerendert (siehe scripts/sync-static.mjs), und eine
+    // Angabe, die niemand einloest, wird von niemandem widerlegt — das war
+    // der Fehler bei feif.space.
+  },
 } as const satisfies Record<string, Site>;
 
 export type SiteKey = keyof typeof SITES;

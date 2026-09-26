@@ -108,6 +108,33 @@ export const PRESETS: Record<SiteKey, Preset> = {
     geprueft: false,
     module: ds.STANDARD_MODULE,
   },
+
+  // Nutzt dieses Preset nicht: Die Rechtstexte der Fibel-Startseite bleiben in
+  // deren Repo. Von hier kommen nur die Stammdaten (anbieterFuer) — wie bei
+  // rechnungswerk. Neu ist allein das Ziel: ein Fibel-Programm statt einer
+  // HTML-Datei (siehe scripts/sync-static.mjs, Eintrag fibel.uber.space).
+  //
+  // Warum der Text dort bleibt: Der Datenschutz beschreibt die Uebermittlung
+  // von Wunsch und Programm an die Fibel-KI und die Spielwiese. `drittland`
+  // und `einwilligungWiderruf` kommen dem nahe, treffen es aber nicht — dort
+  // geht es um einen Auftragsverarbeiter, hier um eine Uebermittlung, die der
+  // Besucher mit einem Knopfdruck selbst ausloest (Art. 6 Abs. 1 lit. a, fuer
+  // die USA Art. 49 Abs. 1 lit. a DSGVO). Wer das umdrehen will, gleicht erst
+  // die Bausteine an den Live-Text an und traegt `dateien` danach ein — nicht
+  // umgekehrt. Dieselbe Reihenfolge wie bei feif.space.
+  'fibel.uber.space': {
+    tone: 'formell',
+    geprueft: false,
+    module: [
+      ds.verantwortlicher,
+      ds.hosting,
+      // Die Seite setzt eine Formularmarke, und nur auf Seiten mit Formular.
+      ds.technischeCookies({ zweck: 'die Marke gegen Formulare von fremden Seiten' }),
+      ds.externeLinks,
+      ds.betroffenenrechte,
+      ds.aktualitaet,
+    ],
+  },
 };
 
 /** Alle Seiten, deren Preset noch nicht geprüft wurde. */

@@ -85,6 +85,22 @@ const STATIC_SITES = {
     sameAsIn: 'website',
     // sameAsId fehlt: #organization ist der Default.
   },
+  'fibel.uber.space': {
+    // Kein `dateien`, und wie bei feif.space ist das eine Entscheidung: Der
+    // Datenschutz dieser Seite beschreibt die Uebermittlung von Wunsch und
+    // Programm an die Fibel-KI samt Einwilligung nach Art. 49 Abs. 1 lit. a
+    // DSGVO und die Spielwiese. Dafuer hat der Baukasten keinen Baustein, ein
+    // Sync wuerde den Abschnitt loeschen. Wer das aendern will, gleicht erst
+    // PRESETS['fibel.uber.space'] an den Live-Text an und traegt `dateien`
+    // danach ein — nicht umgekehrt.
+    //
+    // Von hier kommen die Stammdaten: Anschrift (zweimal, beim Anbieter und
+    // beim Medienverantwortlichen), Kontakt und USt-IdNr.
+    format: 'fibel',
+    // Eine Datei statt einer Wurzel: Das ganze Angebot steht in einem
+    // Programm, und htmlDateien() faende es ohnehin nicht.
+    anschriftIn: ['startseite/startseite.fibel'],
+  },
 };
 
 /**
@@ -205,6 +221,105 @@ function anschriftFragment(siteKey) {
 
 const escapeHtml = (s) =>
   String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+/**
+ * Dasselbe fuer ein Fibel-Programm statt einer HTML-Datei.
+ *
+ * Fibels Startseite ist das erste Ziel, das kein HTML ist: Dort steht die
+ * Anschrift als `text "..."`-Zeilen in einer .fibel-Datei. Geaendert wird
+ * wieder nur, was markiert ist — die Marke ist ein Fibel-Kommentar:
+ *
+ *   # legal:postanschrift
+ *   text "..."
+ *   # /legal:postanschrift
+ *
+ * Global, anders als bei HTML: Eine Fibel-Datei traegt das ganze Angebot, und
+ * die Anschrift steht darin zweimal — beim Anbieter und beim
+ * Medienverantwortlichen nach § 18 Abs. 2 MStV. Ein Ersatz nur des ersten
+ * Treffers liesse den zweiten auseinanderlaufen.
+ */
+const fibelMarke = (name) =>
+  new RegExp(
+    `(^[ \\t]*#[ \\t]*legal:${name}[ \\t]*\\r?\\n)([\\s\\S]*?)(^[ \\t]*#[ \\t]*\\/legal:${name}[ \\t]*$)`,
+    'gm',
+  );
+
+/**
+ * Eine Textzeile fuer Fibel. Ein Anfuehrungszeichen im Wert liesse sich hier
+ * nicht sicher aufloesen — also melden statt eine Zeile bauen, die der
+ * Zerteiler nicht liest.
+ */
+function fibelText(wert) {
+  const s = String(wert);
+  if (s.includes('"')) {
+    throw new Error(`Anfuehrungszeichen in "${s}" — daraus laesst sich keine Fibel-Zeile bauen.`);
+  }
+  return `text "${s}"`;
+}
+
+const fibelZeilen = (einzug, zeilen) => zeilen.map((z) => `${einzug}${fibelText(z)}\n`).join('');
+
+const fibelPost = (siteKey) => (einzug) => {
+  const a = anbieterFuer(siteKey);
+  const zeilen = [a.name, a.strasse, `${a.plz} ${a.ort}`];
+  if (a.land) zeilen.push(a.land);
+  return fibelZeilen(einzug, zeilen);
+};
+
+const fibelKontakt = (siteKey) => (einzug) => {
+  const a = anbieterFuer(siteKey);
+  const zeilen = [];
+  if (a.telefon) zeilen.push(`Telefon: ${a.telefon}`);
+  zeilen.push(`E-Mail: ${a.email}`);
+  return fibelZeilen(einzug, zeilen);
+};
+
+/* Ohne USt-IdNr bleibt der Bereich, wie er ist: Ein leeres Fragment liesse die
+   Ueberschrift "Umsatzsteuer" ohne Angabe darunter stehen, und das waere
+   schlechter als ein unveraenderter Text. */
+const fibelUstId = (siteKey) => (einzug) => {
+  const a = anbieterFuer(siteKey);
+  if (!a.ustId) return null;
+  return fibelZeilen(einzug, [
+    `Umsatzsteuer-Identifikationsnummer gemäß § 27 a Umsatzsteuergesetz: ${a.ustId}`,
+  ]);
+};
+
+/* Der Verantwortliche im Datenschutz nennt Anschrift und beide Kontaktwege in
+   einem Block — dieselbe Reihenfolge wie anschriftMitKontakt() im Paket, wo sie
+   fuer genau diesen Abschnitt gedacht ist. Ohne diese Marke erreichte eine
+   Adressaenderung das Impressum, aber nicht den Datenschutz, und die beiden
+   widersprachen sich. */
+const fibelVerantwortlich = (siteKey) => (einzug) => {
+  const a = anbieterFuer(siteKey);
+  const zeilen = [a.name];
+  if (a.marke) zeilen.push(a.marke);
+  zeilen.push(a.strasse, `${a.plz} ${a.ort}`);
+  if (a.land) zeilen.push(a.land);
+  zeilen.push(`E-Mail: ${a.email}`);
+  if (a.telefon) zeilen.push(`Telefon: ${a.telefon}`);
+  return fibelZeilen(einzug, zeilen);
+};
+
+/**
+ * Welche Marken ein Zielformat kennt.
+ *
+ * HTML fuehrt Anschrift und Kontakt in einer Marke zusammen, Fibel trennt sie:
+ * Dort stehen sie unter eigenen Ueberschriften — genau der Fall, fuer den es
+ * die Postanschrift-Marke schon gab.
+ */
+const MARKEN = {
+  html: [
+    ['Anschrift', anschriftMarke, (k) => () => anschriftFragment(k)],
+    ['Postanschrift', postMarke, (k) => () => postFragment(k)],
+  ],
+  fibel: [
+    ['Postanschrift', fibelMarke('postanschrift'), fibelPost],
+    ['Kontakt', fibelMarke('kontakt'), fibelKontakt],
+    ['USt-IdNr', fibelMarke('ustid'), fibelUstId],
+    ['Verantwortlicher', fibelMarke('verantwortlicher'), fibelVerantwortlich],
+  ],
+};
 
 /**
  * Die Liste `sameAs` in dem Knoten setzen, den die Seite dafür benennt.
@@ -451,10 +566,38 @@ function sameAsPatchen(pfad, profile, kennung = '#organization') {
   return true;
 }
 
-function markePatchen(pfad, marke, fragment) {
+/**
+ * Den Inhalt zwischen zwei Marken ersetzen.
+ *
+ * `bauen(einzug)` liefert das Fragment und bekommt die Einrueckung der
+ * Anfangsmarke mit — HTML braucht sie nicht, ein Fibel-Programm schon, dort
+ * ist Einrueckung Struktur. Gibt `bauen` `null` zurueck, fehlen die Daten und
+ * der Bereich bleibt, wie er ist.
+ *
+ * `lastIndex` wird zurueckgesetzt: Die Fibel-Marken sind global, und `test()`
+ * merkt sich bei einem globalen Ausdruck die Fundstelle.
+ */
+function markePatchen(pfad, marke, bauen) {
   const alt = readFileSync(pfad, 'utf8');
+  marke.lastIndex = 0;
   if (!marke.test(alt)) return false;
-  const neu = alt.replace(marke, (_, auf, __, zu) => `${auf}${fragment}${zu}`);
+  marke.lastIndex = 0;
+  const eol = zeilenende(alt);
+  let ausgelassen = false;
+  const neu = alt.replace(marke, (ganz, auf, __, zu) => {
+    const fragment = bauen(auf.match(/^[ \t]*/)[0]);
+    if (fragment === null) {
+      ausgelassen = true;
+      return ganz;
+    }
+    return aufZeilenende(`${auf}${fragment}${zu}`, eol);
+  });
+  if (ausgelassen) {
+    console.warn(
+      `Hinweis: ${pfad} — für eine Marke fehlen die Daten in den Stammdaten, ` +
+        'der Bereich blieb unverändert.',
+    );
+  }
   if (neu === alt) return false;
   writeFileSync(pfad, neu, 'utf8');
   return true;
@@ -510,14 +653,16 @@ if (cfg.dateien) {
 }
 
 if (cfg.anschriftIn) {
-  const formen = [
-    ['Anschrift', anschriftMarke, anschriftFragment(siteKey)],
-    ['Postanschrift', postMarke, postFragment(siteKey)],
-  ];
-  for (const [name, marke, fragment] of formen) {
+  /* Eine Wurzel, unter der gesucht wird — oder gleich die Dateien, wie es
+     sameAsIn schon erlaubt. Fuer ein Fibel-Programm ist die Liste der einzige
+     Weg: htmlDateien() sucht nach .html und fand eine .fibel nie. */
+  const pfade = Array.isArray(cfg.anschriftIn)
+    ? cfg.anschriftIn.map((datei) => join(checkout, datei))
+    : htmlDateien(join(checkout, cfg.anschriftIn));
+  for (const [name, marke, bauen] of MARKEN[cfg.format ?? 'html']) {
     let mitMarke = 0;
-    for (const pfad of htmlDateien(join(checkout, cfg.anschriftIn))) {
-      if (markePatchen(pfad, marke, fragment)) {
+    for (const pfad of pfade) {
+      if (markePatchen(pfad, marke, bauen(siteKey))) {
         geaendert++;
         mitMarke++;
       }

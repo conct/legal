@@ -157,7 +157,7 @@ const native: Adapters = {
 <Legal doc={impressum(CONCT, SITES['velvet-network.app'])} adapters={native} />
 ```
 
-### Statische Seiten ohne Build (conct.de, feif.space, pip-boy/docs/landing)
+### Statische Seiten ohne Build (conct.de, feif.space, fibel.uber.space, pip-boy/docs/landing)
 
 Diese Seiten konsumieren das Paket nicht direkt. Stattdessen rendert der
 Workflow [`sync-static.yml`](.github/workflows/sync-static.yml) bei jedem
@@ -171,6 +171,7 @@ sein:
 |---|---|---|---|
 | conct.de | ja, deutsch und englisch | ja | ja, am `#organization`-Knoten |
 | feif.space | **nein**, von Hand gepflegt | — | ja, am `#person`-Knoten |
+| fibel.uber.space | **nein**, von Hand gepflegt | Stammdaten im Programm | — |
 
 feif.space hat seine Rechtstexte von Hand im Template, und sie sind
 ausführlicher als das, was das Preset heute erzeugt. Deshalb steht dort kein
@@ -178,6 +179,33 @@ ausführlicher als das, was das Preset heute erzeugt. Deshalb steht dort kein
 erreicht feif.space nicht** und ist dort nachzuziehen. Wer das umdrehen will,
 gleicht erst `PRESETS['feif.space']` an den Live-Text an und trägt `dateien`
 danach ein.
+
+`fibel.uber.space` ist das erste Ziel, das **kein HTML** ist: Die Startseite von
+Fibel ist selbst ein Fibel-Programm. Die Marken sind dort Fibel-Kommentare, und
+der Sync setzt `text "…"`-Zeilen dazwischen:
+
+```fibel
+  ueberschrift "Anbieter"
+  # legal:postanschrift
+  text "Daniel von Lühmann"
+  text "Hauptstraße 154"
+  text "01833 Dürrröhrsdorf-Dittersbach"
+  # /legal:postanschrift
+```
+
+Vier Gruppen: `postanschrift`, `kontakt`, `ustid` und `verantwortlicher` für den
+Datenschutz-Abschnitt, der Anschrift und beide Kontaktwege in einem Block nennt.
+Anders als bei HTML wird **jeder** Treffer ersetzt, nicht nur der erste: Ein
+Fibel-Programm trägt das ganze Angebot in einer Datei, und die Anschrift steht
+darin zweimal — beim Anbieter und beim Medienverantwortlichen nach § 18 Abs. 2
+MStV. Das Ziel steht als Dateiliste in `anschriftIn`, weil der Sync sonst nach
+`.html` sucht und eine `.fibel` nie fände.
+
+Die Rechtstexte bleiben auch dort von Hand gepflegt, und aus demselben Grund wie
+bei feif.space: Der Datenschutz beschreibt die Übermittlung von Wunsch und
+Programm an die Fibel-KI samt Einwilligung nach Art. 49 Abs. 1 lit. a DSGVO und
+die Spielwiese. Dafür gibt es hier keinen Baustein — `drittland` und
+`einwilligungWiderruf` kommen dem nahe, meinen aber einen Auftragsverarbeiter.
 
 Welcher JSON-LD-Knoten `sameAs` bekommt, sagt `sameAsId` (Default
 `#organization`). Geschrieben wird nur die Liste selbst — die Formatierung des
