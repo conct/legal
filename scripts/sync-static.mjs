@@ -22,10 +22,11 @@
  *
  *   node scripts/sync-static.mjs <pfad-zum-checkout> <site-key>
  */
-import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { SITES, anbieterFuer, impressumFuer, datenschutzFuer, PRESETS } from '../dist/index.js';
 import { toHtml } from '../dist/render/html.js';
+import { toMarkdown } from '../dist/render/text.js';
 
 /**
  * Welche Dateien die jeweilige statische Seite hat. Die Datenschutz-Bausteine
@@ -86,20 +87,25 @@ const STATIC_SITES = {
     // sameAsId fehlt: #organization ist der Default.
   },
   'fibel.uber.space': {
-    // Kein `dateien`, und wie bei feif.space ist das eine Entscheidung: Der
-    // Datenschutz dieser Seite beschreibt die Uebermittlung von Wunsch und
-    // Programm an die Fibel-KI samt Einwilligung nach Art. 49 Abs. 1 lit. a
-    // DSGVO und die Spielwiese. Dafuer hat der Baukasten keinen Baustein, ein
-    // Sync wuerde den Abschnitt loeschen. Wer das aendern will, gleicht erst
-    // PRESETS['fibel.uber.space'] an den Live-Text an und traegt `dateien`
-    // danach ein — nicht umgekehrt.
-    //
-    // Von hier kommen die Stammdaten: Anschrift (zweimal, beim Anbieter und
-    // beim Medienverantwortlichen), Kontakt und USt-IdNr.
+    /* Die Startseite von Fibel ist selbst ein Fibel-Programm — das erste Ziel,
+       das kein HTML ist. Deshalb wird hier nicht ein Abschnitt in einer Datei
+       ersetzt, sondern eine Markdown-Datei daneben geschrieben; die Seite holt
+       sie mit dem Baustein "dokument".
+
+       Der Weg dorthin war die Reihenfolge, die feif.space vorgibt: Erst wurde
+       PRESETS['fibel.uber.space'] abschnittsweise an den Live-Text angeglichen
+       — samt zwei freitext-Abschnitten fuer die Beispiele und die Fibel-KI, fuer
+       die es keinen Baustein gibt — und erst danach kam dieser Eintrag. Nicht
+       umgekehrt. */
     format: 'fibel',
-    // Eine Datei statt einer Wurzel: Das ganze Angebot steht in einem
-    // Programm, und htmlDateien() faende es ohnehin nicht.
-    anschriftIn: ['startseite/startseite.fibel'],
+    dateien: {
+      impressum: ['startseite/impressum.md'],
+      datenschutz: ['startseite/datenschutz.md'],
+    },
+    /* Kein `anschriftIn`: Die Stammdaten kamen bis hierher ueber Marken im
+       Programm. Jetzt kommt der ganze Text von hier, und die Marken sind mit
+       den Seiten verschwunden, die sie trugen. Die Fibel-Marken in MARKEN
+       bleiben trotzdem — fuer eine Seite, die nur die Stammdaten will. */
   },
 };
 
@@ -126,6 +132,27 @@ const anschriftMarke =
 // Kontaktseite stand sonst alles doppelt.
 const postMarke =
   /(<!--\s*legal:postanschrift\s*-->)([\s\S]*?)(<!--\s*\/legal:postanschrift\s*-->)/;
+
+/**
+ * Eine ganze Datei schreiben, statt einen Abschnitt darin zu ersetzen.
+ *
+ * Bei HTML gehoert die Datei der Seite: Header, Footer und Styles stehen darin,
+ * und der Sync fasst nur den markierten Abschnitt an. Eine Markdown-Datei neben
+ * einem Fibel-Programm gehoert dagegen vollstaendig dem Sync — sie enthaelt
+ * nichts als den Rechtstext. Dort braucht "was nicht markiert ist, bleibt"
+ * keine Marke: Es ist nichts da, was bleiben muesste.
+ *
+ * Das Zeilenende der vorhandenen Datei wird uebernommen, aus demselben Grund
+ * wie bei patchen(): Ein Wechsel von CRLF auf LF zeigt im ersten Pull Request
+ * die ganze Datei als geaendert, obwohl kein Wort anders lautet.
+ */
+function mdSchreiben(pfad, text) {
+  const alt = existsSync(pfad) ? readFileSync(pfad, 'utf8') : null;
+  const neu = aufZeilenende(text, alt ? zeilenende(alt) : '\n');
+  if (neu === alt) return false;
+  writeFileSync(pfad, neu, 'utf8');
+  return true;
+}
 
 /** Rückt das Fragment auf die Einrücktiefe des Templates ein. */
 function einruecken(fragment, tiefe) {
@@ -652,10 +679,15 @@ if (cfg.dateien) {
     // Eine Datei oder mehrere - dieselbe Fassung, mehrere Ziele.
     for (const datei of Array.isArray(wert) ? wert : [wert]) {
       const pfad = join(checkout, datei);
-      const fragment = toHtml(docs[art], {
-        includeTitle: !cfg.eigeneUeberschrift,
-      });
-      if (patchen(pfad, fragment)) {
+      /* urlsAusschreiben: false — sonst stuende auf der Seite
+         "mail@feif.space (mailto:mail@feif.space)". Der Textrenderer schreibt
+         Verweise fuer Mails und App-Stores aus, wo kein Klick moeglich ist; auf
+         einer Webseite liest das niemand. Fibel macht aus der Adresse ohnehin
+         einen Verweis. */
+      const getan = (cfg.format ?? 'html') === 'fibel'
+        ? mdSchreiben(pfad, toMarkdown(docs[art], { urlsAusschreiben: false }))
+        : patchen(pfad, toHtml(docs[art], { includeTitle: !cfg.eigeneUeberschrift }));
+      if (getan) {
         console.log(`aktualisiert: ${datei}`);
         geaendert++;
       } else {

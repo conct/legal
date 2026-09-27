@@ -171,7 +171,7 @@ sein:
 |---|---|---|---|
 | conct.de | ja, deutsch und englisch | ja | ja, am `#organization`-Knoten |
 | feif.space | **nein**, von Hand gepflegt | — | ja, am `#person`-Knoten |
-| fibel.uber.space | **nein**, von Hand gepflegt | Stammdaten im Programm | — |
+| fibel.uber.space | ja, als Markdown neben dem Programm | — | — |
 
 feif.space hat seine Rechtstexte von Hand im Template, und sie sind
 ausführlicher als das, was das Preset heute erzeugt. Deshalb steht dort kein
@@ -181,8 +181,32 @@ gleicht erst `PRESETS['feif.space']` an den Live-Text an und trägt `dateien`
 danach ein.
 
 `fibel.uber.space` ist das erste Ziel, das **kein HTML** ist: Die Startseite von
-Fibel ist selbst ein Fibel-Programm. Die Marken sind dort Fibel-Kommentare, und
-der Sync setzt `text "…"`-Zeilen dazwischen:
+Fibel ist selbst ein Fibel-Programm. Dort wird deshalb kein Abschnitt in einer
+Datei ersetzt, sondern eine Markdown-Datei daneben geschrieben — `impressum.md`
+und `datenschutz.md`. Die Seite holt sie mit dem Baustein `dokument`:
+
+```fibel
+seite /impressum als "Impressum"
+  oeffentlich
+  dokument "impressum.md"
+```
+
+Gerendert wird mit `toMarkdown(doc, { urlsAusschreiben: false })`. Ohne die
+Option stünde auf der Seite `mail@feif.space (mailto:mail@feif.space)`: Der
+Textrenderer schreibt Verweise für Mails und App-Stores aus, wo kein Klick
+möglich ist. Und `br` wird in Markdown zu zwei Leerzeichen am Zeilenende, dem
+harten Umbruch — ohne ihn stünde die Anschrift als eine einzige Zeile da.
+
+Zwei Abschnitte der Erklärung gibt es nur dort: die Beispiel-Anwendungen und die
+Übermittlung an die Fibel-KI. Sie stehen als `ds.freitext` im Preset, wörtlich,
+damit beim Umzug kein Satz verloren geht. `drittland` und `einwilligungWiderruf`
+stehen dagegen **nicht** in der Liste, obwohl sie zum Standardsatz gehören: Sie
+sind auch dann eine Auskunft, wenn die Antwort „findet nicht statt" lautet — bei
+Fibel findet sie aber statt, und der Abschnitt zur Fibel-KI trägt Drittland und
+Widerruf beide.
+
+Für eine Seite, die **nur** die Stammdaten von hier will, gibt es zusätzlich
+Marken als Fibel-Kommentare:
 
 ```fibel
   ueberschrift "Anbieter"
@@ -195,17 +219,12 @@ der Sync setzt `text "…"`-Zeilen dazwischen:
 
 Vier Gruppen: `postanschrift`, `kontakt`, `ustid` und `verantwortlicher` für den
 Datenschutz-Abschnitt, der Anschrift und beide Kontaktwege in einem Block nennt.
-Anders als bei HTML wird **jeder** Treffer ersetzt, nicht nur der erste: Ein
-Fibel-Programm trägt das ganze Angebot in einer Datei, und die Anschrift steht
-darin zweimal — beim Anbieter und beim Medienverantwortlichen nach § 18 Abs. 2
-MStV. Das Ziel steht als Dateiliste in `anschriftIn`, weil der Sync sonst nach
-`.html` sucht und eine `.fibel` nie fände.
-
-Die Rechtstexte bleiben auch dort von Hand gepflegt, und aus demselben Grund wie
-bei feif.space: Der Datenschutz beschreibt die Übermittlung von Wunsch und
-Programm an die Fibel-KI samt Einwilligung nach Art. 49 Abs. 1 lit. a DSGVO und
-die Spielwiese. Dafür gibt es hier keinen Baustein — `drittland` und
-`einwilligungWiderruf` kommen dem nahe, meinen aber einen Auftragsverarbeiter.
+Anders als bei HTML wird dabei **jeder** Treffer ersetzt, nicht nur der erste:
+Ein Fibel-Programm trägt das ganze Angebot in einer Datei, und die Anschrift
+steht darin zweimal — beim Anbieter und beim Medienverantwortlichen nach § 18
+Abs. 2 MStV. Das Ziel steht als Dateiliste in `anschriftIn`, weil der Sync sonst
+nach `.html` sucht und eine `.fibel` nie fände. `fibel.uber.space` benutzt das
+nicht mehr, seit der ganze Text von hier kommt.
 
 Welcher JSON-LD-Knoten `sameAs` bekommt, sagt `sameAsId` (Default
 `#organization`). Geschrieben wird nur die Liste selbst — die Formatierung des

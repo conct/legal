@@ -5,25 +5,30 @@ export interface TextOptions {
   urlsAusschreiben?: boolean;
 }
 
-function inline(n: Inline, opts: TextOptions): string {
+function inline(n: Inline, opts: TextOptions, markdown = false): string {
   switch (n.t) {
     case 'text':
       return n.v;
     case 'br':
-      return '\n';
+      /* In Markdown ist ein einfacher Umbruch keiner — die Zeilen fließen zum
+         Absatz zusammen. Zwei Leerzeichen davor machen daraus den harten
+         Umbruch. Ohne sie stand eine Anschrift als eine Zeile auf der Seite:
+         "Daniel von Lühmann Hauptstraße 154 01833 Dürrröhrsdorf-Dittersbach".
+         Im reinen Text (Mails) bleibt es beim schlichten Umbruch. */
+      return markdown ? '  \n' : '\n';
     case 'link':
       if (opts.urlsAusschreiben === false) return n.v;
       return n.v === n.href ? n.v : `${n.v} (${n.href})`;
   }
 }
 
-function block(b: Block, opts: TextOptions): string {
+function block(b: Block, opts: TextOptions, markdown = false): string {
   switch (b.t) {
     case 'p':
-      return b.v.map((n) => inline(n, opts)).join('');
+      return b.v.map((n) => inline(n, opts, markdown)).join('');
     case 'ul':
       return b.items
-        .map((i) => `- ${i.map((n) => inline(n, opts)).join('')}`)
+        .map((i) => `- ${i.map((n) => inline(n, opts, markdown)).join('')}`)
         .join('\n');
   }
 }
@@ -35,7 +40,7 @@ export function toMarkdown(doc: LegalDoc, opts: TextOptions = {}): string {
   doc.sections.forEach((s, i) => {
     const nr = doc.numbered ? `${i + 1}. ` : '';
     out.push('', `## ${nr}${s.title}`, '');
-    out.push(s.blocks.map((b) => block(b, opts)).join('\n\n'));
+    out.push(s.blocks.map((b) => block(b, opts, true)).join('\n\n'));
   });
 
   return out.join('\n') + '\n';
