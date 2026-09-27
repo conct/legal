@@ -4,7 +4,7 @@
  *
  * Eine Seite kann dabei auch nur einen Teil beziehen: Wer kein `dateien`
  * einträgt, behält seine Rechtstexte selbst und bekommt nur, was er sonst
- * angibt (heute: feif.space, dort nur `sameAs`).
+ * angibt (heute: feif.space, dort die Profile sichtbar und als `sameAs`).
  *
  * Ersetzt ausschließlich:
  *   - den Inhalt von <section class="legal">…</section> (mit oder ohne
@@ -13,6 +13,8 @@
  *     bzw. <!--legal:postanschrift--> fuer die Anschrift ohne Telefon
  *     und E-Mail (fuer Seiten, die beides ohnehin einzeln nennen),
  *     wo immer er steht — in der Regel in der Fußzeile jeder Seite
+ *   - den Text zwischen <!--legal:profile--> und <!--/legal:profile-->: die
+ *     hinterlegten Profile als sichtbare Links, dieselbe Liste wie in sameAs
  *   - die Liste `sameAs` in dem JSON-LD-Knoten, den die Seite dafuer benennt
  *     (Default #organization, je Seite ueber sameAsId anders; siehe
  *     sameAsPatchen)
@@ -62,6 +64,12 @@ const STATIC_SITES = {
     // #betrieb — der beschreibt hier dieselbe Einzelunternehmung, aber ein
     // Xing-Profil ist kein Betriebsprofil.
     sameAsId: '#person',
+    // Dieselbe Liste noch einmal, diesmal sichtbar: eine Zeile "Profile" im
+    // Kontaktblock. `sameAs` steht in einem script-Block und wird von keinem
+    // Browser dargestellt — wer die Profile auf der Seite sehen will, braucht
+    // Anker im Inhalt. Beides aus derselben Quelle, sonst pflegt man zwei
+    // Wahrheiten.
+    profileIn: ['index.html'],
   },
   'conct.de': {
     // Je Art mehrere Dateien: Die englischen Seiten tragen dieselben
@@ -136,6 +144,14 @@ const anschriftMarke =
 // Kontaktseite stand sonst alles doppelt.
 const postMarke =
   /(<!--\s*legal:postanschrift\s*-->)([\s\S]*?)(<!--\s*\/legal:postanschrift\s*-->)/;
+
+// Dritte Marke: die Profile als sichtbare Links. `sameAs` in der Auszeichnung
+// ist maschinenlesbar und steht in einem script-Block - ein Browser stellt
+// davon nichts dar. Wer die Profile auf der Seite sehen will, braucht Anker im
+// Inhalt, und die kommen aus derselben Liste. Sonst pflegt man zwei Wahrheiten:
+// eine fuer Suchmaschinen, eine fuer Menschen.
+const profilMarke =
+  /(<!--\s*legal:profile\s*-->)([\s\S]*?)(<!--\s*\/legal:profile\s*-->)/;
 
 /**
  * Eine ganze Datei schreiben, statt einen Abschnitt darin zu ersetzen.
@@ -248,6 +264,53 @@ function anschriftFragment(siteKey) {
     : '';
   const mail = `<br><a href="mailto:${a.email}">${escapeHtml(a.email)}</a>`;
   return html + tel + mail;
+}
+
+/**
+ * Wie ein Profil heisst, an seiner Adresse abgelesen.
+ *
+ * Nur die Dienste, die tatsaechlich vorkommen — ein Verzeichnis aller Netzwerke
+ * der Welt waere Pflege ohne Nutzen. Was nicht drinsteht, bekommt seinen
+ * Hostnamen als Namen; das ist nie falsch, nur schmucklos, und faellt beim
+ * Ansehen sofort auf.
+ */
+const PROFIL_NAMEN = [
+  [/(^|\.)xing\.com$/, 'Xing'],
+  [/(^|\.)github\.com$/, 'GitHub'],
+  [/(^|\.)gitlab\.com$/, 'GitLab'],
+  [/(^|\.)linkedin\.com$/, 'LinkedIn'],
+];
+
+function profilName(adresse) {
+  let host;
+  try {
+    host = new URL(adresse).hostname.replace(/^www\./, '');
+  } catch {
+    return adresse;
+  }
+  for (const [muster, name] of PROFIL_NAMEN) if (muster.test(host)) return name;
+  return host;
+}
+
+/**
+ * Die Profile als sichtbare Links, durch einen Mittelpunkt getrennt.
+ *
+ * `rel="me"` sagt dasselbe wie `sameAs` in der Auszeichnung, nur im Inhalt:
+ * Das hier bin ich. `noopener` gehoert zu `target="_blank"`.
+ *
+ * Ohne Profile wird `null` zurueckgegeben, und der Bereich bleibt, wie er ist.
+ * Die Marke leerzuraeumen hiesse, eine beschriftete Zeile ohne Inhalt stehen
+ * zu lassen — was dann dort steht, entscheidet die Seite, nicht der Sync.
+ */
+function profilFragment(siteKey) {
+  const profile = anbieterFuer(siteKey).profile ?? [];
+  if (profile.length === 0) return null;
+  return profile
+    .map(
+      (p) =>
+        `<a href="${escapeHtml(p)}" target="_blank" rel="me noopener">${escapeHtml(profilName(p))}</a>`,
+    )
+    .join(' · ');
 }
 
 const escapeHtml = (s) =>
@@ -755,6 +818,30 @@ if (cfg.anschriftIn) {
         : `${name}: keine Marke gefunden — dieser Bereich wird nicht gepflegt.`,
     );
   }
+}
+
+/* Die sichtbare Entsprechung zu sameAs: dieselbe Liste, aber als Anker im
+   Inhalt. Eigener Schalter, weil eine Seite das eine ohne das andere wollen
+   kann — conct.de fuehrt die Profile heute nur maschinenlesbar. */
+if (cfg.profileIn) {
+  const pfade = Array.isArray(cfg.profileIn)
+    ? cfg.profileIn.map((datei) => join(checkout, datei))
+    : htmlDateien(join(checkout, cfg.profileIn));
+  const zaehler = { erneuert: 0, aktuell: 0, ausgelassen: 0, 'ohne-marke': 0 };
+  for (const pfad of pfade) {
+    const stand = markePatchen(pfad, profilMarke, () => profilFragment(siteKey));
+    zaehler[stand]++;
+    if (stand === 'erneuert') geaendert++;
+  }
+  const teile = [];
+  if (zaehler.erneuert) teile.push(`${zaehler.erneuert} erneuert`);
+  if (zaehler.aktuell) teile.push(`${zaehler.aktuell} schon aktuell`);
+  if (zaehler.ausgelassen) teile.push(`${zaehler.ausgelassen} ohne Profile übersprungen`);
+  console.log(
+    teile.length > 0
+      ? `Profile (sichtbar): ${teile.join(', ')}.`
+      : 'Profile (sichtbar): keine Marke gefunden — dieser Bereich wird nicht gepflegt.',
+  );
 }
 
 if (cfg.sameAsIn) {
