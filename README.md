@@ -197,6 +197,19 @@ Textrenderer schreibt Verweise für Mails und App-Stores aus, wo kein Klick
 möglich ist. Und `br` wird in Markdown zu zwei Leerzeichen am Zeilenende, dem
 harten Umbruch — ohne ihn stünde die Anschrift als eine einzige Zeile da.
 
+Dieselbe Seite bekommt über `sicherheitIn` eine `security.txt` nach RFC 9116.
+`Contact` kommt aus denselben Stammdaten wie das Impressum: Eine Adresse, die
+dort nicht steht, ist für den Empfänger schwer von einer Fälschung zu
+unterscheiden. Fibel liefert die Datei unter `/.well-known/security.txt` aus,
+wenn sie neben dem Programm liegt.
+
+`Expires` ist dort Pflicht und darf nicht in der Vergangenheit liegen — die Datei
+veraltet also von selbst. Damit nicht jeder Lauf eine Änderung zeigt, die
+niemand gewollt hat, wird sie nur neu geschrieben, wenn sich etwas anderes
+geändert hat oder die Frist in weniger als 30 Tagen abläuft. Dass eine
+abgelaufene dann tatsächlich auffällt, ist die andere Hälfte: `fibel prüfe`
+meldet sie.
+
 Zwei Abschnitte der Erklärung gibt es nur dort: die Beispiel-Anwendungen und die
 Übermittlung an die Fibel-KI. Sie stehen als `ds.freitext` im Preset, wörtlich,
 damit beim Umzug kein Satz verloren geht. `drittland` und `einwilligungWiderruf`

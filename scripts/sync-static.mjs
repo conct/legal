@@ -106,6 +106,10 @@ const STATIC_SITES = {
        Programm. Jetzt kommt der ganze Text von hier, und die Marken sind mit
        den Seiten verschwunden, die sie trugen. Die Fibel-Marken in MARKEN
        bleiben trotzdem — fuer eine Seite, die nur die Stammdaten will. */
+    /* Fibel liefert eine security.txt neben dem Programm unter
+       /.well-known/security.txt aus. Die Kontaktadresse ist dieselbe wie im
+       Impressum — sie kommt aus denselben Stammdaten. */
+    sicherheitIn: 'startseite/security.txt',
   },
 };
 
@@ -327,6 +331,31 @@ const fibelVerantwortlich = (siteKey) => (einzug) => {
   if (a.telefon) zeilen.push(`Telefon: ${a.telefon}`);
   return fibelZeilen(einzug, zeilen);
 };
+
+/**
+ * security.txt nach RFC 9116.
+ *
+ * `Contact` kommt aus denselben Stammdaten wie das Impressum. Eine Adresse, die
+ * dort nicht steht, ist für den Empfänger schwer von einer Fälschung zu
+ * unterscheiden — dasselbe Argument wie bei den Bestellmails von rechnungswerk.
+ *
+ * `Expires` ist Pflicht und darf nicht in der Vergangenheit liegen; ein Jahr ist
+ * die übliche Wahl. Damit veraltet die Datei von selbst. Fibel meldet das beim
+ * Prüfen, und ein neuer Sync setzt die Frist neu.
+ */
+function sicherheitText(siteKey) {
+  const a = anbieterFuer(siteKey);
+  const frist = new Date();
+  frist.setUTCFullYear(frist.getUTCFullYear() + 1);
+  return [
+    '# Sicherheitslücken bitte an die Adresse unten melden.',
+    `Contact: mailto:${a.email}`,
+    `Expires: ${frist.toISOString().replace(/\.\d{3}Z$/, 'Z')}`,
+    'Preferred-Languages: de, en',
+    `Canonical: https://${SITES[siteKey].domain}/.well-known/security.txt`,
+    '',
+  ].join('\n');
+}
 
 /**
  * Welche Marken ein Zielformat kennt.
@@ -750,6 +779,28 @@ if (cfg.sameAsIn) {
       ? `sameAs: ${teile.join(', ')}.`
       : `sameAs: kein ${kennung}-Knoten gefunden — nichts zu pflegen.`,
   );
+}
+
+if (cfg.sicherheitIn) {
+  const pfad = join(checkout, cfg.sicherheitIn);
+  const neu = sicherheitText(siteKey);
+  const alt = existsSync(pfad) ? readFileSync(pfad, 'utf8') : null;
+  /* Die Frist allein ist kein Grund zu schreiben: Sonst zeigte jeder Lauf eine
+     Änderung, die niemand gewollt hat, und ein Pull Request mit Rauschen wird
+     nicht gelesen. Neu geschrieben wird, wenn sich etwas anderes geändert hat —
+     oder wenn die Frist in weniger als 30 Tagen abläuft. */
+  const ohneFrist = (t) => String(t ?? '').replace(/^Expires:.*$/im, '');
+  const alteFrist = new Date((/^Expires:[ \t]*(.+)$/im.exec(alt ?? '') ?? [])[1] ?? '');
+  const laeuftAus =
+    Number.isNaN(alteFrist.getTime()) || alteFrist.getTime() - Date.now() < 30 * 24 * 60 * 60 * 1000;
+  if (alt && ohneFrist(alt) === ohneFrist(neu) && !laeuftAus) {
+    console.log(`security.txt: schon aktuell, Frist bis ${alteFrist.toISOString().slice(0, 10)}.`);
+  } else if (mdSchreiben(pfad, neu)) {
+    console.log(`aktualisiert: ${cfg.sicherheitIn}`);
+    geaendert++;
+  } else {
+    console.log(`unverändert:  ${cfg.sicherheitIn}`);
+  }
 }
 
 console.log(geaendert > 0 ? `${geaendert} Datei(en) geändert.` : 'Nichts zu tun.');
