@@ -267,36 +267,52 @@ function anschriftFragment(siteKey) {
 }
 
 /**
- * Wie ein Profil heisst, an seiner Adresse abgelesen.
+ * Wie ein Profil heisst und womit es gezeichnet wird, an seiner Adresse
+ * abgelesen.
  *
  * Nur die Dienste, die tatsaechlich vorkommen — ein Verzeichnis aller Netzwerke
  * der Welt waere Pflege ohne Nutzen. Was nicht drinsteht, bekommt seinen
- * Hostnamen als Namen; das ist nie falsch, nur schmucklos, und faellt beim
- * Ansehen sofort auf.
+ * Hostnamen als Beschriftung: nie falsch, nur schmucklos, und beim Ansehen
+ * sofort erkennbar.
+ *
+ * Die Pfade stammen aus simple-icons 13.21.0 und stehen unter CC0-1.0. Die
+ * Marken gehoeren ihren Inhabern; sie zeigen hier auf ein eigenes Profil bei
+ * genau diesem Dienst — der Zweck, fuer den es sie gibt.
  */
-const PROFIL_NAMEN = [
-  [/(^|\.)xing\.com$/, 'Xing'],
-  [/(^|\.)github\.com$/, 'GitHub'],
-  [/(^|\.)gitlab\.com$/, 'GitLab'],
-  [/(^|\.)linkedin\.com$/, 'LinkedIn'],
+const PROFILE = [
+  [/(^|\.)xing\.com$/, 'Xing', 'M18.188 0c-.517 0-.741.325-.927.66 0 0-7.455 13.224-7.702 13.657.015.024 4.919 9.023 4.919 9.023.17.308.436.66.967.66h3.454c.211 0 .375-.078.463-.22.089-.151.089-.346-.009-.536l-4.879-8.916c-.004-.006-.004-.016 0-.022L22.139.756c.095-.191.097-.387.006-.535C22.056.078 21.894 0 21.686 0h-3.498zM3.648 4.74c-.211 0-.385.074-.473.216-.09.149-.078.339.02.531l2.34 4.05c.004.01.004.016 0 .021L1.86 16.051c-.099.188-.093.381 0 .529.085.142.239.234.45.234h3.461c.518 0 .766-.348.945-.667l3.734-6.609-2.378-4.155c-.172-.315-.434-.659-.962-.659H3.648v.016z'],
+  [/(^|\.)github\.com$/, 'GitHub', 'M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12'],
+  [/(^|\.)gitlab\.com$/, 'GitLab', 'm23.6004 9.5927-.0337-.0862L20.3.9814a.851.851 0 0 0-.3362-.405.8748.8748 0 0 0-.9997.0539.8748.8748 0 0 0-.29.4399l-2.2055 6.748H7.5375l-2.2057-6.748a.8573.8573 0 0 0-.29-.4412.8748.8748 0 0 0-.9997-.0537.8585.8585 0 0 0-.3362.4049L.4332 9.5015l-.0325.0862a6.0657 6.0657 0 0 0 2.0119 7.0105l.0113.0087.03.0213 4.976 3.7264 2.462 1.8633 1.4995 1.1321a1.0085 1.0085 0 0 0 1.2197 0l1.4995-1.1321 2.4619-1.8633 5.006-3.7489.0125-.01a6.0682 6.0682 0 0 0 2.0094-7.003z'],
+  [/(^|\.)linkedin\.com$/, 'LinkedIn', 'M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z'],
 ];
 
-function profilName(adresse) {
+function profilDienst(adresse) {
   let host;
   try {
     host = new URL(adresse).hostname.replace(/^www\./, '');
   } catch {
-    return adresse;
+    return { name: adresse, pfad: null };
   }
-  for (const [muster, name] of PROFIL_NAMEN) if (muster.test(host)) return name;
-  return host;
+  for (const [muster, name, pfad] of PROFILE) if (muster.test(host)) return { name, pfad };
+  return { name: host, pfad: null };
 }
 
 /**
- * Die Profile als sichtbare Links, durch einen Mittelpunkt getrennt.
+ * Die Profile als sichtbare Links — das Zeichen des Dienstes, wo es eines
+ * gibt, sonst sein Name.
  *
  * `rel="me"` sagt dasselbe wie `sameAs` in der Auszeichnung, nur im Inhalt:
  * Das hier bin ich. `noopener` gehoert zu `target="_blank"`.
+ *
+ * Ein Zeichen traegt keinen Text. Deshalb nennt der Anker den Dienst per
+ * `aria-label` — ohne das liest ein Screenreader die Adresse vor, und im
+ * Fokus steht nichts, was das Ziel benennt. Das Bild selbst ist dann
+ * `aria-hidden`, damit der Name nicht zweimal kommt, und `focusable="false"`,
+ * weil der Internet Explorer SVG sonst in die Tabulatorfolge nimmt.
+ *
+ * `fill="currentColor"`: Das Zeichen nimmt die Farbe des Links an, samt
+ * Hover und dunkler Darstellung. Eine Farbe von hier wuerde in jedem Entwurf
+ * irgendwann falsch liegen.
  *
  * Ohne Profile wird `null` zurueckgegeben, und der Bereich bleibt, wie er ist.
  * Die Marke leerzuraeumen hiesse, eine beschriftete Zeile ohne Inhalt stehen
@@ -306,11 +322,15 @@ function profilFragment(siteKey) {
   const profile = anbieterFuer(siteKey).profile ?? [];
   if (profile.length === 0) return null;
   return profile
-    .map(
-      (p) =>
-        `<a href="${escapeHtml(p)}" target="_blank" rel="me noopener">${escapeHtml(profilName(p))}</a>`,
-    )
-    .join(' · ');
+    .map((p) => {
+      const { name, pfad } = profilDienst(p);
+      const inhalt = pfad
+        ? `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true" focusable="false"><path d="${pfad}"/></svg>`
+        : escapeHtml(name);
+      const beschriftung = pfad ? ` aria-label="${escapeHtml(name)}"` : '';
+      return `<a href="${escapeHtml(p)}" target="_blank" rel="me noopener"${beschriftung}>${inhalt}</a>`;
+    })
+    .join(' ');
 }
 
 const escapeHtml = (s) =>

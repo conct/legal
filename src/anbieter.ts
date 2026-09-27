@@ -125,7 +125,14 @@ export const CONCT: Anbieter = {
   // was `sameAs` leisten soll. Wer eine weitere Domain aufnimmt, prüft das
   // Profil vorher: Eine Schreibweise daneben, und die Verbindung besteht nicht
   // (am selben Tag stand dort zeitweise „cocnt.de“).
-  profile: ['https://www.xing.com/profile/Daniel_vonLuehmann'],
+  //
+  // GitHub kam am 27.09.2026 dazu, und zwar in dieser Reihenfolge: erst der
+  // Rückverweis, dann der Eintrag. Das Feld „Website“ des Profils stand leer
+  // und zeigt seitdem auf https://feif.space — nachgesehen über die API
+  // (`blog`) und an der gerenderten Profilseite. Nur feif.space: conct.de
+  // nennt das Profil nicht, für diese Domain wäre die Zuordnung also
+  // einseitig.
+  profile: ['https://www.xing.com/profile/Daniel_vonLuehmann', 'https://github.com/conct'],
   // Keine Steuernummer: § 5 DDG verlangt sie nicht, und dieses Repo ist
   // öffentlich. Was hier steht, liegt auf GitHub und in jedem Bundle, das das
   // Paket einbindet — unabhängig davon, ob ein Impressum es anzeigt.
