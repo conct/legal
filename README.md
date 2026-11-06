@@ -172,6 +172,20 @@ sein:
 | conct.de | ja, deutsch und englisch | ja | ja, am `#organization`-Knoten |
 | feif.space | **nein**, von Hand gepflegt | — | ja, am `#person`-Knoten |
 | fibel.uber.space | ja, als Markdown neben dem Programm | — | — |
+| klarschiff.feif.space | nur Datenschutz, `feif.space/apps-software/klarschiff/` | — | — |
+| sektorix.feif.space | nur Datenschutz, `feif.space/apps-software/sektorix/` | — | — |
+
+Die beiden App-Einträge zielen auf denselben Checkout wie feif.space, fassen dessen eigene
+Rechtstexte aber nicht an; das Impressum der Domain gilt für die Apps mit. Im Workflow hat
+deshalb jeder Eintrag seinen eigenen Branch (`legal-sync-<site>`).
+
+### Apps aus der Vorlage
+
+Apps aus [conct/skeleton-app](https://github.com/conct/skeleton-app) bringen die Screens
+`/impressum` und `/datenschutz` mit. `npm run legal` erzeugt dort aus dem Preset, das in
+`app.json` unter `expo.extra.legal.site` steht, eine `texte.json` — nur die Abschnitte dieser App.
+Ins Bundle kommen diese Datei und `@conct/legal/react`, nicht `CONCT`. Eine neue App braucht hier
+also nur einen Eintrag in `SITES`, ein Preset und, für die Store-URL, ein Ziel im Sync.
 
 feif.space hat seine Rechtstexte von Hand im Template, und sie sind
 ausführlicher als das, was das Preset heute erzeugt. Deshalb steht dort kein
@@ -283,6 +297,9 @@ entfallen samt Abschnittsnummer — `datenschutzbeauftragter` und
 | `technischeCookies({ zweck })` | wofür die Cookies nötig sind |
 | `nutzerkonto({ daten })` | welche Daten beim Anlegen erhoben werden |
 | `externeLinks` | — (nutzt `site.externeLinks`) |
+| `appUpdates({ plattform, zweck })` | OTA-Updates über Expo, wie jede App aus conct/skeleton-app |
+| `storeKauf({ gegenstand, stores })` | Kauf in der App über Google Play, App Store, Microsoft Store |
+| `freitext({ titel, absaetze })` | wörtlicher Abschnitt für das, was nur eine Seite betrifft |
 | `betroffenenrechte` | — |
 | `aktualitaet` | — |
 

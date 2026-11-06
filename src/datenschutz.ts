@@ -7,6 +7,7 @@ import {
   type Tone,
   aufzaehlung,
   br,
+  link,
   mail,
   p,
   tel,
@@ -353,12 +354,12 @@ export const betroffenenrechte: Modul = (ctx) => ({
   ],
 });
 
-export const aktualitaet: Modul = () => ({
+export const aktualitaet: Modul = (ctx) => ({
   title: 'Aktualität dieser Erklärung',
   blocks: [
     p(
       txt(
-        'Diese Datenschutzerklärung kann bei Bedarf angepasst werden, etwa bei Weiterentwicklung der Website oder ' +
+        `Diese Datenschutzerklärung kann bei Bedarf angepasst werden, etwa bei Weiterentwicklung ${art(ctx).genitiv} oder ` +
           'neuen rechtlichen Vorgaben.',
       ),
     ),
@@ -494,6 +495,95 @@ export const keinDatenschutzbeauftragter: Modul = (ctx) => ({
     ),
   ],
 });
+
+export interface AppUpdatesOptions {
+  /** Plattformen, die Updates laden, z.B. "Android". Default: keine Angabe. */
+  plattform?: string;
+  /** Wofür die Updates gut sind — das berechtigte Interesse. */
+  zweck?: string;
+}
+
+/**
+ * Updates der Oberfläche über Expo (EAS Update), wie sie jede App aus der
+ * Vorlage conct/skeleton-app mitbringt. Der Wortlaut stammt aus der
+ * Sektorix-Erklärung vom 14.10.2026; die Liste der übertragenen Angaben folgt
+ * den Kopfzeilen, die expo-updates beim Abruf sendet.
+ */
+export const appUpdates =
+  (opts: AppUpdatesOptions = {}): Modul =>
+  (ctx) => ({
+    title: 'App-Aktualisierungen',
+    blocks: [
+      p(
+        txt(
+          `${opts.plattform ? `Die ${opts.plattform}-App` : 'Die App'} prüft beim Start, ob es eine neue Version der ` +
+            'Oberfläche gibt, und lädt sie gegebenenfalls herunter. Diese Updates liefert der Dienst Expo ' +
+            '(650 Industries, Inc., USA) aus. Dabei werden technisch notwendige Angaben übertragen: ' +
+            v(ctx, 'die IP-Adresse Ihres Geräts', 'die IP-Adresse deines Geräts') +
+            ', eine zufällige Installationskennung, die die App beim ersten Start erzeugt (sie enthält keine ' +
+            'Geräte- oder Personendaten und wird mit der App gelöscht), die Plattform, die installierte ' +
+            'App-Version und der Update-Kanal. Inhalte aus der App werden dabei nicht gesendet.',
+        ),
+      ),
+      p(
+        txt(
+          'Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO; das berechtigte Interesse liegt darin, ' +
+            (opts.zweck ?? 'Fehler schnell beheben zu können') +
+            '. Die Übermittlung in die USA stützt sich auf die Standardvertragsklauseln der EU-Kommission. ' +
+            'Mehr dazu: ',
+        ),
+        link('Datenschutzhinweise von Expo', 'https://expo.dev/privacy', true),
+        txt('.'),
+      ),
+    ],
+  });
+
+export interface StoreKaufOptions {
+  /** Was gekauft wird, z.B. "die Vollversion". */
+  gegenstand: string;
+  /** Die Stores in der Reihenfolge, in der sie genannt werden. */
+  stores: ('google' | 'apple' | 'microsoft')[];
+}
+
+const STORES = {
+  google: { name: 'Google Play', firma: 'Google', datenschutz: 'https://policies.google.com/privacy' },
+  apple: { name: 'den App Store', firma: 'Apple', datenschutz: 'https://www.apple.com/de/legal/privacy/' },
+  microsoft: {
+    name: 'den Microsoft Store',
+    firma: 'Microsoft',
+    datenschutz: 'https://privacy.microsoft.com/de-de/privacystatement',
+  },
+} as const;
+
+/** Kauf in der App über den Store — die Zahlung wickelt allein der Store ab. */
+export const storeKauf =
+  ({ gegenstand, stores }: StoreKaufOptions): Modul =>
+  (ctx) => {
+    const liste = stores.map((s) => STORES[s]);
+    const oder = (namen: string[]) =>
+      namen.length > 1 ? `${namen.slice(0, -1).join(', ')} bzw. ${namen[namen.length - 1]}` : namen[0];
+    const verweise: Inline[] = [];
+    liste.forEach((s, i) => {
+      if (i > 0) verweise.push(txt(i === liste.length - 1 ? ' bzw. ' : ', '));
+      verweise.push(link(s.firma, s.datenschutz, true));
+    });
+    return {
+      title: 'Käufe in der App',
+      blocks: [
+        p(
+          txt(
+            `${gegenstand.charAt(0).toUpperCase()}${gegenstand.slice(1)} ` +
+              v(ctx, 'kaufen Sie', 'kaufst du') +
+              ` über ${oder(liste.map((s) => s.name))}. Den Bezahlvorgang wickelt allein der jeweilige Store ab; ` +
+              'wir erhalten dabei keine Zahlungsdaten. Die App fragt beim Store nur ab, ob der Kauf vorliegt. ' +
+              'Es gelten die Datenschutzhinweise von ',
+          ),
+          ...verweise,
+          txt('.'),
+        ),
+      ],
+    };
+  };
 
 export interface FreitextOptions {
   titel: string;

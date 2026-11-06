@@ -109,6 +109,97 @@ export const PRESETS: Record<SiteKey, Preset> = {
     module: ds.STANDARD_MODULE,
   },
 
+  // Android-, Windows- und Linux-App. Abschnittsweise aus der von Hand
+  // geschriebenen Seite feif.space/apps-software/sektorix/datenschutz.html
+  // (Stand 14.10.2026) uebernommen; Updates und Kauf sind jetzt Bausteine,
+  // weil sie in jeder App aus der Vorlage bzw. mit Kauf wiederkehren.
+  'sektorix.feif.space': {
+    tone: 'persoenlich',
+    geprueft: false,
+    module: [
+      ds.verantwortlicher,
+      ds.keinDatenschutzbeauftragter,
+      ds.freitext({
+        titel: 'Daten auf deinen Laufwerken',
+        absaetze: [
+          'Sektorix liest angeschlossene Laufwerke, um ihren Zustand zu prüfen und Dateien wiederzufinden. Diese Daten — SMART-Werte, Partitionen, Dateinamen, gerettete Dateien und Images — werden ausschließlich auf deinem Gerät verarbeitet und nur dort gespeichert, wo du es auswählst. Nichts davon wird an uns oder Dritte übertragen. Den Diagnosebericht kopiert die App nur auf deinen Wunsch in die Zwischenablage.',
+        ],
+      }),
+      ds.freitext({
+        titel: 'Auf dem Gerät gespeicherte Einstellungen',
+        absaetze: [
+          'Die App merkt sich lokal, ob die Vollversion freigeschaltet ist, damit sie auch ohne Internetverbindung startet. Diese Angabe verlässt das Gerät nicht und wird mit der App gelöscht.',
+        ],
+      }),
+      ds.storeKauf({ gegenstand: 'die Vollversion', stores: ['google', 'microsoft'] }),
+      ds.appUpdates({ plattform: 'Android' }),
+      ds.freitext({
+        titel: 'Berechtigungen',
+        absaetze: [
+          'USB-Zugriff (Android): zum Lesen und – nur nach Bestätigung – Beschreiben des angeschlossenen Laufwerks. Android fragt dafür bei jedem Laufwerk nach.',
+          'Internet: nur für App-Aktualisierungen und die Kaufprüfung im Store.',
+          'Administratorrechte (Windows): Windows erlaubt den direkten Laufwerkszugriff nur mit Administratorrechten.',
+        ],
+      }),
+      ds.freitext({
+        titel: 'Kontaktaufnahme',
+        absaetze: [
+          'Nutzt du in der App die Links zu Kontakt oder Datenrettung, öffnet sich die Website bzw. dein E-Mail-Programm. Dafür gilt die Datenschutzerklärung der Website feif.space.',
+        ],
+      }),
+      ds.drittland,
+      ds.einwilligungWiderruf,
+      ds.betroffenenrechte,
+      ds.aktualitaet,
+    ],
+  },
+
+  // Android-App, Paket space.feif.klarschiff. Am Quelltext der App vom
+  // 06.11.2026 entlang geschrieben: Ausgewertet wird auf dem Geraet, nach
+  // draussen gehen nur die Hashes beim freiwilligen Abgleich. Die
+  // Plus-Variante (APK ausserhalb von Play) sieht dieselbe Erklaerung; ihre
+  // Zusaetze (Bedienungshilfe, alle Dateien, lokales VPN) bleiben ebenfalls
+  // auf dem Geraet und stehen im ersten Freitext.
+  'klarschiff.feif.space': {
+    tone: 'persoenlich',
+    // Bleibt false, bis die Logfiles auf leda nachgemessen sind: Die
+    // Angaben in hostingMit sind von conct.de uebernommen.
+    geprueft: false,
+    module: [
+      ds.verantwortlicher,
+      ds.keinDatenschutzbeauftragter,
+      ds.freitext({
+        titel: 'Auswertung auf deinem Gerät',
+        absaetze: [
+          'Klarschiff hilft beim Aufräumen und prüft dein Gerät und deine Apps auf Sicherheitsrisiken. Dafür liest die App die Liste der installierten Apps mit ihren Berechtigungen und ihrer Herkunft sowie Geräteeinstellungen wie Bildschirmsperre, Stand der Sicherheitsupdates und USB-Debugging.',
+          'Schaltest du in den Android-Einstellungen den Nutzungsdatenzugriff für Klarschiff ein, liest die App außerdem den Speicherplatz pro App, wann du eine App zuletzt benutzt hast und wie viele Daten jede App gesendet und empfangen hat. Ordner für die Suche nach großen und doppelten Dateien gibst du einzeln frei.',
+          'In der Variante Klarschiff Plus kommen auf deinen Wunsch hinzu: die Bedienungshilfe zum automatischen Leeren des Caches, der Zugriff auf alle Dateien und ein lokales VPN, das aufzeichnet, welche App welche Server anfragt. Das VPN leitet nur Namensabfragen über das Gerät weiter, nicht über unsere Server.',
+          'All das wird ausschließlich auf deinem Gerät ausgewertet und nicht an uns oder Dritte übertragen. Es gibt kein Nutzerkonto, keine Werbung und keine Analyse- oder Tracking-Dienste.',
+        ],
+      }),
+      ds.freitext({
+        titel: 'Abgleich mit bekannter Schadsoftware',
+        absaetze: [
+          'Nur wenn du zustimmst und den Abgleich startest, berechnet Klarschiff für jede installierte App einen Fingerabdruck (SHA-256-Hash der Installationsdatei) und schickt diese Fingerabdrücke verschlüsselt an unseren Server. Der Server vergleicht sie mit einer Liste bekannter Schad-Apps, die aus MalwareBazaar (abuse.ch) stammt, und schickt nur die Treffer zurück. App-Namen, Dateien oder Gerätekennungen werden nicht übertragen.',
+          'Die Fingerabdrücke werden auf dem Server weder gespeichert noch protokolliert.',
+          'Rechtsgrundlage ist deine Einwilligung (Art. 6 Abs. 1 lit. a DSGVO). Ohne sie findet kein Abgleich statt; alle übrigen Funktionen bleiben nutzbar.',
+        ],
+      }),
+      ds.hostingMit({ logsTage: 7, adresseGekuerzt: true }),
+      ds.freitext({
+        titel: 'Speicher auf dem Gerät',
+        absaetze: [
+          'Klarschiff speichert auf deinem Gerät nur deine Zustimmung zum Abgleich, den zuletzt gewählten Ordner und in Klarschiff Plus die Liste der Verbindungsziele der letzten 30 Tage. Das alles löschst du über „App-Daten löschen“ in den Android-Einstellungen oder indem du die App deinstallierst.',
+          'Für diesen Speicher ist keine Einwilligung erforderlich, weil er für die von dir gewünschten Funktionen unbedingt nötig ist (§ 25 Abs. 2 Nr. 2 TDDDG).',
+        ],
+      }),
+      ds.drittland,
+      ds.einwilligungWiderruf,
+      ds.betroffenenrechte,
+      ds.aktualitaet,
+    ],
+  },
+
   // Nutzt dieses Preset nicht: Die Rechtstexte der Fibel-Startseite bleiben in
   // deren Repo. Von hier kommen nur die Stammdaten (anbieterFuer) — wie bei
   // rechnungswerk. Neu ist allein das Ziel: ein Fibel-Programm statt einer

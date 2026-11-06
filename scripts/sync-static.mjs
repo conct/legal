@@ -119,6 +119,25 @@ const STATIC_SITES = {
        Impressum — sie kommt aus denselben Stammdaten. */
     sicherheitIn: 'startseite/security.txt',
   },
+  'sektorix.feif.space': {
+    // Wie klarschiff.feif.space: nur die Datenschutzerklaerung der App, das
+    // Impressum der Domain gilt mit.
+    dateien: {
+      datenschutz: ['apps-software/sektorix/datenschutz.html'],
+    },
+    eigeneUeberschrift: true,
+  },
+  'klarschiff.feif.space': {
+    /* Kein eigener Webauftritt: Die Datenschutzerklaerung der Android-App liegt
+       wie die von Sektorix unter feif.space/apps-software/, das Impressum der
+       Domain gilt mit. Deshalb nur `datenschutz` — und der Checkout ist
+       derselbe wie beim Eintrag feif.space, dessen eigene Rechtstexte dieser
+       Eintrag nicht anfasst. Den Titel bringt die Seite selbst mit. */
+    dateien: {
+      datenschutz: ['apps-software/klarschiff/datenschutz.html'],
+    },
+    eigeneUeberschrift: true,
+  },
 };
 
 /**

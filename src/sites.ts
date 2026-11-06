@@ -109,6 +109,28 @@ export const SITES = {
     name: 'Pip-Boy',
     hoster: 'Uberspace Entwicklungen GbR',
   },
+  // Schluessel nach der Paket-ID space.feif.sektorix. Die Erklaerung liegt
+  // unter feif.space/apps-software/sektorix/, wie bei Klarschiff.
+  'sektorix.feif.space': {
+    domain: 'feif.space',
+    name: 'Sektorix',
+    art: 'app',
+    // Kein `hoster`: Sektorix hat keinen eigenen Server. Die Updates liefert
+    // Expo aus, die Kaeufe wickeln die Stores ab.
+    drittdienste: [
+      { name: 'Expo (650 Industries, Inc.)', zweck: 'App-Aktualisierungen', ort: 'USA' },
+    ],
+  },
+  // Schluessel nach der Paket-ID space.feif.klarschiff. Eine eigene Domain gibt
+  // es nicht: Die Erklaerung liegt unter feif.space/apps-software/klarschiff/.
+  'klarschiff.feif.space': {
+    domain: 'feif.space',
+    name: 'Klarschiff',
+    art: 'app',
+    // Der einzige Server ist die Bedrohungsdatenbank auf leda
+    // (feif.space/klarschiff-api). Die App selbst laeuft auf dem Geraet.
+    hoster: 'Uberspace Entwicklungen GbR',
+  },
   'fibel.uber.space': {
     domain: 'fibel.uber.space',
     name: 'Fibel',

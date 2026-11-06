@@ -28,6 +28,13 @@ jobs:
             repo: conct/feif.space
           - site: conct.de
             repo: conct/conct.de
+          # Weitere Ziele im selben Repo: die Datenschutzerklaerungen der Apps
+          # unter apps-software/. Eigener Branch je Eintrag (siehe unten),
+          # sonst ueberschrieben sich die PRs gegenseitig.
+          - site: klarschiff.feif.space
+            repo: conct/feif.space
+          - site: sektorix.feif.space
+            repo: conct/feif.space
     steps:
       - name: legal auschecken
         uses: actions/checkout@v4
@@ -58,7 +65,7 @@ jobs:
         with:
           path: site
           token: ${{ secrets.SYNC_TOKEN }}
-          branch: legal-sync
+          branch: legal-sync-${{ matrix.site }}
           commit-message: 'Rechtstexte aus @conct/legal aktualisieren'
           title: 'Rechtstexte aktualisieren (@conct/legal ${{ github.event.release.tag_name || github.sha }})'
           body: |
