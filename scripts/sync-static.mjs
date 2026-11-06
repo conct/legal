@@ -137,6 +137,15 @@ const STATIC_SITES = {
     },
     eigeneUeberschrift: true,
   },
+  'farbecho.conct.de': {
+    /* Kein eigener Webauftritt: Die Datenschutzerklaerung der App liegt unter
+       conct.de/apps/farbecho/, das Impressum von conct.de gilt mit. Der
+       Checkout ist derselbe wie beim Eintrag conct.de. */
+    dateien: {
+      datenschutz: ['website/apps/farbecho/datenschutz/index.html'],
+    },
+    eigeneUeberschrift: true,
+  },
   'klarschiff.feif.space': {
     /* Kein eigener Webauftritt: Die Datenschutzerklaerung der Android-App liegt
        wie die von Sektorix unter feif.space/apps-software/, das Impressum der

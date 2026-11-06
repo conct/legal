@@ -228,6 +228,24 @@ export const SITES = {
       { name: 'Expo (650 Industries, Inc.)', zweck: 'App-Aktualisierungen', ort: 'USA' },
     ],
   },
+  // Schluessel nach der Paket-ID de.conct.farbecho. Eine eigene Domain gibt es
+  // nicht: Die Erklaerung liegt unter conct.de/apps/farbecho/datenschutz/.
+  'farbecho.conct.de': {
+    domain: 'conct.de',
+    name: 'Farbecho',
+    art: 'app',
+    // Kein `hoster`: Farbecho hat keinen eigenen Server. Einzige Verbindung
+    // nach draussen ist die Update-Pruefung bei Expo.
+    drittdienste: [
+      { name: 'Expo (650 Industries, Inc.)', zweck: 'App-Aktualisierungen', ort: 'USA' },
+    ],
+    anbieter: {
+      // Wie conct.de: Die Seite liegt unter conct.de, also nennt sie auch
+      // die conct.de-Adresse.
+      email: 'mail@conct.de',
+      land: 'Deutschland',
+    },
+  },
   // Schluessel nach der Paket-ID space.feif.klarschiff. Eine eigene Domain gibt
   // es nicht: Die Erklaerung liegt unter feif.space/apps-software/klarschiff/.
   'klarschiff.feif.space': {

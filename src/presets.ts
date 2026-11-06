@@ -132,6 +132,48 @@ export const PRESETS: Record<SiteKey, Preset> = {
     ],
   },
 
+  // Merkspiel fuer Android und iOS, Paket de.conct.farbecho, aus der Vorlage
+  // conct/skeleton-app. Am Quelltext der App vom 06.11.2026 entlang
+  // geschrieben: kein Konto, keine Werbung, keine Analyse; gespeichert wird
+  // nur auf dem Geraet. Nach draussen geht allein die Update-Pruefung.
+  'farbecho.conct.de': {
+    tone: 'persoenlich',
+    geprueft: false,
+    module: [
+      ds.verantwortlicher,
+      ds.keinDatenschutzbeauftragter,
+      ds.freitext({
+        titel: 'Kurz gesagt',
+        absaetze: [
+          'Farbecho ist ein Merkspiel. Es gibt kein Nutzerkonto, keine Werbung und keine Analyse-, Tracking- oder Absturzmelde-Dienste. Das Spiel funktioniert vollständig ohne Internet; die einzige Verbindung nach draußen ist die Suche nach Updates, die unten beschrieben ist.',
+        ],
+      }),
+      ds.freitext({
+        titel: 'Speicher auf dem Gerät',
+        absaetze: [
+          'Farbecho speichert auf deinem Gerät nur, was das Spiel braucht: den zuletzt gewählten Schwierigkeitsgrad, deinen Rekord pro Schwierigkeitsgrad und ob Ton und Vibration an oder aus sind. Diese Angaben verlassen dein Gerät nicht. Du löschst sie über „App-Daten löschen“ in den Einstellungen deines Geräts oder indem du die App deinstallierst.',
+          'Für diesen Speicher ist keine Einwilligung erforderlich, weil er für die von dir gewünschten Funktionen unbedingt nötig ist (§ 25 Abs. 2 Nr. 2 TDDDG).',
+        ],
+      }),
+      ds.freitext({
+        titel: 'Töne und Vibration',
+        absaetze: [
+          'Farbecho spielt Töne ab und lässt das Gerät vibrieren. Dafür braucht die App keine Berechtigung, die du freigeben müsstest; auf Mikrofon, Kamera, Standort oder Kontakte greift sie nicht zu.',
+        ],
+      }),
+      ds.appUpdates({ zweck: 'Fehler schnell beheben zu können' }),
+      ds.freitext({
+        titel: 'Kinder',
+        absaetze: [
+          'Farbecho eignet sich auch für Kinder. Weil die App selbst keine personenbezogenen Daten erhebt, gilt das auch für Kinder.',
+        ],
+      }),
+      ds.drittland,
+      ds.betroffenenrechte,
+      ds.aktualitaet,
+    ],
+  },
+
   // Android-App, Paket space.feif.klarschiff. Am Quelltext der App vom
   // 06.11.2026 entlang geschrieben: Ausgewertet wird auf dem Geraet, nach
   // draussen gehen nur die Hashes beim freiwilligen Abgleich. Die

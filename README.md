@@ -180,12 +180,13 @@ sein:
 | conct.de | ja, deutsch und englisch | ja | ja, am `#organization`-Knoten |
 | feif.space | ja (seit 06.11.2026) | — | ja, am `#person`-Knoten |
 | fibel.uber.space | ja, als Markdown neben dem Programm | — | — |
+| farbecho.conct.de | nur Datenschutz, `conct.de/apps/farbecho/` | — | — |
 | klarschiff.feif.space | nur Datenschutz, `feif.space/apps-software/klarschiff/` | — | — |
 | sektorix.feif.space | nur Datenschutz, `feif.space/apps-software/sektorix/` | — | — |
 | lesestunde.conct.de | ja, als Markdown in `rechtliches/` (Repo conct/lesestunde) | — | — |
 
-Die beiden App-Einträge zielen auf denselben Checkout wie feif.space, fassen dessen eigene
-Rechtstexte aber nicht an; das Impressum der Domain gilt für die Apps mit.
+Die App-Einträge zielen auf denselben Checkout wie ihre Domain (feif.space bzw. conct.de),
+fassen deren eigene Rechtstexte aber nicht an; das Impressum der Domain gilt für die Apps mit.
 
 ### Apps aus der Vorlage
 
