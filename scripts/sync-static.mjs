@@ -4,7 +4,7 @@
  *
  * Eine Seite kann dabei auch nur einen Teil beziehen: Wer kein `dateien`
  * einträgt, behält seine Rechtstexte selbst und bekommt nur, was er sonst
- * angibt (heute: feif.space, dort die Profile sichtbar und als `sameAs`).
+ * angibt.
  *
  * Ersetzt ausschließlich:
  *   - den Inhalt von <section class="legal">…</section> (mit oder ohne
@@ -122,7 +122,7 @@ const STATIC_SITES = {
        https-URLs selbst Verweise — deshalb dieselbe Ausgabe ohne ausgeschriebene
        URLs. Der Pi installiert ohne devDependencies und ohne Install-Skripte,
        das Paket darf dort also nie gebraucht werden: Die Dateien kommen fertig
-       per Pull Request. */
+       ins Repo. */
     format: 'fibel',
     dateien: {
       impressum: ['rechtliches/impressum.md'],

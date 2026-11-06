@@ -159,9 +159,17 @@ const native: Adapters = {
 
 ### Statische Seiten ohne Build (conct.de, feif.space, fibel.uber.space, pip-boy/docs/landing)
 
-Diese Seiten konsumieren das Paket nicht direkt. Stattdessen rendert der
-Workflow [`sync-static.yml`](.github/workflows/sync-static.yml) bei jedem
-Release die HTML-Dateien neu und öffnet einen Pull Request im Ziel-Repo.
+Diese Seiten konsumieren das Paket nicht direkt. Stattdessen schreibt
+[`scripts/sync-static.mjs`](scripts/sync-static.mjs) die Rechtstexte in einen
+lokalen Checkout der Seite; danach wird dort committet und ausgeliefert:
+
+```bash
+node scripts/sync-static.mjs ../../feif.space feif.space
+```
+
+Einen GitHub-Workflow, der das bei jedem Release erledigt und Pull Requests
+öffnet, gab es bis zum 06.11.2026. Er ist entfernt: Ausliefern muss man ohnehin
+von Hand, und er brauchte ein Token mit Schreibrecht auf alle Ziel-Repos.
 
 Was eine Seite bezieht, steht in `STATIC_SITES` in
 [`scripts/sync-static.mjs`](scripts/sync-static.mjs) — und es muss nicht alles
@@ -177,8 +185,7 @@ sein:
 | lesestunde.conct.de | ja, als Markdown in `rechtliches/` (Repo conct/lesestunde) | — | — |
 
 Die beiden App-Einträge zielen auf denselben Checkout wie feif.space, fassen dessen eigene
-Rechtstexte aber nicht an; das Impressum der Domain gilt für die Apps mit. Im Workflow hat
-deshalb jeder Eintrag seinen eigenen Branch (`legal-sync-<site>`).
+Rechtstexte aber nicht an; das Impressum der Domain gilt für die Apps mit.
 
 ### Apps aus der Vorlage
 
@@ -444,8 +451,9 @@ Eine App kann auch ohne Registry-Eintrag ein eigenes `Site`-Objekt übergeben.
 npm version minor && git push --follow-tags
 ```
 
-Konsumenten ziehen per Renovate/Dependabot nach; die statischen Seiten bekommen
-automatisch einen PR.
+Danach in jedem Konsumenten die Version in `package.json` anheben und
+`npm install` bzw. `npm run legal`, für die statischen Seiten den Sync laufen
+lassen (siehe oben), committen und ausliefern.
 
 ## Kein Rechtsrat
 
