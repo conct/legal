@@ -180,7 +180,7 @@ sein:
 | conct.de | ja, deutsch und englisch | ja | ja, am `#organization`-Knoten |
 | feif.space | ja (seit 06.11.2026) | — | ja, am `#person`-Knoten |
 | fibel.uber.space | ja, als Markdown neben dem Programm | — | — |
-| farbecho.conct.de | nur Datenschutz, `conct.de/apps/farbecho/` | — | — |
+| farbecho.feif.space | nur Datenschutz, `feif.space/apps-software/farbecho/` | — | — |
 | klarschiff.feif.space | nur Datenschutz, `feif.space/apps-software/klarschiff/` | — | — |
 | sektorix.feif.space | nur Datenschutz, `feif.space/apps-software/sektorix/` | — | — |
 | lesestunde.conct.de | ja, als Markdown in `rechtliches/` (Repo conct/lesestunde) | — | — |

@@ -137,12 +137,11 @@ const STATIC_SITES = {
     },
     eigeneUeberschrift: true,
   },
-  'farbecho.conct.de': {
-    /* Kein eigener Webauftritt: Die Datenschutzerklaerung der App liegt unter
-       conct.de/apps/farbecho/, das Impressum von conct.de gilt mit. Der
-       Checkout ist derselbe wie beim Eintrag conct.de. */
+  'farbecho.feif.space': {
+    // Wie klarschiff.feif.space: nur die Datenschutzerklaerung der App, das
+    // Impressum der Domain gilt mit.
     dateien: {
-      datenschutz: ['website/apps/farbecho/datenschutz/index.html'],
+      datenschutz: ['apps-software/farbecho/datenschutz.html'],
     },
     eigeneUeberschrift: true,
   },

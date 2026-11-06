@@ -132,11 +132,11 @@ export const PRESETS: Record<SiteKey, Preset> = {
     ],
   },
 
-  // Merkspiel fuer Android und iOS, Paket de.conct.farbecho, aus der Vorlage
+  // Merkspiel fuer Android und iOS, Paket space.feif.farbecho, aus der Vorlage
   // conct/skeleton-app. Am Quelltext der App vom 06.11.2026 entlang
   // geschrieben: kein Konto, keine Werbung, keine Analyse; gespeichert wird
   // nur auf dem Geraet. Nach draussen geht allein die Update-Pruefung.
-  'farbecho.conct.de': {
+  'farbecho.feif.space': {
     tone: 'persoenlich',
     geprueft: false,
     module: [
