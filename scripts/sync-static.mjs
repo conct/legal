@@ -39,19 +39,15 @@ import { toMarkdown } from '../dist/render/text.js';
  */
 const STATIC_SITES = {
   'feif.space': {
-    // Kein `dateien`, und das ist eine Entscheidung, kein Versehen: Impressum
-    // und Datenschutz stehen dort von Hand im Template und sind ausfuehrlicher
-    // als das, was das Preset hier erzeugt — im Impressum ein Absatz zu
-    // Urheberrecht und einer, der Pip-Boy als Fanprojekt einordnet; im
-    // Datenschutz sechs Abschnitte mehr (Datenschutzbeauftragter, Anfragen per
-    // E-Mail und Telefon, Schriftarten, Verschluesselung, Drittlaender,
-    // Widerruf), dazu die Du-Form. Ein Sync wuerde den laengeren Text durch den
-    // kuerzeren ersetzen. Wer das aendern will, gleicht erst das Preset in
-    // src/presets.ts an den Live-Text an und traegt `dateien` danach wieder
-    // ein — nicht umgekehrt.
-    //
-    // Der Preis steht dabei: Eine Adressaenderung hier erreicht feif.space
-    // nicht. Sie ist dort von Hand nachzuziehen.
+    // Seit dem 06.11.2026 auch die Rechtstexte: Das Preset ist abschnittsweise
+    // an den von Hand gepflegten Text angeglichen worden (src/seiten/feifspace.ts),
+    // danach erst kam dieser Eintrag. Die Seiten bringen h1, Einleitung und
+    // Stand-Zeile selbst mit.
+    dateien: {
+      impressum: ['impressum.html'],
+      datenschutz: ['datenschutz.html'],
+    },
+    eigeneUeberschrift: true,
     //
     // Nur die Startseite traegt eine Auszeichnung — deshalb hier eine Liste
     // von Dateien statt einer Wurzel. Ein Ordner waere hier die Wurzel des
@@ -118,6 +114,20 @@ const STATIC_SITES = {
        /.well-known/security.txt aus. Die Kontaktadresse ist dieselbe wie im
        Impressum — sie kommt aus denselben Stammdaten. */
     sicherheitIn: 'startseite/security.txt',
+  },
+  'lesestunde.conct.de': {
+    /* Wie fibel.uber.space: Markdown neben dem Programm statt eines HTML-
+       Abschnitts. scripts/rechtliches.mjs in Lesestunde uebersetzt das kleine
+       Repertoire (Ueberschriften, Absaetze, Listen) und macht aus Adressen und
+       https-URLs selbst Verweise — deshalb dieselbe Ausgabe ohne ausgeschriebene
+       URLs. Der Pi installiert ohne devDependencies und ohne Install-Skripte,
+       das Paket darf dort also nie gebraucht werden: Die Dateien kommen fertig
+       per Pull Request. */
+    format: 'fibel',
+    dateien: {
+      impressum: ['rechtliches/impressum.md'],
+      datenschutz: ['rechtliches/datenschutz.md'],
+    },
   },
   'sektorix.feif.space': {
     // Wie klarschiff.feif.space: nur die Datenschutzerklaerung der App, das

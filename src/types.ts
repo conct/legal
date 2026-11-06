@@ -13,6 +13,11 @@ export type Block =
 export interface Section {
   title: string;
   blocks: Block[];
+  /**
+   * Sprunganker der Überschrift, z.B. "kontaktformular" für /datenschutz#kontaktformular.
+   * Nur der HTML-Renderer gibt ihn aus.
+   */
+  id?: string;
 }
 
 /** Ein vollständiges Rechtsdokument. */

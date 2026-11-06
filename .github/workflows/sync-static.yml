@@ -35,6 +35,8 @@ jobs:
             repo: conct/feif.space
           - site: sektorix.feif.space
             repo: conct/feif.space
+          - site: lesestunde.conct.de
+            repo: conct/lesestunde
     steps:
       - name: legal auschecken
         uses: actions/checkout@v4

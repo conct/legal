@@ -56,7 +56,8 @@ export function toHtml(doc: LegalDoc, opts: HtmlOptions = {}): string {
   doc.sections.forEach((s, i) => {
     const nr = doc.numbered ? `${i + 1}. ` : '';
     out.push('');
-    out.push(`<h${hLevel}>${nr}${escape(s.title)}</h${hLevel}>`);
+    const id = s.id ? ` id="${escape(s.id)}"` : '';
+    out.push(`<h${hLevel}${id}>${nr}${escape(s.title)}</h${hLevel}>`);
     for (const b of s.blocks) out.push(block(b, ''));
   });
 

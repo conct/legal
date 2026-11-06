@@ -1,6 +1,6 @@
 import { type Anbieter, anschrift, kontakt } from './anbieter.js';
 import type { Site } from './sites.js';
-import { type LegalDoc, type Section, aufzaehlung, link, lines, p, txt } from './types.js';
+import { type Block, type LegalDoc, type Section, aufzaehlung, link, lines, p, txt } from './types.js';
 
 export interface ImpressumOptions {
   /**
@@ -8,11 +8,23 @@ export interface ImpressumOptions {
    * z.B. berufsrechtliche Angaben oder eine Aufsichtsbehörde.
    */
   zusatz?: Section[];
+  /** Zusätzliche Abschnitte ganz am Ende, nach „Haftung für Links“. */
+  ende?: Section[];
   /**
    * Bereit zur Teilnahme an einem Verbraucherschlichtungsverfahren?
    * Default: false.
    */
   schlichtungsbereit?: boolean;
+  /**
+   * Eigener Wortlaut für die drei Standardabschnitte am Ende, wo eine Seite
+   * bewusst anders formuliert (z.B. „ich“ statt „wir“). Titel und Reihenfolge
+   * bleiben; nur die Absätze werden ersetzt.
+   */
+  wortlaut?: {
+    streitbeilegung?: Block[];
+    haftungInhalte?: Block[];
+    haftungLinks?: Block[];
+  };
 }
 
 /**
@@ -126,7 +138,7 @@ export function impressum(
   // ein stehengebliebener Verweis ist abmahnfähig.
   sections.push({
     title: 'Verbraucherstreitbeilegung',
-    blocks: [
+    blocks: opts.wortlaut?.streitbeilegung ?? [
       p(
         txt(
           opts.schlichtungsbereit
@@ -139,7 +151,7 @@ export function impressum(
 
   sections.push({
     title: 'Haftung für Inhalte',
-    blocks: [
+    blocks: opts.wortlaut?.haftungInhalte ?? [
       p(
         txt(
           'Als Diensteanbieter sind wir gemäß § 7 Abs. 1 DDG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. ' +
@@ -155,7 +167,7 @@ export function impressum(
     : '';
   sections.push({
     title: 'Haftung für Links',
-    blocks: [
+    blocks: opts.wortlaut?.haftungLinks ?? [
       p(
         txt(
           `Unser Angebot enthält Links zu externen Webseiten Dritter${links}, auf deren Inhalte wir keinen Einfluss haben. ` +
@@ -165,6 +177,8 @@ export function impressum(
       ),
     ],
   });
+
+  if (opts.ende) sections.push(...opts.ende);
 
   return { title: 'Impressum', numbered: false, sections };
 }

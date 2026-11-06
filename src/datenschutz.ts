@@ -1,6 +1,7 @@
 import { type Anbieter, anschriftMitKontakt } from './anbieter.js';
 import type { Angebotsart, Site } from './sites.js';
 import {
+  type Block,
   type Inline,
   type LegalDoc,
   type Section,
@@ -587,8 +588,13 @@ export const storeKauf =
 
 export interface FreitextOptions {
   titel: string;
-  /** Die Absätze, wörtlich. Ein Eintrag je Absatz. */
-  absaetze: string[];
+  /**
+   * Die Absätze, wörtlich. Ein Eintrag je Absatz; ein Array von Strings wird
+   * zur Liste, ein fertiger Block (p, ul mit Links) bleibt, wie er ist.
+   */
+  absaetze: (string | string[] | Block)[];
+  /** Sprunganker der Überschrift, siehe Section.id. */
+  id?: string;
 }
 
 /**
@@ -609,10 +615,13 @@ export interface FreitextOptions {
  * jemand geschrieben hat. Die Verantwortung dafür bleibt bei der Seite.
  */
 export const freitext =
-  ({ titel, absaetze }: FreitextOptions): Modul =>
+  ({ titel, absaetze, id }: FreitextOptions): Modul =>
   () => ({
     title: titel,
-    blocks: absaetze.map((absatz) => p(txt(absatz))),
+    ...(id ? { id } : {}),
+    blocks: absaetze.map((absatz) =>
+      typeof absatz === 'string' ? p(txt(absatz)) : Array.isArray(absatz) ? ul(...absatz) : absatz,
+    ),
   });
 
 export const STANDARD_MODULE: Modul[] = [

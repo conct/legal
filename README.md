@@ -42,7 +42,7 @@ Domain — jede Domain trägt ihr eigenes.
 ## Installation
 
 ```bash
-npm i git+https://github.com/conct/legal.git#v1.3.0
+npm i git+https://github.com/conct/legal.git#v1.6.0
 ```
 
 > `github:conct/legal#v1.2.0` funktioniert genauso — npm schreibt es beim
@@ -170,10 +170,11 @@ sein:
 | Seite | Rechtstexte | Anschrift in der Fußzeile | `sameAs` |
 |---|---|---|---|
 | conct.de | ja, deutsch und englisch | ja | ja, am `#organization`-Knoten |
-| feif.space | **nein**, von Hand gepflegt | — | ja, am `#person`-Knoten |
+| feif.space | ja (seit 06.11.2026) | — | ja, am `#person`-Knoten |
 | fibel.uber.space | ja, als Markdown neben dem Programm | — | — |
 | klarschiff.feif.space | nur Datenschutz, `feif.space/apps-software/klarschiff/` | — | — |
 | sektorix.feif.space | nur Datenschutz, `feif.space/apps-software/sektorix/` | — | — |
+| lesestunde.conct.de | ja, als Markdown in `rechtliches/` (Repo conct/lesestunde) | — | — |
 
 Die beiden App-Einträge zielen auf denselben Checkout wie feif.space, fassen dessen eigene
 Rechtstexte aber nicht an; das Impressum der Domain gilt für die Apps mit. Im Workflow hat
@@ -187,12 +188,11 @@ Apps aus [conct/skeleton-app](https://github.com/conct/skeleton-app) bringen die
 Ins Bundle kommen diese Datei und `@conct/legal/react`, nicht `CONCT`. Eine neue App braucht hier
 also nur einen Eintrag in `SITES`, ein Preset und, für die Store-URL, ein Ziel im Sync.
 
-feif.space hat seine Rechtstexte von Hand im Template, und sie sind
-ausführlicher als das, was das Preset heute erzeugt. Deshalb steht dort kein
-`dateien`-Eintrag. Der Preis dafür ist ausdrücklich: **eine Adressänderung hier
-erreicht feif.space nicht** und ist dort nachzuziehen. Wer das umdrehen will,
-gleicht erst `PRESETS['feif.space']` an den Live-Text an und trägt `dateien`
-danach ein.
+feif.space hatte seine Rechtstexte bis zum 06.11.2026 von Hand im Template.
+Seitdem ist `PRESETS['feif.space']` abschnittsweise an den Live-Text angeglichen
+([src/seiten/feifspace.ts](src/seiten/feifspace.ts)) und der Sync versorgt
+`impressum.html` und `datenschutz.html` mit; Urheberrecht und der Hinweis zum
+Fanprojekt stehen über `impressum.ende` wie bisher am Schluss.
 
 `fibel.uber.space` ist das erste Ziel, das **kein HTML** ist: Die Startseite von
 Fibel ist selbst ein Fibel-Programm. Dort wird deshalb kein Abschnitt in einer
@@ -299,7 +299,7 @@ entfallen samt Abschnittsnummer — `datenschutzbeauftragter` und
 | `externeLinks` | — (nutzt `site.externeLinks`) |
 | `appUpdates({ plattform, zweck })` | OTA-Updates über Expo, wie jede App aus conct/skeleton-app |
 | `storeKauf({ gegenstand, stores })` | Kauf in der App über Google Play, App Store, Microsoft Store |
-| `freitext({ titel, absaetze })` | wörtlicher Abschnitt für das, was nur eine Seite betrifft |
+| `freitext({ titel, absaetze, id })` | wörtlicher Abschnitt für das, was nur eine Seite betrifft. Ein Absatz ist ein String, ein `string[]` wird zur Liste, ein fertiger Block (`p(txt(…), link(…))`) bleibt. `id` wird im HTML zum Sprunganker (`<h2 id>`) |
 | `betroffenenrechte` | — |
 | `aktualitaet` | — |
 
@@ -323,6 +323,17 @@ datenschutzFuer('choozy.io', CONCT, { tone: 'formell' });  // punktuell abweiche
 
 Die Presets liegen bewusst nicht in `sites.ts`: die Registry darf die
 Bausteine nicht importieren, sonst entsteht ein Import-Zyklus.
+
+Lange Presets, die fast nur aus `freitext` bestehen, weil sie den gewachsenen
+Text einer Seite abschnittsweise übernehmen, liegen je Projekt unter
+[`src/seiten/`](src/seiten) (rechnungswerk, velvet, lesestunde, trader) und
+werden in `PRESETS` eingesetzt. Der Eintrag in `SITES` bleibt in `sites.ts`.
+
+Ein Preset kann auch Zusätze zum Impressum mitbringen (`impressum: { zusatz,
+wortlaut }`), etwa die DSA-Kontaktstelle bei Lesestunde. `impressumFuer` und
+der Sync nehmen sie als Standard. `wortlaut` ersetzt die Absätze der drei
+Standardabschnitte am Ende (Streitbeilegung, Haftung für Inhalte, Haftung für
+Links), wo eine Seite bewusst anders formuliert.
 
 ### Die `geprueft`-Flagge
 
@@ -421,7 +432,7 @@ den Abschnitt „Verbraucherstreitbeilegung" ohne Link. Seiten, die noch einen
 'webtik.example': {
   domain: 'webtik.example',
   name: 'Webtik',
-  hoster: 'Uberspace Entwicklungen GbR',
+  hoster: 'Uberspace (Jonas Pasche, Kaiserstraße 15, 55116 Mainz)',
 },
 ```
 

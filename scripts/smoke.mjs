@@ -66,7 +66,7 @@ const app = {
   domain: 'velvet-network.app',
   name: 'VELVET',
   art: 'app',
-  hoster: 'Uberspace Entwicklungen GbR',
+  hoster: 'Uberspace (Jonas Pasche, Kaiserstraße 15, 55116 Mainz)',
   drittdienste: [
     { name: 'Expo', zweck: 'Auslieferung von App-Updates', ort: 'USA' },
     { name: 'Sentry', zweck: 'Fehlerdiagnose', ort: 'Deutschland' },

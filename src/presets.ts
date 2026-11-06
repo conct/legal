@@ -4,6 +4,11 @@ import { type DatenschutzOptions, type Modul, datenschutz } from './datenschutz.
 import { type ImpressumOptions, impressum } from './impressum.js';
 import { SITES, type Site, type SiteKey } from './sites.js';
 import type { LegalDoc, Tone } from './types.js';
+import { PRESETS_FEIFSPACE } from './seiten/feifspace.js';
+import { PRESETS_LESESTUNDE } from './seiten/lesestunde.js';
+import { PRESETS_RECHNUNGSWERK } from './seiten/rechnungswerk.js';
+import { PRESETS_TRADER } from './seiten/trader.js';
+import { PRESETS_VELVET } from './seiten/velvet.js';
 
 /**
  * Welche Datenschutz-Bausteine eine Seite braucht, an einer Stelle statt in
@@ -22,39 +27,20 @@ export interface Preset {
    * dazu da, dass ungeprüfte Seiten sichtbar bleiben statt still zu wirken.
    */
   geprueft: boolean;
+  /**
+   * Zusätze zum Impressum (z.B. DSA-Kontaktstelle). `impressumFuer` und der
+   * Sync nehmen sie als Standard; ein Aufruf mit eigenen Optionen ersetzt sie.
+   */
+  impressum?: ImpressumOptions;
 }
 
 export const PRESETS: Record<SiteKey, Preset> = {
-  // Nicht gegen die Live-Seite abgeglichen — der Vermerk „rendert wortgleich"
-  // stand hier, traf aber nie zu und ist am 26.09.2026 nachgemessen worden:
-  // feif.space führt 13 Abschnitte in der Du-Form, dieses Preset erzeugt 7 in
-  // der Sie-Form, und im Impressum fehlen hier Urheberrecht und der Hinweis
-  // zum Fanprojekt. Aufgefallen ist es nie, weil der Sync die Rechtstexte dort
-  // gar nicht anfasst (siehe scripts/sync-static.mjs, Eintrag feif.space).
-  //
-  // Damit ist dieses Preset heute ein Entwurf wie die übrigen: Wer feif.space
-  // an die zentrale Quelle hängen will, gleicht es erst an den Live-Text an.
-  'feif.space': {
-    tone: 'formell',
-    geprueft: false,
-    module: [
-      ds.verantwortlicher,
-      ds.hosting,
-      ds.kontaktformular(),
-      ds.keineCookies,
-      ds.externeLinks,
-      ds.betroffenenrechte,
-      ds.aktualitaet,
-    ],
-  },
+  // feif.space: abschnittsweise aus impressum.html und datenschutz.html
+  // (06.11.2026), siehe src/seiten/feifspace.ts.
+  ...PRESETS_FEIFSPACE,
 
   // Ab hier: Baukasten-Vermutungen. Vor dem Livegang prüfen.
   'choozy.io': {
-    tone: 'persoenlich',
-    geprueft: false,
-    module: ds.STANDARD_MODULE,
-  },
-  'velvet-network.app': {
     tone: 'persoenlich',
     geprueft: false,
     module: ds.STANDARD_MODULE,
@@ -95,14 +81,6 @@ export const PRESETS: Record<SiteKey, Preset> = {
     ],
   },
 
-  // Nutzt dieses Preset nicht: der Datenschutztext von rechnungswerk ist am
-  // Quelltext belegt und bleibt im Repo. Von hier kommen nur die Stammdaten
-  // (anbieterFuer). Steht hier für den Fall, dass sich das ändert.
-  'rechnungswerk.conct.de': {
-    tone: 'formell',
-    geprueft: false,
-    module: ds.STANDARD_MODULE,
-  },
   'pip-boy.feif.space': {
     tone: 'persoenlich',
     geprueft: false,
@@ -275,6 +253,13 @@ export const PRESETS: Record<SiteKey, Preset> = {
       ds.aktualitaet,
     ],
   },
+
+  // Abschnittsweise aus den von Hand geschriebenen Texten der Projekte
+  // uebernommen (06.11.2026), je Projekt eine Datei unter src/seiten/.
+  ...PRESETS_RECHNUNGSWERK,
+  ...PRESETS_VELVET,
+  ...PRESETS_LESESTUNDE,
+  ...PRESETS_TRADER,
 };
 
 /** Alle Seiten, deren Preset noch nicht geprüft wurde. */
@@ -303,7 +288,7 @@ export function anbieterFuer(key: SiteKey, basis: Anbieter = CONCT): Anbieter {
 export function impressumFuer(
   key: SiteKey,
   anbieter: Anbieter = anbieterFuer(key),
-  opts?: ImpressumOptions,
+  opts: ImpressumOptions | undefined = PRESETS[key].impressum,
 ): LegalDoc {
   return impressum(anbieter, siteOf(key), opts);
 }
