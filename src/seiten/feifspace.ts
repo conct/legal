@@ -203,6 +203,7 @@ export const PRESETS_FEIFSPACE: Record<'feif.space', Preset> = {
             'angeforderte Adresse, Statuscode und Größe der Antwort',
             'zuvor besuchte Seite (Referrer), sofern übermittelt',
             'Browser und Betriebssystem (User-Agent)',
+            'die übrigen Kopfzeilen, die dein Browser bei jeder Anfrage mitschickt — darunter die bevorzugte Sprache und nähere Angaben zu Browser und Geräteart',
           ],
           'Die IP-Adresse wird dabei bereits vom Anbieter gekürzt, sodass sie sich keiner Person mehr zuordnen lässt. Die Protokolldateien werden täglich gewechselt und nach sieben Tagen gelöscht. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO; das berechtigte Interesse liegt im technischen Betrieb und in der Abwehr von Angriffen.',
         ],
@@ -214,7 +215,7 @@ export const PRESETS_FEIFSPACE: Record<'feif.space', Preset> = {
         titel: 'Kontaktformular',
         absaetze: [
           'Das Formular am Ende der Startseite fragt Name, E-Mail-Adresse und Nachricht ab. Zusätzlich werden zwei technische Angaben mitgeschickt: der Zeitpunkt, an dem die Seite geladen wurde, und ein für Menschen unsichtbares Feld. Beides dient allein der Spam-Erkennung und wird nicht gespeichert.',
-          'Die Eingaben werden von meinem Server über eine verschlüsselte SMTP-Verbindung an mein Postfach geschickt. Dort bleiben sie so lange, wie es für die Bearbeitung deiner Anfrage nötig ist; anschließend lösche ich sie, sofern keine gesetzlichen Aufbewahrungspflichten entgegenstehen. Beim Versand wird die IP-Adresse der Absendung in die Nachricht aufgenommen, damit Missbrauch nachvollziehbar bleibt. Zur Begrenzung von Spam wird die Anzahl der Absendungen je IP-Adresse für zehn Minuten im Arbeitsspeicher mitgezählt; danach verfällt der Zähler.',
+          'Die Eingaben werden von meinem Server über eine verschlüsselte SMTP-Verbindung an mein Postfach geschickt. Dort bleiben sie so lange, wie es für die Bearbeitung deiner Anfrage nötig ist; anschließend lösche ich sie, sofern keine gesetzlichen Aufbewahrungspflichten entgegenstehen. Beim Versand wird die IP-Adresse der Absendung in die Nachricht aufgenommen, damit Missbrauch nachvollziehbar bleibt. Zur Begrenzung von Spam wird die Anzahl der Absendungen je IP-Adresse im Arbeitsspeicher mitgezählt — in einem Fenster von zehn Minuten und zusätzlich über den Tag; danach verfallen die Zähler. Gespeichert wird dabei nichts auf der Festplatte. Weist der Dienst eine Absendung ab — etwa weil sie als Spam erkannt wurde —, vermerkt er das zusammen mit der IP-Adresse in seinem Betriebsprotokoll auf dem Server; dieses Protokoll wird nach sieben Tagen gelöscht.',
           'Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO, wenn es um die Anbahnung eines Vertrags geht, sonst Art. 6 Abs. 1 lit. f DSGVO — mein berechtigtes Interesse an der Beantwortung von Anfragen. Die Angabe der Daten ist freiwillig; ohne Name, Adresse und Nachricht kann ich die Anfrage nicht beantworten. Du kannst mir stattdessen jederzeit direkt eine E-Mail schreiben oder anrufen.',
         ],
       }),
