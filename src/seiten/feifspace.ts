@@ -140,10 +140,19 @@ export const PRESETS_FEIFSPACE: Record<'feif.space', Preset> = {
   // Abschnitten in der Sie-Form (siehe README, „Die geprueft-Flagge“).
   'feif.space': {
     tone: 'persoenlich',
-    // Bleibt false: Der Text ist wörtlich übernommen, rendert aber nicht
-    // wortgleich — Verantwortlicher kommt aus dem Baustein (Reihenfolge
-    // E-Mail/Telefon, Telefonschreibweise, Links),
-    // Adressblöcke werden <p> statt <address>.
+    // Die ursprüngliche Begründung ist überholt: Hier stand, der Text rendere
+    // nicht wortgleich — andere Reihenfolge von E-Mail und Telefon, andere
+    // Telefonschreibweise, <p> statt <address>. Das traf zu, solange die Seite
+    // ihren handgeschriebenen Stand trug. Seit dem Sync trägt sie den erzeugten,
+    // und ein Lauf gegen den Checkout lässt beide Dateien byte-unverändert
+    // (nachgemessen am 12.11.2026).
+    //
+    // Trotzdem weiter false, aber aus dem Grund, den die Flagge meint: Ob die
+    // Bausteine die tatsächliche Datenverarbeitung abbilden, hat für feif.space
+    // niemand geprüft. Der Text wurde von der Seite übernommen, und die war
+    // nach eigener Auskunft nie anwaltlich geprüft. Wer die Flagge setzt,
+    // prüft vorher die Angaben zu Protokollfrist, Hoster und Drittländern am
+    // Server nach — so wie es für conct.de gemacht wurde.
     geprueft: false,
     impressum: impressumFeifspace,
     module: [
