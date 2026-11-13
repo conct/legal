@@ -256,7 +256,13 @@ export const SITES = {
     // Kein `hoster`: Farbecho hat keinen eigenen Server. Einzige Verbindung
     // nach draussen ist die Update-Pruefung bei Expo.
     drittdienste: [
-      { name: 'Expo (650 Industries, Inc.)', zweck: 'App-Aktualisierungen', ort: 'USA' },
+      {
+        name: 'Expo (650 Industries, Inc.)',
+        // Benachrichtigungen erst, wenn der Nutzer sie einschaltet; dann holt
+        // die App dort ein Push-Token. Siehe den Absatz im Preset.
+        zweck: 'App-Aktualisierungen und, nach Einschalten, Benachrichtigungen',
+        ort: 'USA',
+      },
     ],
   },
   // Schluessel nach der Paket-ID space.feif.klarschiff. Eine eigene Domain gibt

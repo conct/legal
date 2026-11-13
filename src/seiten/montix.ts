@@ -98,10 +98,18 @@ export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
       // Standardvertragsklauseln selbst. Dieselbe Lage wie bei Farbecho.
       ds.appUpdates({ zweck: 'Fehler schnell beheben zu können' }),
 
+      // Korrigiert am 13.11.2026: Der erste Entwurf behauptete, es werde keine
+      // Geraetekennung abgerufen. Das stimmte nicht. registerForPush() haengt
+      // in src/app/settings.tsx an der Zeile "Benachrichtigungen erlauben" und
+      // holt getExpoPushTokenAsync({ projectId }) - also sehr wohl eine
+      // Kennung, und zwar ueber Expo. Ein Rechtstext, der eine Erhebung
+      // verschweigt, ist schlimmer als gar keiner.
       ds.freitext({
         titel: 'Benachrichtigungen',
         absaetze: [
-          'Die App ist technisch darauf vorbereitet, Benachrichtigungen anzuzeigen, verschickt derzeit aber keine. Solange das so ist, wird auch keine Gerätekennung dafür abgerufen oder übertragen. Kommen Benachrichtigungen hinzu, steht es vorher an dieser Stelle.',
+          'Benachrichtigungen sind freiwillig und zunächst aus. Erst wenn Sie sie unter „Einstellungen“ einschalten, fragt die App die Erlaubnis Ihres Geräts ab und holt anschließend über den Dienst Expo (650 Industries, Inc., USA) eine Kennung, mit der sich genau dieses Gerät ansprechen lässt. Rechtsgrundlage ist Ihre Einwilligung nach Art. 6 Abs. 1 lit. a DSGVO; Sie widerrufen sie, indem Sie Benachrichtigungen in den Systemeinstellungen Ihres Geräts wieder abschalten.',
+          'Diese Kennung wird auf Ihrem Gerät gespeichert und derzeit an keinen Server übertragen. Versendet werden bislang auch keine Benachrichtigungen — die Funktion ist vorbereitet, aber nicht in Gebrauch. Ändert sich das, steht es vorher an dieser Stelle.',
+          'Schalten Sie Benachrichtigungen nicht ein, geschieht nichts davon: keine Abfrage, keine Kennung, keine Verbindung zu Expo.',
         ],
       }),
 
