@@ -145,6 +145,16 @@ const STATIC_SITES = {
     },
     eigeneUeberschrift: true,
   },
+  'montix.feif.space': {
+    /* Wie Sektorix und Klarschiff: Die App hat keinen eigenen Webauftritt,
+       ihre Datenschutzerklaerung liegt unter feif.space/apps-software/, und
+       das Impressum der Domain gilt mit. Google Play verlangt genau diese
+       Adresse, bevor die App eingereicht werden kann. */
+    dateien: {
+      datenschutz: ['apps-software/montix/datenschutz.html'],
+    },
+    eigeneUeberschrift: true,
+  },
   'klarschiff.feif.space': {
     /* Kein eigener Webauftritt: Die Datenschutzerklaerung der Android-App liegt
        wie die von Sektorix unter feif.space/apps-software/, das Impressum der
