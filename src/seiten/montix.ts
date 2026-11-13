@@ -8,12 +8,13 @@ import type { Preset } from '../presets.js';
  *
  * Quelle ist nicht ein vorhandener Rechtstext — es gibt keinen. Jeder Absatz
  * unten ist am Code nachgesehen (Repo conct/Kilpro, Stand 13.11.2026,
- * f4050e4):
+ * 8bb9457):
  *
  *   app.json            plugins, android.permissions, updates.url
  *   src/features/…      license, payment, push, signature, home, customers
  *   src/plan/use-plan   AsyncStorage-Schlüssel des Planeditors
- *   src/features/pdf    Berichts-PDF, Ablage im App-Ordner
+ *   src/features/pdf    Berichts- und Beleg-PDF, Ablage im App-Ordner
+ *   src/features/belege Angebot, Lieferschein, Rechnung als E-Rechnung
  *   src/features/company Firmendaten (Absender, Bank, Steuernummer)
  *   src/features/reports/fotos.native.ts  Fotos als Dateien, Kamerarecht
  *
@@ -45,7 +46,8 @@ export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
         titel: 'Was auf dem Gerät gespeichert wird',
         absaetze: [
           'Pläne mit allen Elementen, ein als Vorlage hinterlegtes Foto oder Planbild, die selbst angelegte Symbolbibliothek, Unterschriften samt Name, Zweck und Zeitpunkt, Kundendaten, Artikel, Termine, Arbeitsberichte, die Zusammenstellung Ihrer Startseite, die Kalibrierung der Wasserwaage, die gewählten Firmenfarben, Ihr Firmenlogo sowie Hell- oder Dunkeldarstellung.',
-          'Dazu die Daten Ihres Betriebs, die als Absender auf den Bericht kommen: Firmenname, Anschrift, Inhaber, Telefon, E-Mail, Internetseite, Bankverbindung und Steuernummer oder Umsatzsteuer-Identifikationsnummer.',
+          'Dazu Ihre Belege — Angebote, Lieferscheine und Rechnungen — samt der Nummernstände, die die App je Belegart und Jahr auf dem Gerät weiterzählt.',
+          'Dazu die Daten Ihres Betriebs, die als Absender auf Bericht und Beleg kommen: Firmenname, Anschrift, Inhaber, Telefon, E-Mail, Internetseite, Bankverbindung und Steuernummer oder Umsatzsteuer-Identifikationsnummer.',
           'Fotos zu den Arbeitsberichten und die erzeugten PDF-Dateien liegen als Dateien in einem eigenen Ordner der App, nicht in der Bilderrolle Ihres Geräts. Andere Apps kommen dort nicht heran, solange Sie die Dateien nicht selbst weitergeben.',
           'Dazu kommen der Tag des ersten Starts — daran bemisst sich der kostenlose Probemonat — und, falls vorhanden, Ihr Lizenzschlüssel.',
           'Diese Angaben verlassen das Gerät nicht. Sie entfernen sie über „App-Daten löschen“ in den Einstellungen Ihres Geräts oder indem Sie die App deinstallieren.',
@@ -71,10 +73,11 @@ export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
       }),
 
       ds.freitext({
-        titel: 'Der Arbeitsbericht als PDF',
+        titel: 'Arbeitsberichte und Belege als PDF',
         absaetze: [
-          'Das PDF entsteht vollständig auf Ihrem Gerät; dafür wird keine Verbindung aufgebaut und nichts an uns oder an Dritte übertragen. Die fertige Datei legt die App in ihrem eigenen Ordner ab und öffnet die Vorschau Ihres Betriebssystems.',
-          'Ab da entscheiden Sie: Was Sie von dort aus drucken, per E-Mail versenden, in eine Cloud legen oder in eine andere App geben, richtet sich nach deren Bedingungen und liegt in Ihrer Verantwortung als Betrieb. Beachten Sie dabei, dass ein solcher Bericht Anschrift, Unterschrift und Fotos Ihres Kunden enthält.',
+          'Arbeitsberichte, Angebote, Lieferscheine und Rechnungen entstehen vollständig auf Ihrem Gerät; dafür wird keine Verbindung aufgebaut und nichts an uns oder an Dritte übertragen. Es gibt keinen Server und keinen Versand durch uns. Die fertigen Dateien legt die App in ihrem eigenen Ordner ab und öffnet die Vorschau Ihres Betriebssystems.',
+          'Ab da entscheiden Sie: Was Sie von dort aus drucken, per E-Mail versenden, in eine Cloud legen oder in eine andere App geben, richtet sich nach deren Bedingungen und liegt in Ihrer Verantwortung als Betrieb. Beachten Sie dabei, dass ein solches Blatt Anschrift und Kundennummer Ihres Kunden enthält, beim Arbeitsbericht auch dessen Unterschrift und Fotos.',
+          'Eine Rechnung erzeugt die App als E-Rechnung im Format ZUGFeRD: Im PDF steckt zusätzlich eine maschinenlesbare Datei (factur-x.xml) mit denselben Angaben — Anschrift, E-Mail und Kundennummer Ihres Kunden sowie Anschrift, Bankverbindung und Steuernummer Ihres Betriebs. Wer das PDF erhält, kann diese Angaben also auch maschinell auslesen; genau dazu ist eine E-Rechnung da.',
         ],
       }),
 
