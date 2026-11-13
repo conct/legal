@@ -231,6 +231,24 @@ export const SITES = {
   // Schluessel nach der Paket-ID space.feif.farbecho. Eine eigene Domain gibt
   // es nicht: Die Erklaerung liegt unter feif.space/apps-software/farbecho/,
   // wie bei Klarschiff und Sektorix.
+  // Schluessel nach der Paket-ID de.conct.montix. Eine eigene Domain gibt es
+  // nicht: Die Erklaerung liegt unter feif.space/apps-software/montix/.
+  'montix.feif.space': {
+    domain: 'feif.space',
+    name: 'Montix',
+    art: 'app',
+    // Kein `hoster`: Montix laeuft auf dem Geraet. Lizenz- und Zahlungsdienst
+    // betreibt der Handwerksbetrieb selbst, nicht wir.
+    //
+    // Stripe steht bewusst NICHT in `drittdienste`: Der Dienst wird ueber das
+    // Stripe-Konto des Betriebs genutzt, Vertragspartner ist der Betrieb. Ein
+    // Eintrag hier speiste `auftragsverarbeitung` und behauptete einen
+    // Art.-28-Vertrag von uns mit Stripe, den es nicht gibt. Dieselbe
+    // Abwaegung wie bei velvet-network.app.
+    drittdienste: [
+      { name: 'Expo (650 Industries, Inc.)', zweck: 'App-Aktualisierungen', ort: 'USA' },
+    ],
+  },
   'farbecho.feif.space': {
     domain: 'feif.space',
     name: 'Farbecho',

@@ -8,6 +8,7 @@ import { PRESETS_FEIFSPACE } from './seiten/feifspace.js';
 import { PRESETS_LESESTUNDE } from './seiten/lesestunde.js';
 import { PRESETS_RECHNUNGSWERK } from './seiten/rechnungswerk.js';
 import { PRESETS_TRADER } from './seiten/trader.js';
+import { PRESETS_MONTIX } from './seiten/montix.js';
 import { PRESETS_VELVET } from './seiten/velvet.js';
 
 /**
@@ -300,6 +301,7 @@ export const PRESETS: Record<SiteKey, Preset> = {
   // uebernommen (06.11.2026), je Projekt eine Datei unter src/seiten/.
   ...PRESETS_RECHNUNGSWERK,
   ...PRESETS_VELVET,
+  ...PRESETS_MONTIX,
   ...PRESETS_LESESTUNDE,
   ...PRESETS_TRADER,
 };
