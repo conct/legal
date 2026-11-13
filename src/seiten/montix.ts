@@ -38,7 +38,7 @@ export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
         titel: 'Kurz gesagt',
         absaetze: [
           'Montix braucht keine Registrierung: kein Kennwort, keine E-Mail-Adresse, kein Profil bei uns. Alles, was Sie in der App anlegen — Pläne, Kunden, Artikel, Termine, Unterschriften —, bleibt auf Ihrem Gerät. Es gibt keine Werbung und keine Analyse-, Tracking- oder Absturzmeldedienste.',
-          'Eine Ausnahme gibt es, und sie ist freiwillig: Wer die Alleinarbeit ohne Betrieb nutzen möchte, lässt dafür ein Konto auf unserem Server anlegen — mit nichts als einem Namen. Was darin steht und wer dafür verantwortlich ist, steht weiter unten unter „Alleinarbeit ohne Betrieb“.',
+          'Eine einzige Funktion kann mehr verlangen, und auch die nur, wenn Sie sie wollen: Wer die Alleinarbeit ohne Betrieb nutzt, lässt dafür ein Konto auf unserem Server anlegen — mit nichts als einem Namen, ohne Kennwort und ohne Anmeldung. Alles andere in Montix funktioniert ohne das; Einzelheiten unter „Alleinarbeit ohne Betrieb“.',
           'Die App ist darauf ausgelegt, vollständig ohne Netz zu arbeiten. Verbindungen nach außen gibt es nur in den unten einzeln beschriebenen Fällen.',
         ],
       }),
