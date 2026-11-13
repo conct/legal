@@ -8,7 +8,7 @@ import type { Preset } from '../presets.js';
  *
  * Quelle ist nicht ein vorhandener Rechtstext — es gibt keinen. Jeder Absatz
  * unten ist am Code nachgesehen (Repo conct/Kilpro, Stand 13.11.2026,
- * b9417d1):
+ * aa8cec7):
  *
  *   app.json            plugins, android.permissions, updates.url
  *   src/features/…      license, payment, push, signature, home, customers
@@ -132,7 +132,7 @@ export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
         titel: 'Nachrichten zwischen Mitarbeitern',
         absaetze: [
           'Nutzt Ihr Betrieb den Abgleich über einen Server, können sich die Mitarbeiter darüber kurze Nachrichten und Sprachnachrichten schicken. Gespeichert werden auf diesem Server Absender, Empfänger — eine Person oder alle —, der Text beziehungsweise die Aufnahme und der Zeitpunkt. Jedes Gerät erhält nur, was an alle, an die jeweilige Person oder von ihr ist.',
-          'Es gibt dafür keinen Push-Dienst und keinen fremden Anbieter; die App fragt den Server ab, solange sie offen ist. Auf dem Gerät bleiben die Nachrichten der letzten 90 Tage.',
+          'Die App fragt den Server ab, solange sie offen ist. Haben Sie Benachrichtigungen eingeschaltet, kommt zu einer neuen Nachricht zusätzlich eine Push-Mitteilung mit Ihrem Namen und bis zu 140 Zeichen des Textes — über Expo und Google, siehe den Abschnitt „Benachrichtigungen“. Auf dem Gerät bleiben die Nachrichten der letzten 90 Tage.',
           'Auf dem Server gilt dieselbe Frist, allerdings mit einer Einschränkung, die Sie kennen sollten: Gelöscht wird beim Abruf, nicht von selbst. Nachrichten, die älter als 90 Tage sind, verschwinden, sobald jemand das nächste Mal Nachrichten abruft. Ruft niemand mehr ab — etwa weil der Betrieb die App nicht mehr benutzt —, bleiben sie liegen, bis wieder abgerufen oder der Betrieb insgesamt gelöscht wird.',
         ],
       }),
@@ -156,8 +156,19 @@ export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
           'Das ist kein Angebot, sondern Arbeitsschutz. Deshalb stützt sich diese Verarbeitung nicht auf eine Einwilligung, sondern darauf, dass Ihr Arbeitgeber für Ihre Sicherheit zu sorgen hat (§ 26 Abs. 1 BDSG in Verbindung mit dem Arbeitsschutzgesetz). Mit dem Schrittzähler hat sie nichts zu tun: Es werden keine Schritte erfasst, keine Bewegungsdaten ausgewertet, und nichts davon erscheint in einer Rangliste.',
           'Auf dem Server Ihres Betriebs steht, solange die Alleinarbeit läuft oder ein Alarm besteht: Ihre Kennung und Ihr Name, wann Sie begonnen haben, wann die Frist abläuft, welches Zeitfenster Sie gewählt haben, der Stand (läuft, Alarm, beendet), bei einem Alarm dessen Anlass — abgelaufene Frist oder Notruf — und dessen Zeitpunkt sowie der Name des Kollegen, der „Ich kümmere mich“ angetippt hat. Diese Angaben sehen alle aktiven Mitarbeiter Ihres Betriebs; anders wäre ein Alarm sinnlos. Beendete Einträge löscht der Server nach sieben Tagen.',
           'Dazu kommt Ihr Standort, aber nur unter drei Bedingungen: wenn Sie den Schalter „Standort im Alarmfall mitschicken“ an lassen — er ist ab Werk an und lässt sich ausschalten —, nur während die App offen ist, und nur beim Beginnen und bei jedem Bestätigen. Gespeichert wird allein der zuletzt bekannte Ort, kein Verlauf und keine Strecke. Er ist dafür da, dass jemand weiß, wo er nachsehen muss.',
-          'Jetzt die Grenze, und sie ist wichtig genug, um vor dem ersten Einsatz gelesen zu werden. In der App selbst gibt es keine Push-Nachricht: Kollegen und Angehörige sehen den Alarm dort nur, wenn sie Montix geöffnet haben oder die App noch läuft. Dafür gibt es den Weg über E-Mail an Notfallkontakte, und der funktioniert auch bei geschlossener App — vorausgesetzt, unser Server läuft, die Zustellung klappt und jemand liest seine Post. Drei Bedingungen, von denen Sie keine erzwingen können.',
+          'Ein Alarm nimmt drei Wege: Kollegen und Angehörige sehen ihn in der App, sie bekommen — wenn Benachrichtigungen eingeschaltet sind — eine Push-Mitteilung, und Notfallkontakte bekommen eine E-Mail. Jeder dieser Wege hat eine Bedingung, die Sie nicht erzwingen können: die App muss offen sein, die Mitteilung muss zugestellt werden, die Post muss gelesen werden. Und alle drei setzen voraus, dass unser Server läuft.',
           'Deshalb bleibt es dabei: Montix ist keine Personen-Notsignal-Anlage im Sinne der einschlägigen Regeln und ersetzt keine. Wenn Ihre Gefährdungsbeurteilung eine solche verlangt, bleibt sie verlangt. Und einen Notruf ersetzt es ohnehin nicht — in Lebensgefahr gilt die 112.',
+        ],
+      }),
+
+      ds.freitext({
+        titel: 'Unterwegs zum Kunden',
+        absaetze: [
+          'Diese Funktion gibt es nur im Betrieb und nur, wenn der Betrieb den Standort bei Terminen eingeschaltet hat. Ist sie an, kann der Monteur am Termin „Losfahren“ antippen. Der Server legt dafür eine Adresse an, die der Monteur dem Kunden selbst schickt — über das Teilen-Menü seines Handys, nicht von uns aus.',
+          'Was Ihr Kunde auf dieser Seite sieht, ist bewusst wenig: den Vornamen des Monteurs, den Namen Ihres Betriebs, bei wem der Termin ist, und eine gerundete Entfernung — „gleich da“, „weniger als 1 km“, „etwa 4 km“. Keine Karte, keine Koordinaten, keine Adresse. Dazu, wann zuletzt aktualisiert wurde, und der Hinweis, dass es sich um Luftlinie handelt. Die Seite ist von Suchmaschinen ausgenommen.',
+          'Die App meldet die Position etwa jede Minute, solange sie offen ist; gespeichert wird nur die letzte, kein Verlauf. Eine Ortung im Hintergrund gibt es nicht — schließt der Monteur die App, bleibt die Seite beim letzten Stand stehen und sagt das auch. Mit „Angekommen“ endet die Fahrt, der Ort wird gelöscht, und vierundzwanzig Stunden später ist die Adresse nicht mehr erreichbar.',
+          'Die Entfernung kann die App nur nennen, wenn sie den Ort des Kunden schon kennt — gelernt beim ersten Ankommen dort. Sonst steht auf der Seite nur „Auf dem Weg“.',
+          'Im Betrieb sehen die Kollegen im Kalender dasselbe: wer gerade unterwegs ist, zu wem, und wie weit es ungefähr noch ist. Für Sie als Betrieb heißt das: Hier werden Beschäftigte geortet, und zwar sichtbar für Kollegen und für Kunden. Gibt es einen Betriebsrat, ist dessen Mitbestimmung nach § 87 Abs. 1 Nr. 6 BetrVG zu beachten, bevor Sie den Schalter umlegen.',
         ],
       }),
 
@@ -256,7 +267,10 @@ export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
         titel: 'Benachrichtigungen',
         absaetze: [
           'Benachrichtigungen sind freiwillig und zunächst aus. Erst wenn Sie sie unter „Einstellungen“ einschalten, fragt die App die Erlaubnis Ihres Geräts ab und holt anschließend über den Dienst Expo (650 Industries, Inc., USA) eine Kennung, mit der sich genau dieses Gerät ansprechen lässt. Rechtsgrundlage ist Ihre Einwilligung nach Art. 6 Abs. 1 lit. a DSGVO; Sie widerrufen sie, indem Sie Benachrichtigungen in den Systemeinstellungen Ihres Geräts wieder abschalten.',
-          'Diese Kennung wird auf Ihrem Gerät gespeichert und derzeit an keinen Server übertragen. Versendet werden bislang auch keine Benachrichtigungen — die Funktion ist vorbereitet, aber nicht in Gebrauch. Ändert sich das, steht es vorher an dieser Stelle.',
+          'An dieser Stelle stand bis zum 13. November 2026, die Kennung werde an keinen Server übertragen und es würden keine Benachrichtigungen versendet — mit dem Zusatz, dass eine Änderung vorher hier stehen würde. Das ist hiermit geschehen: Gleicht Ihr Betrieb über einen Server ab, meldet Ihr Gerät diese Kennung dorthin, zusammen mit Ihrer Mitarbeiterkennung und der Angabe, ob es ein Android-Gerät oder ein iPhone ist.',
+          'Verschickt werden damit drei Arten von Mitteilungen: der Alarm einer Alleinarbeit und dessen Entwarnung an Kollegen und Angehörige der betroffenen Person, sowie neue Nachrichten an deren Empfänger. In der Mitteilung stehen der Name der absendenden oder betroffenen Person und ein kurzer Text; bei einer Nachricht sind das bis zu 140 Zeichen des Geschriebenen.',
+          'Den Weg dorthin nimmt die Mitteilung über Expo und von dort über den Mitteilungsdienst von Google, auf dem iPhone später über den von Apple. Daraus folgt etwas, das Sie wissen sollten: Diese Unternehmen können den Inhalt einer Mitteilung sehen, und Expo sitzt in den Vereinigten Staaten. Behandeln Sie eine Push-Mitteilung deshalb nicht als vertraulich. Der Nachrichtentext selbst liegt weiterhin nur auf dem Server Ihres Betriebs; was hinausgeht, ist der Auszug in der Mitteilung.',
+          'Wollen Sie das nicht, schalten Sie Benachrichtigungen ab — dann meldet Ihr Gerät keine Kennung und bekommt keine Mitteilungen. Die Nachrichten und Alarme selbst sehen Sie weiterhin, sobald Sie die App öffnen.',
           'Schalten Sie Benachrichtigungen nicht ein, geschieht nichts davon: keine Abfrage, keine Kennung, keine Verbindung zu Expo.',
         ],
       }),
