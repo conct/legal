@@ -8,7 +8,7 @@ import type { Preset } from '../presets.js';
  *
  * Quelle ist nicht ein vorhandener Rechtstext — es gibt keinen. Jeder Absatz
  * unten ist am Code nachgesehen (Repo conct/Kilpro, Stand 13.11.2026,
- * 7520d10):
+ * 79a691e):
  *
  *   app.json            plugins, android.permissions, updates.url
  *   src/features/…      license, payment, push, signature, home, customers
@@ -73,6 +73,14 @@ export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
       }),
 
       ds.freitext({
+        titel: 'Codes scannen',
+        absaetze: [
+          'Unter den Werkzeugen gibt es „Scannen“, und bei der Anmeldung einen Knopf „QR-Code scannen“. Damit liest die App QR-Codes und die gängigen Strichcodes. Dazu wird dieselbe Kameraerlaubnis verwendet wie beim Fotografieren; verweigern Sie sie, entfällt das Scannen und sonst nichts.',
+          'Das Kamerabild wird nicht gespeichert und nicht übertragen — es wird nur angesehen, während der Sucher offen ist. Gefunden wird der Code selbst, als Zeichenfolge. Ist es die Einladung eines Betriebs, öffnet die App damit die Anmeldung; jeder andere Code wird Ihnen nur angezeigt, und Sie entscheiden, was damit geschieht. Eine Liste gescannter Codes führt die App nicht.',
+        ],
+      }),
+
+      ds.freitext({
         titel: 'Arbeitsberichte und Belege als PDF',
         absaetze: [
           'Arbeitsberichte, Angebote, Lieferscheine und Rechnungen entstehen vollständig auf Ihrem Gerät; dafür wird keine Verbindung aufgebaut und nichts an uns oder an Dritte übertragen. Es gibt keinen Server und keinen Versand durch uns. Die fertigen Dateien legt die App in ihrem eigenen Ordner ab und öffnet die Vorschau Ihres Betriebssystems.',
@@ -114,7 +122,7 @@ export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
         absaetze: [
           'Damit ein zweites Gerät am Abgleich teilnimmt, gibt der Verwalter einen Einladungscode aus. Die App zeigt ihn als QR-Code an; daneben steht „Einladung teilen“, womit der Verwalter ihn über das gewohnte Teilen-Menü seines Handys verschickt — per Nachricht, E-Mail oder wie auch immer er es gewöhnt ist.',
           'Zwei Dinge sollten Sie dabei wissen. Erstens enthält die Einladung den Code und, wenn Ihr Betrieb einen eigenen Server eingetragen hat, dessen Adresse; wer die Einladung bekommt, kann sich damit anmelden. Verschicken Sie sie also so, wie Sie einen Schlüssel verschicken würden. Zweitens entscheiden Sie selbst, welcher Weg das ist: Die App wählt keinen Dienst aus und sendet nichts von sich aus, sie reicht den Text nur an das Teilen-Menü weiter. Was der dort gewählte Dienst damit macht, richtet sich nach dessen eigenen Bedingungen.',
-          'Einen Scanner bringt die App nicht mit. Der QR-Code wird mit der Kamera-App des Handys gelesen, die daraufhin Montix öffnet. Die Kameraerlaubnis von Montix wird dafür nicht gebraucht.',
+          'Den QR-Code können Sie mit der Kamera-App Ihres Handys lesen, die daraufhin Montix öffnet — oder mit dem Scanner, den Montix selbst mitbringt. In beiden Fällen landen Sie auf der Anmeldung, mit eingetragenem Code.',
         ],
       }),
 
