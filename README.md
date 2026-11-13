@@ -42,7 +42,7 @@ Domain — jede Domain trägt ihr eigenes.
 ## Installation
 
 ```bash
-npm i git+https://github.com/conct/legal.git#v1.6.0
+npm i git+https://github.com/conct/legal.git#v1.7.0
 ```
 
 > `github:conct/legal#v1.2.0` funktioniert genauso — npm schreibt es beim
