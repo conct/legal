@@ -8,7 +8,7 @@ import type { Preset } from '../presets.js';
  *
  * Quelle ist nicht ein vorhandener Rechtstext — es gibt keinen. Jeder Absatz
  * unten ist am Code nachgesehen (Repo conct/Kilpro, Stand 13.11.2026,
- * 4d3c8b9):
+ * b9417d1):
  *
  *   app.json            plugins, android.permissions, updates.url
  *   src/features/…      license, payment, push, signature, home, customers
@@ -37,7 +37,8 @@ export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
       ds.freitext({
         titel: 'Kurz gesagt',
         absaetze: [
-          'Montix braucht kein Benutzerkonto und keine Registrierung. Alles, was Sie in der App anlegen — Pläne, Kunden, Artikel, Termine, Unterschriften —, bleibt auf Ihrem Gerät. Es gibt keine Werbung und keine Analyse-, Tracking- oder Absturzmeldedienste.',
+          'Montix braucht keine Registrierung: kein Kennwort, keine E-Mail-Adresse, kein Profil bei uns. Alles, was Sie in der App anlegen — Pläne, Kunden, Artikel, Termine, Unterschriften —, bleibt auf Ihrem Gerät. Es gibt keine Werbung und keine Analyse-, Tracking- oder Absturzmeldedienste.',
+          'Eine Ausnahme gibt es, und sie ist freiwillig: Wer die Alleinarbeit ohne Betrieb nutzen möchte, lässt dafür ein Konto auf unserem Server anlegen — mit nichts als einem Namen. Was darin steht und wer dafür verantwortlich ist, steht weiter unten unter „Alleinarbeit ohne Betrieb“.',
           'Die App ist darauf ausgelegt, vollständig ohne Netz zu arbeiten. Verbindungen nach außen gibt es nur in den unten einzeln beschriebenen Fällen.',
         ],
       }),
@@ -155,7 +156,38 @@ export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
           'Das ist kein Angebot, sondern Arbeitsschutz. Deshalb stützt sich diese Verarbeitung nicht auf eine Einwilligung, sondern darauf, dass Ihr Arbeitgeber für Ihre Sicherheit zu sorgen hat (§ 26 Abs. 1 BDSG in Verbindung mit dem Arbeitsschutzgesetz). Mit dem Schrittzähler hat sie nichts zu tun: Es werden keine Schritte erfasst, keine Bewegungsdaten ausgewertet, und nichts davon erscheint in einer Rangliste.',
           'Auf dem Server Ihres Betriebs steht, solange die Alleinarbeit läuft oder ein Alarm besteht: Ihre Kennung und Ihr Name, wann Sie begonnen haben, wann die Frist abläuft, welches Zeitfenster Sie gewählt haben, der Stand (läuft, Alarm, beendet), bei einem Alarm dessen Anlass — abgelaufene Frist oder Notruf — und dessen Zeitpunkt sowie der Name des Kollegen, der „Ich kümmere mich“ angetippt hat. Diese Angaben sehen alle aktiven Mitarbeiter Ihres Betriebs; anders wäre ein Alarm sinnlos. Beendete Einträge löscht der Server nach sieben Tagen.',
           'Dazu kommt Ihr Standort, aber nur unter drei Bedingungen: wenn Sie den Schalter „Standort im Alarmfall mitschicken“ an lassen — er ist ab Werk an und lässt sich ausschalten —, nur während die App offen ist, und nur beim Beginnen und bei jedem Bestätigen. Gespeichert wird allein der zuletzt bekannte Ort, kein Verlauf und keine Strecke. Er ist dafür da, dass jemand weiß, wo er nachsehen muss.',
-          'Jetzt die Grenze, und sie ist wichtig genug, um vor dem ersten Einsatz gelesen zu werden: Diese Funktion verschickt keine Push-Nachrichten und keine SMS. Die Kollegen erfahren vom Alarm, wenn ihre App ihn abruft — also während sie offen oder noch im Hintergrund aktiv ist. Haben alle Montix geschlossen, bemerkt niemand den Alarm, bis jemand die App wieder öffnet. Verlassen Sie sich also nicht darauf wie auf eine Notrufanlage. Montix ist keine Personen-Notsignal-Anlage im Sinne der einschlägigen Regeln, ersetzt keine solche und ersetzt keinen Notruf. In Lebensgefahr gilt die 112.',
+          'Jetzt die Grenze, und sie ist wichtig genug, um vor dem ersten Einsatz gelesen zu werden. In der App selbst gibt es keine Push-Nachricht: Kollegen und Angehörige sehen den Alarm dort nur, wenn sie Montix geöffnet haben oder die App noch läuft. Dafür gibt es den Weg über E-Mail an Notfallkontakte, und der funktioniert auch bei geschlossener App — vorausgesetzt, unser Server läuft, die Zustellung klappt und jemand liest seine Post. Drei Bedingungen, von denen Sie keine erzwingen können.',
+          'Deshalb bleibt es dabei: Montix ist keine Personen-Notsignal-Anlage im Sinne der einschlägigen Regeln und ersetzt keine. Wenn Ihre Gefährdungsbeurteilung eine solche verlangt, bleibt sie verlangt. Und einen Notruf ersetzt es ohnehin nicht — in Lebensgefahr gilt die 112.',
+        ],
+      }),
+
+      ds.freitext({
+        titel: 'Notfallkontakte: wer eine E-Mail bekommt',
+        absaetze: [
+          'Zur Alleinarbeit können Sie bis zu fünf Notfallkontakte hinterlegen — Name und E-Mail-Adresse, gern auch Angehörige. Entsteht ein Alarm, verschickt unser Server genau eine E-Mail an diese Adressen: Ihr Name, ob die Frist ablief oder Sie den Notruf gedrückt haben, der Zeitpunkt, und falls Sie den Standort mitschicken lassen, dessen Koordinaten als Kartenlink. Dazu der Hinweis, sofort zu versuchen Sie zu erreichen, und dass in Lebensgefahr die 112 gilt. Melden Sie sich danach, geht eine Entwarnung hinterher.',
+          'Verschickt wird über den Mailversand unseres eigenen Servers, Absender ist eine Adresse unter feif.space. Es ist kein Versanddienstleister beteiligt, und die Adressen Ihrer Kontakte werden für nichts anderes benutzt — kein Newsletter, keine Werbung, keine Weitergabe.',
+          'Ein Punkt, den Sie bedenken sollten, weil er andere betrifft: Diese Adressen gehören nicht Ihnen, sondern den Menschen dahinter. Die App weist darauf hin, nur Personen einzutragen, die damit einverstanden sind, und wir prüfen das nicht nach — eine Bestätigung durch den Kontakt selbst gibt es nicht. Sprechen Sie also vorher mit den Betreffenden. Ein Tippfehler in der Adresse hat zur Folge, dass ein Fremder erfährt, dass es Ihnen schlecht geht, und unter Umständen auch wo Sie sind.',
+          'Zum Kartenlink: Der Standort steht als Verweis auf OpenStreetMap in der E-Mail. Die Koordinaten selbst stehen damit bereits in der Nachricht; ruft der Empfänger den Verweis auf, erfährt OpenStreetMap, welche Stelle angesehen wird. Wer das nicht möchte, kann die Koordinaten aus der Nachricht auch in eine andere Karte eingeben, und wer gar keinen Standort mitschicken will, schaltet das in der App ab.',
+          'Entfernen können Sie einen Kontakt jederzeit in der App; dann bekommt er keine Nachricht mehr. Gespeichert bleiben die Kontakte, solange Sie sie stehen lassen.',
+        ],
+      }),
+
+      ds.freitext({
+        titel: 'Angehörige als Empfänger',
+        absaetze: [
+          'Sie können einer Person außerhalb des Betriebs — etwa jemandem zu Hause — einen Empfänger-Zugang geben. Dazu erzeugt die App einen Code als QR-Bild, so wie bei einer Einladung. Wer ihn einlöst, sieht auf seinem Gerät ausschließlich Ihre Alleinarbeit: ob sie läuft, ob ein Alarm besteht, und kann „Ich kümmere mich“ antippen.',
+          'Sonst nichts. Kein Abgleich, keine Kunden, keine Berichte, keine Kollegenliste, keine Lizenz. Der Server lässt für einen solchen Zugang nur diesen einen Weg zu und auch den nur für die Person, zu der er gehört. In den Mitarbeiterlisten Ihres Betriebs taucht er nicht auf. Entfernen Sie den Empfänger, ist dessen Gerät abgemeldet.',
+        ],
+      }),
+
+      ds.freitext({
+        titel: 'Alleinarbeit ohne Betrieb: das Privatkonto',
+        absaetze: [
+          'Die Alleinarbeit lässt sich auch ohne Betrieb nutzen. Die App legt dafür auf unserem Server ein Konto für Sie allein an — Sie geben nur einen Namen an, kein Kennwort, keine E-Mail-Adresse, keine Anmeldung.',
+          'Hier gilt etwas anderes als im ganzen übrigen Text, und das ist der Grund, warum dieser Abschnitt existiert: Bei einem Betrieb verarbeiten wir in dessen Auftrag, und der Betrieb ist Verantwortlicher. Bei einem Privatkonto gibt es keinen Auftraggeber. Dort sind wir selbst Verantwortliche im Sinne der DSGVO, und Sie wenden sich mit Auskunft, Berichtigung und Löschung an uns, nicht an jemand anderen. Die Anschrift steht oben unter 1.',
+          'Auf dem Server liegen dabei nur die Angaben, die diese eine Funktion braucht: Ihr Name, Beginn und Frist der laufenden Alleinarbeit, deren Stand, Ihre Notfallkontakte, etwaige Empfänger und — falls eingeschaltet — der zuletzt bekannte Standort. Ihre Kunden, Pläne, Berichte und Belege bleiben auf dem Gerät; für ein Privatkonto ist der Abgleich auf dem Server gesperrt. Rechtsgrundlage ist die Erfüllung dieser von Ihnen gewünschten Leistung, beim Standort zudem der Schutz Ihrer lebenswichtigen Interessen.',
+          'Damit nicht jemand massenhaft Konten anlegt, nimmt der Server höchstens fünf neue Konten je Internetanschluss und Tag an. Dazu wird die IP-Adresse gezählt, aber nur im Arbeitsspeicher und ohne sie zu speichern.',
+          'Eine Unvollständigkeit, die wir nicht verschweigen: Ein Privatkonto löschen wir derzeit auf Zuruf — eine Schaltfläche dafür gibt es in der App noch nicht. Schreiben Sie an die oben genannte Adresse, dann entfernen wir es samt Kontakten und Standort. Beendete Einträge zur Alleinarbeit verschwinden ohnehin nach sieben Tagen von selbst.',
         ],
       }),
 
