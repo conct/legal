@@ -8,11 +8,14 @@ import type { Preset } from '../presets.js';
  *
  * Quelle ist nicht ein vorhandener Rechtstext — es gibt keinen. Jeder Absatz
  * unten ist am Code nachgesehen (Repo conct/Kilpro, Stand 13.11.2026,
- * ff66f73 und app.json nach der Umbenennung):
+ * f4050e4):
  *
  *   app.json            plugins, android.permissions, updates.url
  *   src/features/…      license, payment, push, signature, home, customers
  *   src/plan/use-plan   AsyncStorage-Schlüssel des Planeditors
+ *   src/features/pdf    Berichts-PDF, Ablage im App-Ordner
+ *   src/features/company Firmendaten (Absender, Bank, Steuernummer)
+ *   src/features/reports/fotos.native.ts  Fotos als Dateien, Kamerarecht
  *
  * `geprueft` bleibt false. Ich habe den Code gelesen, aber niemand sonst hat
  * diesen Text gegen ihn abgenommen, und die App ist in keinem Store. Vor der
@@ -41,7 +44,9 @@ export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
       ds.freitext({
         titel: 'Was auf dem Gerät gespeichert wird',
         absaetze: [
-          'Pläne mit allen Elementen, ein als Vorlage hinterlegtes Foto oder Planbild, die selbst angelegte Symbolbibliothek, Unterschriften samt Name, Zweck und Zeitpunkt, Kundendaten, Artikel, Termine, die Zusammenstellung Ihrer Startseite, die Kalibrierung der Wasserwaage, die gewählten Firmenfarben sowie Hell- oder Dunkeldarstellung.',
+          'Pläne mit allen Elementen, ein als Vorlage hinterlegtes Foto oder Planbild, die selbst angelegte Symbolbibliothek, Unterschriften samt Name, Zweck und Zeitpunkt, Kundendaten, Artikel, Termine, Arbeitsberichte, die Zusammenstellung Ihrer Startseite, die Kalibrierung der Wasserwaage, die gewählten Firmenfarben, Ihr Firmenlogo sowie Hell- oder Dunkeldarstellung.',
+          'Dazu die Daten Ihres Betriebs, die als Absender auf den Bericht kommen: Firmenname, Anschrift, Inhaber, Telefon, E-Mail, Internetseite, Bankverbindung und Steuernummer oder Umsatzsteuer-Identifikationsnummer.',
+          'Fotos zu den Arbeitsberichten und die erzeugten PDF-Dateien liegen als Dateien in einem eigenen Ordner der App, nicht in der Bilderrolle Ihres Geräts. Andere Apps kommen dort nicht heran, solange Sie die Dateien nicht selbst weitergeben.',
           'Dazu kommen der Tag des ersten Starts — daran bemisst sich der kostenlose Probemonat — und, falls vorhanden, Ihr Lizenzschlüssel.',
           'Diese Angaben verlassen das Gerät nicht. Sie entfernen sie über „App-Daten löschen“ in den Einstellungen Ihres Geräts oder indem Sie die App deinstallieren.',
           'Für diese Speicherung ist keine Einwilligung erforderlich, weil sie für die von Ihnen gewünschten Funktionen unbedingt erforderlich ist (§ 25 Abs. 2 Nr. 2 TDDDG).',
@@ -61,6 +66,15 @@ export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
         titel: 'Fotos und Kamera',
         absaetze: [
           'Sie können ein Foto oder ein vorhandenes Planbild als Vorlage unter einen Plan legen und darüber zeichnen. Dafür fragt die App beim ersten Mal den Zugriff auf Ihre Bilder ab. Das gewählte Bild wird zum Plan gespeichert und bleibt wie dieser auf dem Gerät.',
+          'Zum Arbeitsbericht und beim Messen per Foto können Sie außerdem unmittelbar mit der Kamera aufnehmen. Dafür fragt die App beim ersten Mal das Kamerarecht ab; verweigern Sie es, bleibt der Weg über die Galerie. Die Aufnahmen werden in den Ordner der App kopiert und dort gespeichert, nicht in Ihre Bilderrolle. Übertragen wird nichts.',
+        ],
+      }),
+
+      ds.freitext({
+        titel: 'Der Arbeitsbericht als PDF',
+        absaetze: [
+          'Das PDF entsteht vollständig auf Ihrem Gerät; dafür wird keine Verbindung aufgebaut und nichts an uns oder an Dritte übertragen. Die fertige Datei legt die App in ihrem eigenen Ordner ab und öffnet die Vorschau Ihres Betriebssystems.',
+          'Ab da entscheiden Sie: Was Sie von dort aus drucken, per E-Mail versenden, in eine Cloud legen oder in eine andere App geben, richtet sich nach deren Bedingungen und liegt in Ihrer Verantwortung als Betrieb. Beachten Sie dabei, dass ein solcher Bericht Anschrift, Unterschrift und Fotos Ihres Kunden enthält.',
         ],
       }),
 
