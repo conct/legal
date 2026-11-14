@@ -19,6 +19,11 @@ import { link, p, txt } from '../types.js';
  *   src/features/company Firmendaten (Absender, Bank, Steuernummer)
  *   src/features/reports/fotos.native.ts  Fotos als Dateien, Kamerarecht
  *
+ * Nachgetragen am 14.11.2026 (Kilpro-Stand mit OTA d631cc91): Termine dem
+ * Kunden mitteilen (server/abgleich/terminmitteilung.mjs), Fehler melden
+ * (fehler.mjs, src/app/fehler.tsx), Adressvorschläge und „Aktuelle Position
+ * verwenden“ (adresse.mjs, src/components/AdressFeld.tsx).
+ *
  * `geprueft` bleibt false. Ich habe den Code gelesen, aber niemand sonst hat
  * diesen Text gegen ihn abgenommen, und die App ist in keinem Store. Vor der
  * Veröffentlichung durchgehen — besonders die beiden Stellen, die heute noch
@@ -159,6 +164,15 @@ export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
       }),
 
       ds.freitext({
+        titel: 'Fehler melden',
+        absaetze: [
+          'Unter Einstellungen → Benutzer und System → „Fehler melden“ können Sie uns einen Fehler schicken. Mit Ihrer Beschreibung gehen dann, und nur dann, mit: die Fassung der App und des zuletzt geladenen Updates, Hersteller und Modell des Geräts, die Version des Betriebssystems, die Bildschirmgröße, ob Sie im Betrieb oder allein arbeiten, und die Uhrzeit. Wenn Sie wollen, außerdem eine E-Mail-Adresse für Rückfragen und bis zu drei Bildschirmfotos, die Sie selbst aus der Galerie wählen. Ist Ihr Gerät bei unserem Server angemeldet, stehen Ihr Name, Ihr Betrieb und Ihre Rolle dabei.',
+          'Die Meldung geht über unseren Server als E-Mail an unseren Support und wird dort zur Fehlerbehebung gelesen. Der Server selbst speichert sie nicht. Er zählt nur im Arbeitsspeicher, wie viele Meldungen am selben Tag von derselben IP-Adresse kamen, damit ihn niemand mit Meldungen überschwemmt; mit einem Neustart des Dienstes ist das fort. Rechtsgrundlage ist Ihre Anfrage selbst (Art. 6 Abs. 1 lit. b DSGVO) und unser Interesse, Fehler zu beheben (Art. 6 Abs. 1 lit. f DSGVO).',
+          'Weil Montix Bildschirmfotos sperrt, lassen sie sich auf dieser Seite für fünfzehn Minuten erlauben. Danach, nach dem Senden oder nach einem Neustart sperrt die App von selbst wieder. Achten Sie darauf, was auf einem Bildschirmfoto zu sehen ist: Steht dort der Name eines Kunden, geht er mit.',
+        ],
+      }),
+
+      ds.freitext({
         titel: 'Alleinarbeit: wenn niemand sonst da ist',
         absaetze: [
           'Wer allein in einem Keller, auf einem Dach oder in einem Schacht arbeitet, kann in der App „Alleinarbeit“ beginnen und dabei ein Zeitfenster wählen — 15, 30, 60 oder 120 Minuten. Innerhalb dieser Frist tippt er „Alles in Ordnung“, was die Frist verlängert. Bleibt das aus, wird daraus ein Alarm für die Kollegen. „Notruf an Kollegen“ löst sofort aus, „Beenden“ hebt alles wieder auf.',
@@ -178,6 +192,16 @@ export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
           'Die App meldet die Position etwa jede Minute, solange sie offen ist; gespeichert wird nur die letzte, kein Verlauf. Eine Ortung im Hintergrund gibt es nicht — schließt der Monteur die App, bleibt die Seite beim letzten Stand stehen und sagt das auch. Mit „Angekommen“ endet die Fahrt, der Ort wird gelöscht, und vierundzwanzig Stunden später ist die Adresse nicht mehr erreichbar.',
           'Die Entfernung kann die App nur nennen, wenn sie den Ort des Kunden schon kennt — gelernt beim ersten Ankommen dort. Sonst steht auf der Seite nur „Auf dem Weg“.',
           'Im Betrieb sehen die Kollegen im Kalender dasselbe: wer gerade unterwegs ist, zu wem, und wie weit es ungefähr noch ist. Für Sie als Betrieb heißt das: Hier werden Beschäftigte geortet, und zwar sichtbar für Kollegen und für Kunden. Gibt es einen Betriebsrat, ist dessen Mitbestimmung nach § 87 Abs. 1 Nr. 6 BetrVG zu beachten, bevor Sie den Schalter umlegen.',
+        ],
+      }),
+
+      ds.freitext({
+        titel: 'Termine dem Kunden mitteilen',
+        absaetze: [
+          'Am Termin können Sie Ihrem Kunden Datum, Uhrzeit und Ort mitteilen und ihn bestätigen lassen. Dafür legt der Server, über den Ihr Betrieb abgleicht, zu diesem Termin einen Eintrag an: Titel, Beginn, Dauer und bei mehrtägigen Terminen den letzten Tag, Name, E-Mail-Adresse und Anschrift des Kunden, soweit eingetragen, Ihre Nachricht an ihn, Ihren Namen und wer für den Termin zuständig ist. Dazu eine zufällige, nicht zu erratende Adresse, unter der Ihr Kunde den Termin sieht.',
+          'Diese Adresse erreicht den Kunden auf einem von zwei Wegen. Entweder schickt der Server ihm eine E-Mail im Namen Ihres Betriebs. Oder Sie geben den Link selbst weiter, über das Teilen-Menü Ihres Handys — dann gilt, was oben zur Einladung von Mitarbeitern steht: Welchen Dienst Sie dort wählen, entscheiden Sie.',
+          'Auf der Seite tippt der Kunde „Termin bestätigen“ oder „Passt nicht“ und kann einen Wunschtermin oder ein paar Worte dazuschreiben. Gespeichert werden seine Wahl, dieser Text und der Zeitpunkt. Die Antwort kommt in Ihre App zurück und, wenn Benachrichtigungen eingeschaltet sind, als Push-Mitteilung an Sie und die Zuständigen. Auf Wunsch erinnert der Server den Kunden am Tag vor dem Termin einmal per E-Mail. Die Seite ist von Suchmaschinen ausgenommen.',
+          'Dreißig Tage nach dem letzten Tag des Termins löscht der Server den Eintrag samt Antwort, und der Link führt ins Leere. Für Sie als Betrieb ist das eine Verarbeitung von Kundendaten; betreiben wir den Server, tun wir das in Ihrem Auftrag, und es gilt der Vertrag zur Auftragsverarbeitung.',
         ],
       }),
 
@@ -279,6 +303,16 @@ export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
       }),
 
       ds.freitext({
+        titel: 'Adressvorschläge',
+        absaetze: [
+          'Beim Tippen in „Straße und Hausnummer“ — beim Kunden und in Ihren Firmendaten — schlägt die App ab drei Zeichen passende Anschriften vor. Dafür schickt sie den bis dahin getippten Text an unseren Server. Der fragt beim Dienst Photon nach, den die komoot GmbH in Deutschland mit den Daten von OpenStreetMap betreibt, und reicht die Antwort zurück. Photon sieht dabei nur den Text, nicht Ihr Gerät und nicht Ihre IP-Adresse.',
+          'Unter dem Feld steht außerdem „Aktuelle Position verwenden“. Erst wenn Sie das antippen, fragt die App einmal den Standort ab und schickt ihn, auf etwa zehn Meter gerundet, auf demselben Weg, um die Anschriften in der Nähe zu erfahren.',
+          'Auf Dauer gespeichert wird dabei nichts. Unser Server hält Anfrage und Antwort eine Weile im Arbeitsspeicher, damit dieselbe Anfrage nicht zweimal hinausgeht, und zählt dort, wie viele Anfragen am Tag von derselben IP-Adresse kommen. Beides ist mit einem Neustart des Dienstes fort. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO: das Interesse, Anschriften schnell und richtig zu erfassen.',
+          'Den Text schickt die App, solange Sie in diesem einen Feld schreiben. Ohne Netz gibt es keine Vorschläge, und das Feld bleibt ein gewöhnliches Eingabefeld. Soll eine Anschrift gar nicht hinausgehen, ist das Netz abzuschalten der sichere Weg.',
+        ],
+      }),
+
+      ds.freitext({
         titel: 'Sensoren',
         absaetze: [
           'Die Werkzeuge lesen die Sensoren des Geräts: Wasserwaage den Lagesensor, Kompass das Magnetfeld, der Höhenmesser den Luftdruck. Beim Kalibrieren der Wasserwaage prüft zusätzlich das Gyroskop, ob Sie das Gerät wirklich um 180 Grad gedreht haben.',
@@ -301,7 +335,7 @@ export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
           'Daneben kann Montix an einem SumUp-Kartenleser kassieren, der über Bluetooth am Telefon hängt — nur unter Android, und nur wenn Ihre App-Fassung das mitbringt. Dann liest der Leser die Karte, und den Vorgang wickelt SumUp über das SumUp-Konto Ihres Betriebs ab. Angemeldet wird einmal je Gerät im Anmeldefenster von SumUp; dieses Fenster gehört SumUp, Ihre Zugangsdaten bekommen wir nicht zu sehen und wir speichern sie nicht. Es gilt dann die Datenschutzerklärung von SumUp, und Vertragspartner von SumUp sind Sie, nicht wir. Anders als bei Stripe prüft unser Server eine SumUp-Zahlung nicht nach.',
           'Den geheimen Schlüssel Ihres Stripe-Kontos hinterlegt Ihr Verwalter einmal in der App; abgelegt wird er auf dem Server, über den Ihr Betrieb abgleicht, verschlüsselt und ohne je an ein Gerät zurückgegeben zu werden. Betreiben wir diesen Server, steht im Vertrag zur Auftragsverarbeitung, was diese Verschlüsselung leistet und was nicht.',
           'Für diese Funktion verlangt der Zahlungsanbieter den Standort des Geräts — ohne Standortfreigabe nimmt er keine Karten an. Das ist der eine Anlass, bei dem ein Standort das Gerät verlässt.',
-          'Damit Sie den Überblick behalten: Nach dem Standort fragt die App an drei Stellen, jedes Mal nur im Vordergrund und nie von selbst. Beim Kassieren, weil der Zahlungsanbieter es verlangt. Bei Ankunft und Abfahrt, falls Ihr Betrieb das eingeschaltet hat. Und beim Höhenmesser, wenn dem Gerät der Luftdrucksensor fehlt. Nur im ersten Fall geht etwas nach draußen; in den beiden anderen bleibt der Wert auf dem Gerät beziehungsweise geht höchstens in den Abgleich Ihres eigenen Betriebs. An uns übermittelt Montix keinen Standort.',
+          'Damit Sie den Überblick behalten: Nach dem Standort fragt die App nur an diesen Stellen, jedes Mal nur im Vordergrund und nie von selbst. Beim Kassieren, weil der Zahlungsanbieter es verlangt. Bei Ankunft und Abfahrt, falls Ihr Betrieb das eingeschaltet hat. Beim Höhenmesser, wenn dem Gerät der Luftdrucksensor fehlt. Bei „Aktuelle Position verwenden“ in einem Adressfeld. Und, wie oben beschrieben, bei Alleinarbeit und unterwegs zum Kunden. Beim Kassieren geht der Standort an den Zahlungsanbieter; bei „Aktuelle Position verwenden“ gerundet über unseren Server an Photon, ohne gespeichert zu werden. Sonst bleibt er auf dem Gerät oder geht höchstens in den Abgleich Ihres eigenen Betriebs.',
           'Kassieren erscheint in der App überhaupt erst, wenn einer der beiden Wege eingerichtet ist: ein Stripe-Schlüssel auf Ihrem Zahlungsdienst oder ein eingerichteter SumUp-Leser. Für die Verarbeitung durch Stripe gilt deren Datenschutzerklärung; Vertragspartner von Stripe sind Sie, nicht wir.',
         ],
       }),
@@ -328,7 +362,7 @@ export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
         absaetze: [
           'Benachrichtigungen sind freiwillig und zunächst aus. Erst wenn Sie sie unter „Einstellungen“ einschalten, fragt die App die Erlaubnis Ihres Geräts ab und holt anschließend über den Dienst Expo (650 Industries, Inc., USA) eine Kennung, mit der sich genau dieses Gerät ansprechen lässt. Rechtsgrundlage ist Ihre Einwilligung nach Art. 6 Abs. 1 lit. a DSGVO; Sie widerrufen sie, indem Sie Benachrichtigungen in den Systemeinstellungen Ihres Geräts wieder abschalten.',
           'An dieser Stelle stand bis zum 13. November 2026, die Kennung werde an keinen Server übertragen und es würden keine Benachrichtigungen versendet — mit dem Zusatz, dass eine Änderung vorher hier stehen würde. Das ist hiermit geschehen: Gleicht Ihr Betrieb über einen Server ab, meldet Ihr Gerät diese Kennung dorthin, zusammen mit Ihrer Mitarbeiterkennung und der Angabe, ob es ein Android-Gerät oder ein iPhone ist.',
-          'Verschickt werden damit drei Arten von Mitteilungen: der Alarm einer Alleinarbeit und dessen Entwarnung an Kollegen und Angehörige der betroffenen Person, sowie neue Nachrichten an deren Empfänger. In der Mitteilung stehen der Name der absendenden oder betroffenen Person und ein kurzer Text; bei einer Nachricht sind das bis zu 140 Zeichen des Geschriebenen.',
+          'Verschickt werden damit vier Arten von Mitteilungen: der Alarm einer Alleinarbeit und dessen Entwarnung an Kollegen und Angehörige der betroffenen Person, neue Nachrichten an deren Empfänger, und die Antwort eines Kunden auf einen mitgeteilten Termin an die Person, die ihn mitgeteilt hat, und an die Zuständigen. In der Mitteilung stehen der Name der absendenden oder betroffenen Person und ein kurzer Text; bei einer Nachricht sind das bis zu 140 Zeichen des Geschriebenen, bei einer Terminantwort der Titel des Termins und bis zu 120 Zeichen dessen, was der Kunde dazugeschrieben hat.',
           'Den Weg dorthin nimmt die Mitteilung über Expo und von dort über den Mitteilungsdienst von Google, auf dem iPhone später über den von Apple. Daraus folgt etwas, das Sie wissen sollten: Diese Unternehmen können den Inhalt einer Mitteilung sehen, und Expo sitzt in den Vereinigten Staaten. Behandeln Sie eine Push-Mitteilung deshalb nicht als vertraulich. Der Nachrichtentext selbst liegt weiterhin nur auf dem Server Ihres Betriebs; was hinausgeht, ist der Auszug in der Mitteilung.',
           'Für diese Übermittlung in die Vereinigten Staaten gibt es zwei Grundlagen, und wir haben beide am 14. November 2026 nachgesehen. Das Unternehmen hinter Expo, 650 Industries, Inc., ist in der amtlichen Liste zum EU-U.S. Data Privacy Framework geführt — damit greift der Angemessenheitsbeschluss der Kommission nach Art. 45 DSGVO. Und die Nutzungsbedingungen von Expo verpflichten sich in Abschnitt 3.2 auf Modul zwei der Standardvertragsklauseln (C/2021/3972) für die Rolle als Auftragsverarbeiter. Zur Ehrlichkeit gehört: Der Eintrag im Framework stand bei unserer Prüfung auf „Active – Re-certification under Review“ und beruht auf einer Selbstbewertung, nicht auf einer fremden Prüfung.',
           'Wollen Sie das nicht, schalten Sie Benachrichtigungen ab — dann meldet Ihr Gerät keine Kennung und bekommt keine Mitteilungen. Die Nachrichten und Alarme selbst sehen Sie weiterhin, sobald Sie die App öffnen.',
