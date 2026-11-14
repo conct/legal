@@ -8,7 +8,7 @@ import type { Preset } from '../presets.js';
  *
  * Quelle ist nicht ein vorhandener Rechtstext — es gibt keinen. Jeder Absatz
  * unten ist am Code nachgesehen (Repo conct/Kilpro, Stand 13.11.2026,
- * 388cdcf):
+ * 39ada2b):
  *
  *   app.json            plugins, android.permissions, updates.url
  *   src/features/…      license, payment, push, signature, home, customers
@@ -185,6 +185,21 @@ export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
           'Löschen Sie Ihr eigenes Konto, bleiben Mappen bestehen, die Sie geteilt haben — sie gehören dem Betrieb, so wie Berichte und Belege auch. Ihr Name verschwindet dabei: Er wird in diesen Mappen durch „gelöscht“ ersetzt, genau wie überall sonst. Wollen Sie auch die Mappen selbst los sein, ziehen Sie sie vor dem Löschen zurück.',
           'Aufnehmen lassen sich Bilder (JPEG, PNG, WebP), Zeichnungen (SVG) und PDF-Dateien, höchstens zwanzig Stück und zusammen 25 MB je Mappe; ein Betrieb kann insgesamt 500 MB geteilt halten. Der Server prüft bei jeder Datei, ob sie wirklich dem angegebenen Typ entspricht, und nimmt Zeichnungen nur ohne eingebettete Skripte an.',
           'Über die Weitergabe entscheiden Sie als Betrieb. Sie sind dafür der Verantwortliche: Was in der Mappe landet, bestimmen Sie, und ob Ihr Kunde damit einverstanden ist, dass sein Lageplan oder Fotos seines Hauses eine andere Firma erreichen, klären Sie. Wir speichern und stellen bereit, in Ihrem Auftrag und nach dem Vertrag zur Auftragsverarbeitung.',
+        ],
+      }),
+
+      ds.freitext({
+        titel: 'Gemeinsame Bereiche für ein Objekt',
+        absaetze: [
+          'Auch diese Funktion gibt es nur im Betrieb. Sie legen zu einem Objekt einen Bereich an und laden ein, wer dort mitarbeitet: andere Firmen und den Auftraggeber. Jede und jeder bekommt einen eigenen Link. Darin lassen sich Punkte und Mängel anlegen, abhaken, Notizen schreiben und Fotos anhängen — im Browser, ohne Konto und ohne dass die Gegenseite Montix braucht. Bei jedem Eintrag steht, wer ihn geschrieben hat.',
+          'Der Link ist dabei der Ausweis. Wer ihn hat, schreibt unter dem Namen, für den er ausgestellt wurde. Geben Sie ihn also jeweils einer Person und sagen Sie der Gegenseite, dass sie ihn nicht weiterreichen soll — sonst steht am Ende unter einem Eintrag ein Name, der nicht dazugehört. Entfernen Sie eine Beteiligte oder einen Beteiligten, ist der zugehörige Link sofort tot.',
+          'Hier ist ein Unterschied zu den geteilten Mappen wichtig, und wir sagen ihn offen: Bei einer Mappe liegt auf dem Server nur die Prüfsumme des Schlüssels, wir können den Link also selbst nicht wiederherstellen. Bei einem Bereich liegt er zusätzlich verschlüsselt, weil der Server ihn in die Benachrichtigungen schreiben muss. Der Schutz ist damit etwas schwächer als bei einer Mappe.',
+          'Auf dem Server liegen: Name, Rolle und, falls Sie eine angeben, die E-Mail-Adresse jeder beteiligten Person; die Punkte mit Titel, Text, Zuständigkeit, Stand, Fotos sowie Name und Zeitpunkt dessen, der sie geschrieben und der sie erledigt hat; die Notizen ebenso; und je Beteiligtem, wann er den Bereich zuletzt aufgerufen hat. IP-Adressen speichern wir nicht. Gegen Missbrauch nimmt der Server je Zugang höchstens dreißig Eingaben in der Minute an.',
+          'Untereinander sehen die Beteiligten die Namen aller, die dabei sind, und natürlich, wer was geschrieben hat. Die E-Mail-Adressen sehen sie nicht — die kennt nur Ihr Betrieb, und auch den Zeitpunkt des letzten Aufrufs sehen nur Sie.',
+          'Für vertrauliche Hinweise — in der Praxis vor allem der Türcode zum Objekt — gibt es einen eigenen Weg. Ein solcher Hinweis wird verschlüsselt abgelegt (AES-256-GCM mit einem Schlüssel, der nur auf unserem Server liegt), er ist nur für die von Ihnen ausgewählten Beteiligten und für Ihren Betrieb sichtbar, und er steht niemals in einer E-Mail oder in einer Mitteilung aufs Handy. Jedes Ansehen wird mit Namen und Zeitpunkt festgehalten, damit später nachvollziehbar ist, wer den Code kannte. Nach der gewählten Frist löscht ihn der Server von selbst: Das Formular im Browser bietet einen Tag, sieben, dreißig oder neunzig Tage an, über die App sind bis zu 365 Tage möglich, voreingestellt sind dreißig. Der Aufräumlauf arbeitet stündlich.',
+          'Benachrichtigt wird per E-Mail von einer Adresse unter feif.space. Die Einladung geht sofort hinaus. Alles Weitere wird gesammelt: höchstens eine Nachricht je Beteiligtem und Bereich in der Minute, mit bis zu dreißig Zeilen, und was jemand selbst getan hat, steht nicht in seiner eigenen Nachricht. An entfernte Beteiligte und in geschlossene Bereiche geht nichts mehr. In Ihren Betrieb geht zusätzlich eine Mitteilung aufs Handy, und zwar an die Person, die den Bereich angelegt hat, und an die Verwalter.',
+          'Zum Schließen: „Schließen“ macht alle Links tot und löscht Fotos und vertrauliche Hinweise sofort; die Punkte bleiben für Ihren Betrieb lesbar, weil sie zum Objekt gehören und oft noch gebraucht werden. Wird der ganze Betrieb gelöscht, verschwindet alles mit ihm. Löscht eine einzelne Person ihr Konto, bleiben ihre Einträge bestehen, ihr Name wird darin aber durch „gelöscht“ ersetzt — auch bei „erledigt von“ und in den festgehaltenen Einsichten in einen Code.',
+          'Verantwortlicher für all das sind Sie als Betrieb. Dreierlei liegt damit bei Ihnen und nicht bei uns: Sie entscheiden, wen Sie einladen, und übermitteln uns dabei Namen und E-Mail-Adressen von Menschen, die bei anderen Firmen arbeiten oder Ihre Kunden sind — dafür brauchen Sie einen Grund nach Artikel 6 DSGVO, in aller Regel die Durchführung des Auftrags. Sie entscheiden, was in den Bereich geschrieben und fotografiert wird. Und Sie entscheiden, wer den Türcode sehen darf. Wir speichern, stellen bereit und benachrichtigen, in Ihrem Auftrag und nach dem Vertrag zur Auftragsverarbeitung.',
         ],
       }),
 
