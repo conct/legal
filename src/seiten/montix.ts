@@ -1,5 +1,6 @@
 import * as ds from '../datenschutz.js';
 import type { Preset } from '../presets.js';
+import { link, p, txt } from '../types.js';
 
 /**
  * Montix (de.conct.montix) — die App für Handwerker und Dienstleister, die
@@ -7,8 +8,8 @@ import type { Preset } from '../presets.js';
  * deshalb der Schlüssel `montix.feif.space` wie bei Farbecho und Klarschiff.
  *
  * Quelle ist nicht ein vorhandener Rechtstext — es gibt keinen. Jeder Absatz
- * unten ist am Code nachgesehen (Repo conct/Kilpro, Stand 13.11.2026,
- * c9f90b9):
+ * unten ist am Code nachgesehen (Repo conct/Kilpro, Stand 14.11.2026,
+ * fb37ffb):
  *
  *   app.json            plugins, android.permissions, updates.url
  *   src/features/…      license, payment, push, signature, home, customers
@@ -40,6 +41,11 @@ export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
           'Montix braucht keine Registrierung: kein Kennwort, keine E-Mail-Adresse, kein Profil bei uns. Alles, was Sie in der App anlegen — Pläne, Kunden, Artikel, Termine, Unterschriften —, bleibt auf Ihrem Gerät. Es gibt keine Werbung und keine Analyse-, Tracking- oder Absturzmeldedienste.',
           'Eine einzige Funktion kann mehr verlangen, und auch die nur, wenn Sie sie wollen: Wer die Alleinarbeit ohne Betrieb nutzt, lässt dafür ein Konto auf unserem Server anlegen — mit nichts als einem Namen, ohne Kennwort und ohne Anmeldung. Alles andere in Montix funktioniert ohne das; Einzelheiten unter „Alleinarbeit ohne Betrieb“.',
           'Die App ist darauf ausgelegt, vollständig ohne Netz zu arbeiten. Verbindungen nach außen gibt es nur in den unten einzeln beschriebenen Fällen.',
+          p(
+            txt('Dieser Text sagt, was wo gespeichert wird und was hinausgeht. Wie die einzelnen Funktionen bedient werden, steht im '),
+            link('Benutzerhandbuch zu Montix', '/apps-software/montix/handbuch/'),
+            txt(' — dort hat jedes Kapitel einen Abschnitt „Gut zu wissen“, in dem auch die Grenzen stehen.'),
+          ),
         ],
       }),
 
@@ -48,10 +54,12 @@ export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
         absaetze: [
           'Pläne mit allen Elementen, ein als Vorlage hinterlegtes Foto oder Planbild, die selbst angelegte Symbolbibliothek, Kundendaten, Artikel, Termine, Arbeitsberichte, Belege, Sprachnotizen, die Zusammenstellung Ihrer Startseite, die Kalibrierung der Wasserwaage, die gewählten Firmenfarben, Ihr Firmenlogo sowie Hell- oder Dunkeldarstellung.',
           'Dazu Ihre Belege — Angebote, Lieferscheine und Rechnungen — samt der Nummernstände, die die App je Belegart und Jahr auf dem Gerät weiterzählt.',
+          'An einer ausgestellten Rechnung kommen mit der Zeit zwei Dinge hinzu, die nicht zu ihrem festgeschriebenen Inhalt gehören: erfasste Zahlungen — jeweils Datum, Betrag, Zahlart und eine mögliche Notiz — und die Mahnstufen mit Datum, Gebühr und neuer Frist. Daraus entsteht auf dem Gerät der Mahnbrief als PDF. Beides sagt etwas über das Zahlungsverhalten Ihres Kunden aus; gehen Sie damit entsprechend um.',
+          'An Ihren Kunden können außerdem stehen: die Umsatzsteuer-Identifikationsnummer, die Angabe, dass der Kunde selbst Bauleistungen erbringt (dann rechnet Montix nach § 13b UStG ohne Steuer ab), und bei öffentlichen Auftraggebern die Leitweg-ID. Die Leitweg-ID steht in der XRechnung auch als elektronische Adresse des Käufers — sie geht also mit der Rechnung an den Auftraggeber, was ihr Zweck ist.',
           'Dazu die Daten Ihres Betriebs, die als Absender auf Bericht und Beleg kommen: Firmenname, Anschrift, Inhaber, Telefon, E-Mail, Internetseite, Bankverbindung und Steuernummer oder Umsatzsteuer-Identifikationsnummer.',
           'Fotos zu den Arbeitsberichten und die erzeugten PDF-Dateien liegen als Dateien in einem eigenen Ordner der App, nicht in der Bilderrolle Ihres Geräts. Andere Apps kommen dort nicht heran, solange Sie die Dateien nicht selbst weitergeben.',
           'Dazu kommen der Tag des ersten Starts — daran bemisst sich der kostenlose Probemonat — und, falls vorhanden, Ihr Lizenzschlüssel.',
-          'Beim allerersten Start legt die App auf einem noch leeren Gerät je ein Beispiel an — einen Kunden, einen Artikel, einen Termin und einen Auftragsentwurf, alle mit dem Zusatz „(Beispiel)“ im Namen. Sie sind zum Ausprobieren da und lassen sich auf der Startseite mit einem Tipp entfernen. Melden Sie das Gerät bei einem Betrieb an, verschwinden sie von selbst, damit sie nicht in dessen Datenbestand geraten.',
+          'Beim allerersten Start legt die App auf einem noch leeren Gerät Beispiele an — einen Kunden, zwei Artikel, einen Termin und einen Arbeitsbericht als Entwurf, alle mit dem Zusatz „(Beispiel)“ im Namen. Sie sind zum Ausprobieren da und lassen sich auf der Startseite mit einem Tipp entfernen. Melden Sie das Gerät bei einem Betrieb an, verschwinden sie von selbst, damit sie nicht in dessen Datenbestand geraten.',
           'Diese Angaben verlassen das Gerät nicht. Sie entfernen sie über „App-Daten löschen“ in den Einstellungen Ihres Geräts oder indem Sie die App deinstallieren.',
           'Für diese Speicherung ist keine Einwilligung erforderlich, weil sie für die von Ihnen gewünschten Funktionen unbedingt erforderlich ist (§ 25 Abs. 2 Nr. 2 TDDDG).',
         ],
@@ -202,6 +210,7 @@ export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
           'Das geschieht in der App, auf Ihrem Gerät. Wir sehen dabei nichts, und ein Stapel entsteht nicht von selbst — Sie lösen ihn aus. Sie können ihn als Datei weitergeben, dann berührt er unseren Server überhaupt nicht.',
           'Wählen Sie stattdessen „An die Kanzlei senden“, wird daraus eine geteilte Mappe mit der Tabelle darin: Sie liegt dreißig Tage auf unserem Server, und die Kanzlei bekommt den Link per E-Mail. Dann gilt alles, was im Abschnitt zu den Mappen steht — auch, dass der Link der Schlüssel ist. In dieser Tabelle stehen Rechnungsdaten Ihrer Kunden, also Namen, Beträge und Konten. Überlegen Sie deshalb, ob der kurze Weg über uns der richtige ist oder ob Sie die Datei lieber unmittelbar übergeben.',
           'Für diese Funktion speichert Montix ein paar Angaben zusätzlich: an Ihren Firmendaten die Berater- und die Mandantennummer, den Beginn Ihres Wirtschaftsjahres, den Kontenrahmen und die E-Mail-Adresse Ihrer Kanzlei; an Ihren Kunden deren Debitorennummer. Nutzen Sie den Abgleich, liegen diese Angaben wie die übrigen Stammdaten auf dem Server Ihres Betriebs.',
+          'Dieselbe Seite gibt auch eine Rechnungsliste als Tabelle aus — dieselben Rechnungen mit Fälligkeit, erfassten Zahlungen und Zahlstand. Sie entsteht ebenfalls auf Ihrem Gerät und geht nur dorthin, wohin Sie sie geben.',
           'Eine Grenze, die zur Ehrlichkeit gehört: Der Stapel prüft sich nicht selbst. Ob die Kontierung zu Ihrem Betrieb passt, entscheidet Ihre Kanzlei — lassen Sie den ersten Stapel dort bestätigen, bevor Sie sich darauf verlassen.',
         ],
       }),
@@ -249,7 +258,8 @@ export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
           'Hier gilt etwas anderes als im ganzen übrigen Text, und das ist der Grund, warum dieser Abschnitt existiert: Bei einem Betrieb verarbeiten wir in dessen Auftrag, und der Betrieb ist Verantwortlicher. Bei einem Privatkonto gibt es keinen Auftraggeber. Dort sind wir selbst Verantwortliche im Sinne der DSGVO, und Sie wenden sich mit Auskunft, Berichtigung und Löschung an uns, nicht an jemand anderen. Die Anschrift steht oben unter 1.',
           'Auf dem Server liegen dabei nur die Angaben, die diese eine Funktion braucht: Ihr Name, Beginn und Frist der laufenden Alleinarbeit, deren Stand, Ihre Notfallkontakte, etwaige Empfänger und — falls eingeschaltet — der zuletzt bekannte Standort. Ihre Kunden, Pläne, Berichte und Belege bleiben auf dem Gerät; für ein Privatkonto ist der Abgleich auf dem Server gesperrt. Rechtsgrundlage ist die Erfüllung dieser von Ihnen gewünschten Leistung, beim Standort zudem der Schutz Ihrer lebenswichtigen Interessen.',
           'Damit nicht jemand massenhaft Konten anlegt, nimmt der Server höchstens fünf neue Konten je Internetanschluss und Tag an. Dazu wird die IP-Adresse gezählt, aber nur im Arbeitsspeicher und ohne sie zu speichern.',
-          'Eine Unvollständigkeit, die wir nicht verschweigen: Ein Privatkonto löschen wir derzeit auf Zuruf — eine Schaltfläche dafür gibt es in der App noch nicht. Schreiben Sie an die oben genannte Adresse, dann entfernen wir es samt Kontakten und Standort. Beendete Einträge zur Alleinarbeit verschwinden ohnehin nach sieben Tagen von selbst.',
+          'Hier stand bis zum 14. November 2026, für das Löschen eines Privatkontos gebe es noch keine Schaltfläche und wir erledigten es auf Zuruf. Das stimmt nicht mehr: Auf der Seite Alleinarbeit steht „Konto löschen“, und damit verschwindet der ganze Bestand dieses Privatkontos vom Server — Name, Fristen, Notfallkontakte, Empfänger und der letzte Standort. Auf Zuruf tun wir es weiterhin, wenn Sie das vorziehen. Beendete Einträge zur Alleinarbeit verschwinden ohnehin nach sieben Tagen von selbst.',
+          'Eine Einschränkung, die Sie kennen sollten, wenn Sie in einem Betrieb der einzige Verwalter sind: Ihre eigene Person lässt sich dann nicht löschen. Der Server lehnt es ab, weil ein Betrieb ohne Verwalter niemanden mehr hätte, der ihn verwaltet. Bestimmen Sie zuerst einen zweiten Verwalter, oder löschen Sie den ganzen Betrieb.',
         ],
       }),
 
@@ -287,11 +297,12 @@ export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
       ds.freitext({
         titel: 'Kartenzahlung und Standort',
         absaetze: [
-          'Wenn Sie vor Ort kassieren, liest das Telefon die Karte mit seinem eigenen NFC-Chip. Den Bezahlvorgang wickelt Stripe über das Stripe-Konto Ihres Betriebs ab. Montix sieht und speichert dabei keine Kartendaten.',
+          'Wenn Sie vor Ort mit dem Telefon kassieren, liest es die Karte mit seinem eigenen NFC-Chip. Den Bezahlvorgang wickelt Stripe über das Stripe-Konto Ihres Betriebs ab. Montix sieht und speichert dabei keine Kartendaten.',
+          'Daneben kann Montix an einem SumUp-Kartenleser kassieren, der über Bluetooth am Telefon hängt — nur unter Android, und nur wenn Ihre App-Fassung das mitbringt. Dann liest der Leser die Karte, und den Vorgang wickelt SumUp über das SumUp-Konto Ihres Betriebs ab. Angemeldet wird einmal je Gerät im Anmeldefenster von SumUp; dieses Fenster gehört SumUp, Ihre Zugangsdaten bekommen wir nicht zu sehen und wir speichern sie nicht. Es gilt dann die Datenschutzerklärung von SumUp, und Vertragspartner von SumUp sind Sie, nicht wir. Anders als bei Stripe prüft unser Server eine SumUp-Zahlung nicht nach.',
           'Den geheimen Schlüssel Ihres Stripe-Kontos hinterlegt Ihr Verwalter einmal in der App; abgelegt wird er auf dem Server, über den Ihr Betrieb abgleicht, verschlüsselt und ohne je an ein Gerät zurückgegeben zu werden. Betreiben wir diesen Server, steht im Vertrag zur Auftragsverarbeitung, was diese Verschlüsselung leistet und was nicht.',
           'Für diese Funktion verlangt der Zahlungsanbieter den Standort des Geräts — ohne Standortfreigabe nimmt er keine Karten an. Das ist der eine Anlass, bei dem ein Standort das Gerät verlässt.',
           'Damit Sie den Überblick behalten: Nach dem Standort fragt die App an drei Stellen, jedes Mal nur im Vordergrund und nie von selbst. Beim Kassieren, weil der Zahlungsanbieter es verlangt. Bei Ankunft und Abfahrt, falls Ihr Betrieb das eingeschaltet hat. Und beim Höhenmesser, wenn dem Gerät der Luftdrucksensor fehlt. Nur im ersten Fall geht etwas nach draußen; in den beiden anderen bleibt der Wert auf dem Gerät beziehungsweise geht höchstens in den Abgleich Ihres eigenen Betriebs. An uns übermittelt Montix keinen Standort.',
-          'Kassieren erscheint in der App überhaupt erst, wenn auf Ihrem Zahlungsdienst ein Stripe-Schlüssel hinterlegt ist. Für die Verarbeitung durch Stripe gilt deren Datenschutzerklärung; Vertragspartner von Stripe sind Sie, nicht wir.',
+          'Kassieren erscheint in der App überhaupt erst, wenn einer der beiden Wege eingerichtet ist: ein Stripe-Schlüssel auf Ihrem Zahlungsdienst oder ein eingerichteter SumUp-Leser. Für die Verarbeitung durch Stripe gilt deren Datenschutzerklärung; Vertragspartner von Stripe sind Sie, nicht wir.',
         ],
       }),
 
