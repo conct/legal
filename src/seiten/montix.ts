@@ -8,7 +8,7 @@ import type { Preset } from '../presets.js';
  *
  * Quelle ist nicht ein vorhandener Rechtstext — es gibt keinen. Jeder Absatz
  * unten ist am Code nachgesehen (Repo conct/Kilpro, Stand 13.11.2026,
- * aa8cec7):
+ * ffb1a98):
  *
  *   app.json            plugins, android.permissions, updates.url
  *   src/features/…      license, payment, push, signature, home, customers
@@ -169,6 +169,20 @@ export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
           'Die App meldet die Position etwa jede Minute, solange sie offen ist; gespeichert wird nur die letzte, kein Verlauf. Eine Ortung im Hintergrund gibt es nicht — schließt der Monteur die App, bleibt die Seite beim letzten Stand stehen und sagt das auch. Mit „Angekommen“ endet die Fahrt, der Ort wird gelöscht, und vierundzwanzig Stunden später ist die Adresse nicht mehr erreichbar.',
           'Die Entfernung kann die App nur nennen, wenn sie den Ort des Kunden schon kennt — gelernt beim ersten Ankommen dort. Sonst steht auf der Seite nur „Auf dem Weg“.',
           'Im Betrieb sehen die Kollegen im Kalender dasselbe: wer gerade unterwegs ist, zu wem, und wie weit es ungefähr noch ist. Für Sie als Betrieb heißt das: Hier werden Beschäftigte geortet, und zwar sichtbar für Kollegen und für Kunden. Gibt es einen Betriebsrat, ist dessen Mitbestimmung nach § 87 Abs. 1 Nr. 6 BetrVG zu beachten, bevor Sie den Schalter umlegen.',
+        ],
+      }),
+
+      ds.freitext({
+        titel: 'Mappen mit anderen Firmen teilen',
+        absaetze: [
+          'Diese Funktion gibt es nur im Betrieb. Sie stellen eine Mappe zusammen — einen Plan als Zeichnung und als PDF, dazu Fotos oder PDF-Dateien — und teilen sie über einen Link oder einen QR-Code mit jemandem außerhalb Ihres Betriebs, etwa einer anderen Firma auf derselben Baustelle. Geteilt wird ein Stand, also eine Kopie. Niemand bekommt dadurch Zugang zu Ihrem Betrieb, zu Ihren Kunden oder zu Ihren Berichten.',
+          'Auf unserem Server liegen dann: der Titel, auf Wunsch eine Objektadresse und eine Notiz, die Dateien selbst, und der Name der Person, die geteilt hat. Dazu, wann die Mappe angelegt und zuletzt geändert wurde, die wievielte Fassung es ist, wie oft sie abgerufen wurde und wann zuletzt. IP-Adressen der Abrufenden speichern wir nicht, und wer eine Mappe ansieht, erfahren wir nicht.',
+          'Die Seite dazu ist öffentlich in dem Sinne, dass sie keine Anmeldung verlangt. Sie ist von Suchmaschinen ausgenommen, wird nicht zwischengespeichert und gibt beim Weiterklicken keine Herkunft preis. Der Schutz liegt allein im Link: Er enthält einen zufälligen Schlüssel, und auf dem Server liegt nur dessen Prüfsumme. Das hat zwei Folgen, die Sie kennen sollten. Erstens können auch wir den Link nicht wiederherstellen, wenn er verloren geht — dann teilen Sie neu. Zweitens kommt jeder hinein, der ihn hat. Behandeln Sie ihn wie einen Schlüssel und stellen Sie ihn nicht irgendwohin, wo ihn Unbeteiligte finden.',
+          'Zusätzlich können Sie eine PIN setzen. Nach zehn falschen Eingaben ist die Mappe fünfzehn Minuten gesperrt. Wer die richtige PIN eingegeben hat, kommt eine Stunde lang ohne erneute Eingabe hinein.',
+          'Sie wählen beim Teilen, wie lange der Link gelten soll: sieben Tage, dreißig Tage, ein Jahr oder unbefristet. Hier ist eine Grenze wichtig, und wir schreiben sie hin, statt sie zu beschönigen: Läuft die Frist ab, ist die Mappe nicht mehr abrufbar — gelöscht ist sie damit nicht. Die Dateien liegen weiter auf dem Server. Wirklich gelöscht wird beim Zurückziehen: Das entfernt die Dateien sofort und macht den Link tot. Dasselbe geschieht, wenn der ganze Betrieb gelöscht wird. Ziehen Sie eine Mappe also zurück, wenn sie erledigt ist, und verlassen Sie sich nicht auf den Ablauf.',
+          'Löschen Sie Ihr eigenes Konto, bleiben Mappen bestehen, die Sie geteilt haben — sie gehören dem Betrieb, so wie Berichte und Belege auch. Anders als an anderen Stellen bleibt dort allerdings Ihr Name stehen, weil er beim Teilen in die Mappe geschrieben wurde. Wenn Sie das nicht möchten, ziehen Sie Ihre Mappen vor dem Löschen zurück.',
+          'Aufnehmen lassen sich Bilder (JPEG, PNG, WebP), Zeichnungen (SVG) und PDF-Dateien, höchstens zwanzig Stück und zusammen 25 MB je Mappe; ein Betrieb kann insgesamt 500 MB geteilt halten. Der Server prüft bei jeder Datei, ob sie wirklich dem angegebenen Typ entspricht, und nimmt Zeichnungen nur ohne eingebettete Skripte an.',
+          'Über die Weitergabe entscheiden Sie als Betrieb. Sie sind dafür der Verantwortliche: Was in der Mappe landet, bestimmen Sie, und ob Ihr Kunde damit einverstanden ist, dass sein Lageplan oder Fotos seines Hauses eine andere Firma erreichen, klären Sie. Wir speichern und stellen bereit, in Ihrem Auftrag und nach dem Vertrag zur Auftragsverarbeitung.',
         ],
       }),
 
