@@ -343,9 +343,22 @@ export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
       }),
 
       ds.freitext({
-        titel: 'Lizenz',
+        titel: 'Lizenz und Kauf',
         absaetze: [
-          'Der erste Monat ist kostenlos und braucht keinen Schlüssel; gemerkt wird dafür nur der Tag des ersten Starts auf dem Gerät. Ein später erworbener Lizenzschlüssel wird auf dem Gerät geprüft — die App meldet dazu nichts an uns zurück und fragt bei uns nichts ab.',
+          'Der erste Monat ist kostenlos und braucht keinen Schlüssel; gemerkt wird dafür nur der Tag des ersten Starts auf dem Gerät. Die App zählt diesen Monat selbst, ohne Zahlungsdaten und ohne uns zu fragen.',
+          'Für einen einzelnen Arbeitsplatz ändert sich daran nichts: Ob Sie in Google Play oder im App Store kaufen oder einen Lizenzschlüssel eintippen — geprüft wird auf dem Gerät. Die App meldet dazu nichts an uns zurück und fragt bei uns nichts ab.',
+          'Beim Team-Abo geht das nicht ohne uns, denn es gilt für alle Geräte eines Betriebs und nicht nur für das kaufende. Die App schickt deshalb den Kaufbeleg an unseren Server — bei Google den Kauf-Token, bei Apple die von Apple signierte Transaktion. Unser Server fragt damit bei Google den Stand des Abos ab beziehungsweise prüft die Unterschrift von Apple nach. Gespeichert werden danach: die Kennung Ihres Betriebs, welches Produkt gekauft wurde, für wie viele Plätze es gilt, bis wann es läuft, sein Stand und die Kennung, unter der der Store den Kauf führt. Google und Apple melden uns später von sich aus, wenn ein Abo verlängert, gekündigt oder erstattet wird; wir schreiben dann den Stand fort.',
+          'Zahlungsdaten bekommen wir dabei nie zu sehen. Wer bezahlt hat und womit, wissen Google und Apple; uns erreicht nur die Auskunft, dass dieser Kauf gültig ist und bis wann. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO — ohne diese Prüfung könnten wir die gekaufte Leistung nicht freischalten.',
+          'Einen Mehrplatz-Kauf oder eine Enterprise-Fassung rechnen wir weiter auf Rechnung ab. Dabei entsteht ein Lizenzschlüssel, den wir Ihnen per Mail schicken und den Ihre Geräte eintippen; dafür gelten die üblichen Angaben eines Geschäftsvorgangs und die steuerlichen Aufbewahrungsfristen.',
+        ],
+      }),
+
+      ds.freitext({
+        titel: 'Testbetrieb',
+        absaetze: [
+          'Sie können einen Betrieb direkt in der App zum Ausprobieren einrichten; er läuft dreißig Tage. Zahlungsdaten brauchen wir dafür nicht, und es wird daraus von selbst nichts Kostenpflichtiges.',
+          'Angegeben werden dabei der Name des Betriebs und Ihr Name; eine E-Mail-Adresse ist freiwillig und dient nur dazu, dass wir uns melden können, wenn etwas klemmt oder der Test ausläuft. Gespeichert werden diese Angaben samt dem Tag, an dem der Test endet. Wir bekommen darüber eine Hinweis-Mail, damit wir wissen, dass jemand angefangen hat.',
+          'Wird daraus nichts, löschen wir den Betrieb von Hand, und zwar dreißig Tage nach dem Ende des Tests. Vorher können Sie uns jederzeit sagen, dass er sofort weg soll. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO für die Einrichtung selbst und Art. 6 Abs. 1 lit. f DSGVO für die Hinweis-Mail — unser berechtigtes Interesse daran, einen beginnenden Test zu bemerken und ansprechbar zu sein.',
         ],
       }),
 
