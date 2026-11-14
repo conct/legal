@@ -84,6 +84,7 @@ export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
         absaetze: [
           'Sie können ein Foto oder ein vorhandenes Planbild als Vorlage unter einen Plan legen und darüber zeichnen. Dafür fragt die App beim ersten Mal den Zugriff auf Ihre Bilder ab. Das gewählte Bild wird zum Plan gespeichert und bleibt wie dieser auf dem Gerät.',
           'Zum Arbeitsbericht und beim Messen per Foto können Sie außerdem unmittelbar mit der Kamera aufnehmen. Dafür fragt die App beim ersten Mal das Kamerarecht ab; verweigern Sie es, bleibt der Weg über die Galerie. Die Aufnahmen werden in den Ordner der App kopiert und dort gespeichert, nicht in Ihre Bilderrolle. Übertragen wird nichts.',
+          'Beim Vermessen eines Raumes läuft die Kamera ebenfalls — auf iPhone und iPad über Apples RoomPlan, auf Android über ARCore. Dabei entsteht kein Bild, das irgendwo bliebe: Gespeichert wird allein der Grundriss, also Wände, Türen, Fenster und ihre Maße. Das Kamerabild wird nur ausgewertet, solange die Aufnahme läuft, und weder abgelegt noch übertragen.',
         ],
       }),
 
@@ -324,7 +325,8 @@ export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
       ds.freitext({
         titel: 'NFC',
         absaetze: [
-          'Die App kann NFC-Etiketten lesen, um ein Objekt oder ein Gerät wiederzufinden. Ein solches Etikett trägt nur eine Kennung; was dahintersteckt, steht in Ihren eigenen Daten auf dem Gerät.',
+          'Die App kann NFC-Etiketten lesen und beschreiben, um ein Objekt oder ein Gerät wiederzufinden. Ein solches Etikett trägt nur eine Kennung; was dahintersteckt, steht in Ihren eigenen Daten auf dem Gerät. Beim Beschreiben wandert also kein Name, keine Anschrift und keine andere Angabe Ihres Kunden auf das Etikett — nur der Verweis. Wer das Etikett ohne Montix ausliest oder den dahinterliegenden Eintrag nicht hat, erfährt daraus nichts.',
+          'Auf das Etikett geschrieben wird nur, wenn Sie es ausdrücklich anstoßen und das Etikett dabei an das Gerät halten. Was vorher darauf stand, wird dabei überschrieben.',
         ],
       }),
 

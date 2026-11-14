@@ -141,7 +141,8 @@ const STATIC_SITES = {
     // Wie klarschiff.feif.space: nur die Datenschutzerklaerung der App, das
     // Impressum der Domain gilt mit.
     dateien: {
-      datenschutz: ['apps-software/farbecho/datenschutz.html'],
+      // Farbecho ist am 14.11.2026 von Apps & Software nach Spiele umgezogen.
+      datenschutz: ['spiele/farbecho/datenschutz.html'],
     },
     eigeneUeberschrift: true,
   },
