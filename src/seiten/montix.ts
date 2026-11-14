@@ -8,7 +8,7 @@ import type { Preset } from '../presets.js';
  *
  * Quelle ist nicht ein vorhandener Rechtstext — es gibt keinen. Jeder Absatz
  * unten ist am Code nachgesehen (Repo conct/Kilpro, Stand 13.11.2026,
- * 8c25321):
+ * c9f90b9):
  *
  *   app.json            plugins, android.permissions, updates.url
  *   src/features/…      license, payment, push, signature, home, customers
@@ -183,8 +183,21 @@ export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
           'Sie wählen beim Teilen, wie lange der Link gelten soll: sieben Tage, dreißig Tage, ein Jahr oder unbefristet. Läuft die Frist ab, ist die Mappe sofort nicht mehr abrufbar, und ein Aufräumlauf entfernt die Dateien vom Server — er läuft stündlich, spätestens eine Stunde nach Ablauf sind sie also weg. Stehen bleibt nur die Zeile in Ihrer eigenen Liste, mit Titel, Zeitpunkten und der Zahl der Abrufe; die Dateien sind daraus nicht wiederherzustellen.',
           'Schneller geht es mit „Zurückziehen“: Das entfernt die Dateien unmittelbar und macht den Link tot. Nehmen Sie das, wenn eine Mappe nicht erst in sieben Tagen verschwinden soll. Wird der ganze Betrieb gelöscht, verschwinden ohnehin alle Mappen mit ihm, weil sie in derselben Datei liegen.',
           'Löschen Sie Ihr eigenes Konto, bleiben Mappen bestehen, die Sie geteilt haben — sie gehören dem Betrieb, so wie Berichte und Belege auch. Ihr Name verschwindet dabei: Er wird in diesen Mappen durch „gelöscht“ ersetzt, genau wie überall sonst. Wollen Sie auch die Mappen selbst los sein, ziehen Sie sie vor dem Löschen zurück.',
-          'Aufnehmen lassen sich Bilder (JPEG, PNG, WebP), Zeichnungen (SVG) und PDF-Dateien, höchstens zwanzig Stück und zusammen 25 MB je Mappe; ein Betrieb kann insgesamt 500 MB geteilt halten. Der Server prüft bei jeder Datei, ob sie wirklich dem angegebenen Typ entspricht, und nimmt Zeichnungen nur ohne eingebettete Skripte an.',
+          'Aufnehmen lassen sich Bilder (JPEG, PNG, WebP), Zeichnungen (SVG), PDF-Dateien und Tabellen als CSV, höchstens zwanzig Stück und zusammen 25 MB je Mappe; ein Betrieb kann insgesamt 500 MB geteilt halten. Der Server prüft bei jeder Datei, ob sie wirklich dem angegebenen Typ entspricht, nimmt Zeichnungen nur ohne eingebettete Skripte an und CSV-Dateien nur ohne Nullbytes.',
+          'Den Link können Sie selbst verschicken oder uns verschicken lassen. Im zweiten Fall geben Sie eine Empfängeradresse an, und unser Server schickt eine E-Mail im Namen Ihres Betriebs: darin der Titel, die Objektadresse, Ihre optionale Nachricht, der Link, bis wann er gilt und, falls Sie eine PIN gesetzt haben, der Hinweis, dass diese getrennt kommt. Die Dateien selbst hängen nie an einer solchen Mail. Als Absender steht der Name Ihres Betriebs, nicht der einer Person.',
+          'Diese Empfängeradresse speichern wir nicht — sie wird für den Versand benutzt und danach nicht abgelegt. Es gibt keine Liste, wem Sie etwas geschickt haben. Damit niemand unseren Server als Schleuder benutzt, gehen höchstens hundert solcher Mails je Betrieb und Tag hinaus, und der Server lässt sich nur einen Link schicken, der wirklich zu dieser Mappe gehört.',
           'Über die Weitergabe entscheiden Sie als Betrieb. Sie sind dafür der Verantwortliche: Was in der Mappe landet, bestimmen Sie, und ob Ihr Kunde damit einverstanden ist, dass sein Lageplan oder Fotos seines Hauses eine andere Firma erreichen, klären Sie. Wir speichern und stellen bereit, in Ihrem Auftrag und nach dem Vertrag zur Auftragsverarbeitung.',
+        ],
+      }),
+
+      ds.freitext({
+        titel: 'Buchhaltung: der Stapel für die Kanzlei',
+        absaetze: [
+          'Aus Ihren ausgestellten Rechnungen und Stornorechnungen erzeugt Montix einen Buchungsstapel im DATEV-Format, den Ihre Kanzlei einlesen kann. Angebote und Lieferscheine sind keine Buchungen und kommen darin nicht vor, Entwürfe ebenso wenig.',
+          'Das geschieht in der App, auf Ihrem Gerät. Wir sehen dabei nichts, und ein Stapel entsteht nicht von selbst — Sie lösen ihn aus. Sie können ihn als Datei weitergeben, dann berührt er unseren Server überhaupt nicht.',
+          'Wählen Sie stattdessen „An die Kanzlei senden“, wird daraus eine geteilte Mappe mit der Tabelle darin: Sie liegt dreißig Tage auf unserem Server, und die Kanzlei bekommt den Link per E-Mail. Dann gilt alles, was im Abschnitt zu den Mappen steht — auch, dass der Link der Schlüssel ist. In dieser Tabelle stehen Rechnungsdaten Ihrer Kunden, also Namen, Beträge und Konten. Überlegen Sie deshalb, ob der kurze Weg über uns der richtige ist oder ob Sie die Datei lieber unmittelbar übergeben.',
+          'Für diese Funktion speichert Montix ein paar Angaben zusätzlich: an Ihren Firmendaten die Berater- und die Mandantennummer, den Beginn Ihres Wirtschaftsjahres, den Kontenrahmen und die E-Mail-Adresse Ihrer Kanzlei; an Ihren Kunden deren Debitorennummer. Nutzen Sie den Abgleich, liegen diese Angaben wie die übrigen Stammdaten auf dem Server Ihres Betriebs.',
+          'Eine Grenze, die zur Ehrlichkeit gehört: Der Stapel prüft sich nicht selbst. Ob die Kontierung zu Ihrem Betrieb passt, entscheidet Ihre Kanzlei — lassen Sie den ersten Stapel dort bestätigen, bevor Sie sich darauf verlassen.',
         ],
       }),
 
