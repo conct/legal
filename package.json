@@ -1,6 +1,6 @@
 {
   "name": "@conct/legal",
-  "version": "1.19.0",
+  "version": "1.20.0",
   "description": "Zentrale Quelle für Impressum und Datenschutzerklärung aller conct-Projekte",
   "license": "UNLICENSED",
   "author": "Daniel von Lühmann",
@@ -39,7 +39,8 @@
     "prepare": "npm run build",
     "check": "tsc -p tsconfig.json --noEmit",
     "smoke": "node scripts/smoke.mjs",
-    "sync": "node scripts/sync-static.mjs"
+    "sync": "node scripts/sync-static.mjs",
+    "stand": "node scripts/stand.mjs"
   },
   "peerDependencies": {
     "react": ">=18"
