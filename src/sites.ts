@@ -208,8 +208,10 @@ export const SITES = {
       // Umstellung auf 'conct' vom Vormittag zurucknimmt. Rechtstexte nennen
       // Daniel von Luehmann, nicht conct und nicht feif.space. Das ist auch
       // die saubere Lesart von § 5 DDG - gefordert ist der Name, eine Marke
-      // ist Zierde. conct und feif.space bleiben Marken im Auftritt
-      // (Fusszeile, Produktschau), nicht in den Rechtstexten.
+      // ist Zierde. conct und feif.space bleiben Marken im Auftritt,
+      // nicht in den Rechtstexten - seit dem Nachmittag des 15.11.2026
+      // aber auch nicht mehr in den Fusszeilen: die nennen denselben
+      // Anbieter wie das Impressum.
       //
       // E-Mail am 15.11.2026 von mail@feif.space auf mail@conct.de
       // umgestellt: Der Dienst liegt unter walkforward.conct.de, und die
