@@ -24,6 +24,9 @@ import { link, p, txt } from '../types.js';
  * (fehler.mjs, src/app/fehler.tsx), Adressvorschläge und „Aktuelle Position
  * verwenden“ (adresse.mjs, src/components/AdressFeld.tsx).
  *
+ * Nachgetragen am 15.11.2026 (Kilpro 954a3fd): E-Mail je Mitarbeiter über den
+ * Server des Betriebs (server/abgleich/mail.mjs, mail-helfer.py, src/app/mail*).
+ *
  * `geprueft` bleibt false. Ich habe den Code gelesen, aber niemand sonst hat
  * diesen Text gegen ihn abgenommen, und die App ist in keinem Store. Vor der
  * Veröffentlichung durchgehen — besonders die beiden Stellen, die heute noch
@@ -149,6 +152,16 @@ export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
           'Nutzt Ihr Betrieb den Abgleich über einen Server, können sich die Mitarbeiter darüber kurze Nachrichten und Sprachnachrichten schicken. Gespeichert werden auf diesem Server Absender, Empfänger — eine Person oder alle —, der Text beziehungsweise die Aufnahme und der Zeitpunkt. Jedes Gerät erhält nur, was an alle, an die jeweilige Person oder von ihr ist.',
           'Die App fragt den Server ab, solange sie offen ist. Haben Sie Benachrichtigungen eingeschaltet, kommt zu einer neuen Nachricht zusätzlich eine Push-Mitteilung mit Ihrem Namen und bis zu 140 Zeichen des Textes — über Expo und Google, siehe den Abschnitt „Benachrichtigungen“. Auf dem Gerät bleiben die Nachrichten der letzten 90 Tage.',
           'Auf dem Server gilt dieselbe Frist, allerdings mit einer Einschränkung, die Sie kennen sollten: Gelöscht wird beim Abruf, nicht von selbst. Nachrichten, die älter als 90 Tage sind, verschwinden, sobald jemand das nächste Mal Nachrichten abruft. Ruft niemand mehr ab — etwa weil der Betrieb die App nicht mehr benutzt —, bleiben sie liegen, bis wieder abgerufen oder der Betrieb insgesamt gelöscht wird.',
+        ],
+      }),
+
+      ds.freitext({
+        titel: 'E-Mail',
+        absaetze: [
+          'Nutzt Ihr Betrieb den Abgleich über einen Server, kann jeder Mitarbeiter in Montix sein eigenes E-Mail-Postfach einrichten — mit Adresse, Passwort und den Servern seines Mailanbieters, wie in jedem Mailprogramm. Das ist freiwillig; wer es nicht einrichtet, bei dem geschieht nichts davon.',
+          'Montix verbindet sich dabei nicht selbst mit Ihrem Mailanbieter, sondern über den Server Ihres Betriebs: Die App bittet ihn, Ordner und Mails abzurufen oder eine Mail zu verschicken, und er erledigt das beim Mailanbieter. Dafür speichert der Server Ihre Zugangsdaten — Adresse, Name, Server, Benutzername und Passwort —, und zwar verschlüsselt und getrennt je Mitarbeiter. Das Passwort geht einmal beim Einrichten an den Server und kommt nie zurück aufs Gerät; die Kollegen und der Verwalter Ihres Betriebs sehen weder Ihr Postfach noch Ihre Mails.',
+          'Die Mails selbst legt der Server nicht ab. Sie gehen bei jedem Abruf durch ihn hindurch zur App und bleiben im Übrigen bei Ihrem Mailanbieter, wie bisher. Die App merkt sich auf dem Gerät nur die zuletzt geladene Liste je Ordner — Absender, Empfänger, Betreff und Datum —, damit sie ohne Netz etwas zeigen kann. Öffnen Sie einen Anhang, wird er auf dem Gerät abgelegt und mit dem System geöffnet.',
+          'Entfernen Sie das Postfach in Montix, löscht der Server die Zugangsdaten sofort. Für die Mails bei Ihrem Mailanbieter gelten dessen eigene Bedingungen. Betreiben wir den Server für Ihren Betrieb, verarbeiten wir die Zugangsdaten und die durchgereichten Mails in dessen Auftrag; es gilt der Vertrag zur Auftragsverarbeitung.',
         ],
       }),
 
