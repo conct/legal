@@ -261,7 +261,7 @@ export const PRESETS_TRADER: Record<'walkforward.conct.de', Preset> = { 'walkfor
     ds.freitext({
       titel: 'Änderungen',
       absaetze: [
-        'Diese Erklärung gilt in der Fassung vom 06.11.2026 — das ist der Tag der letzten inhaltlichen Änderung, nicht der Tag deines Aufrufs. AGB und Datenschutzerklärung tragen jeweils ihr eigenes Datum, weil sie sich unabhängig voneinander ändern; steht dort dasselbe, wurden sie am selben Tag angefasst.',
+        'Diese Erklärung gilt in der Fassung vom 15.11.2026 — das ist der Tag der letzten inhaltlichen Änderung, nicht der Tag deines Aufrufs. AGB und Datenschutzerklärung tragen jeweils ihr eigenes Datum, weil sie sich unabhängig voneinander ändern; steht dort dasselbe, wurden sie am selben Tag angefasst.',
       ],
     }),
   ],
