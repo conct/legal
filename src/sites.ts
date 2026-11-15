@@ -126,7 +126,6 @@ export const SITES = {
       // Bestellmail von einer Adresse, die im Impressum nicht steht, ist für
       // den Empfänger schwer von einer Fälschung zu unterscheiden.
       email: 'mail@conct.de',
-      marke: 'conct',
       land: 'Deutschland',
       rechtlicheStellung: 'Einzelunternehmen. Nicht im Handelsregister eingetragen.',
     },
@@ -146,7 +145,6 @@ export const SITES = {
       // Dieselben Abweichungen wie die Website — die App verweist für den
       // Kauf im Browser auf sie, also dieselbe Adresse.
       email: 'mail@conct.de',
-      marke: 'conct',
       land: 'Deutschland',
       rechtlicheStellung: 'Einzelunternehmen. Nicht im Handelsregister eingetragen.',
     },
@@ -186,7 +184,6 @@ export const SITES = {
       // Wie conct.de: Die Seite tritt unter conct.de auf und nennt im Original
       // mail@conct.de — in Impressum, DSA-Kontaktstelle und Store-Texten.
       email: 'mail@conct.de',
-      marke: 'conct',
       land: 'Deutschland',
       rechtlicheStellung: 'Einzelunternehmen. Nicht im Handelsregister eingetragen.',
     },
@@ -207,25 +204,22 @@ export const SITES = {
     //
     // Kein `externeLinks`: Die Seite verlinkt nach draussen nur auf sich selbst.
     anbieter: {
-      // Marke seit dem 15.11.2026 'conct' - Entscheidung des Betreibers:
-      // Die Produkt-Impressen nennen einheitlich conct, weil die Produkte
-      // unter *.conct.de laufen und conct.de das Unternehmen hinter der
-      // Umsetzung ist. feif.space bleibt die Produktschau.
+      // Keine Marke: Entscheidung des Betreibers vom 15.11.2026, die die
+      // Umstellung auf 'conct' vom Vormittag zurucknimmt. Rechtstexte nennen
+      // Daniel von Luehmann, nicht conct und nicht feif.space. Das ist auch
+      // die saubere Lesart von § 5 DDG - gefordert ist der Name, eine Marke
+      // ist Zierde. conct und feif.space bleiben Marken im Auftritt
+      // (Fusszeile, Produktschau), nicht in den Rechtstexten.
       //
-      // OFFEN: Die E-Mail unten steht weiterhin auf feif.space. Damit nennt
-      // das Impressum eine Marke und eine Adresse aus einer anderen - genau
-      // die Unstimmigkeit, die beim Rechnungswerk-Eintrag oben als Grund
-      // gegen Fremdadressen steht. Umstellen beruehrt aber den Mailversand
-      // (PRUEFSTAND_MAILVERSAND_ANTWORT_AN) und die laufenden Anmelde- und
-      // Kuendigungsmails; das ist eine eigene Entscheidung.
-      marke: 'conct',
+      // E-Mail am 15.11.2026 von mail@feif.space auf mail@conct.de
+      // umgestellt: Der Dienst liegt unter walkforward.conct.de, und die
+      // Adresse im Impressum ist jetzt die der Domain. Dieselbe Adresse ist
+      // Antwort-An der Anmelde- und Kuendigungsmails; sie wurde zusammen mit
+      // PRUEFSTAND_MAILVERSAND_ANTWORT_AN im Repo Trader geaendert. Wer eine
+      // von beiden anfasst, aendert die andere mit.
+      email: 'mail@conct.de',
       // Die Seite nennt "Deutschland" in der Anschrift.
       land: 'Deutschland',
-      // E-Mail bleibt mail@feif.space (CONCT), obwohl die Domain unter conct.de
-      // liegt - conct.de und rechnungswerk nennen mail@conct.de. So steht es
-      // heute auf der Seite, und dieselbe Adresse ist Antwort-An der
-      // Anmelde- und Kuendigungsmails (PRUEFSTAND_MAILVERSAND_ANTWORT_AN).
-      // Wer auf mail@conct.de wechselt, aendert beides zugleich.
     },
   },
   // Schluessel nach der Paket-ID space.feif.sektorix. Die Erklaerung liegt

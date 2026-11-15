@@ -8,7 +8,18 @@ import { type Block, type Inline, br, lines, mail, tel, txt } from './types.js';
 export interface Anbieter {
   name: string;
   rechtsform?: string;
-  /** Marke, unter der das Angebot auftritt, z.B. "feif.space". Keine eigene Gesellschaft. */
+  /**
+   * Marke, unter der das Angebot auftritt. Keine eigene Gesellschaft; erscheint
+   * als zusaetzliche Zeile unter dem Namen.
+   *
+   * Fuer die eigenen Seiten bewusst ungenutzt (Entscheidung vom 15.11.2026):
+   * Rechtstexte nennen Daniel von Luehmann, nicht conct und nicht feif.space.
+   * § 5 DDG verlangt den Namen; eine Marke daneben macht aus einem Impressum
+   * kein besseres, sondern laedt ein, dass Impressum, AGB und Fusszeile
+   * verschiedene Namen fuehren. Genau das war am Vormittag der Fall.
+   * Das Feld bleibt, weil Mandanten-Seiten es brauchen koennen - dort firmiert
+   * eine Gesellschaft tatsaechlich unter einer anderen Marke.
+   */
   marke?: string;
   /** Kurze Angabe zur Unternehmensform, z.B. "Einzelunternehmen. Nicht im Handelsregister eingetragen." */
   rechtlicheStellung?: string;
