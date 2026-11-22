@@ -208,6 +208,19 @@ export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
       }),
 
       ds.freitext({
+        titel: 'Wenn ein Hilfetext fehlt',
+        absaetze: [
+          'Die App hat einen Hilfemodus: Darin ist jeder Knopf, jedes Feld und jede Zeile antippbar, und es erscheint eine Erklärung. Wo wir noch keine geschrieben haben, steht nur „Mehr dazu steht im Handbuch.“ ' +
+            'Tippen Sie auf so eine Stelle, meldet die App sie uns, damit wir den Text nachschreiben. Das geht immer an unseren zentralen Server, auch wenn Ihr Betrieb sonst über seinen eigenen abgleicht.',
+          'Mit geht: die Kennung der Stelle (etwa „knopf:Speichern“), ihre Beschriftung in Ihrer Sprache, der Pfad der Seite (etwa „/clients/4f2a“), Ihre App-Sprache und ob es Android, ein iPhone oder der Browser ist. ' +
+            'Nicht dabei sind Ihr Name, Ihr Betrieb, Ihre Rolle und eine Kennung Ihres Geräts. Der Seitenpfad kann allerdings die Kennung des Datensatzes enthalten, den Sie gerade offen hatten — eine Nummer oder Zeichenfolge, keinen Namen. Je App-Start wird jede Stelle höchstens einmal gemeldet, und ohne Netz geht nur diese Meldung verloren.',
+          'Auf dem Server stehen diese Angaben in einer Liste der fehlenden Hilfetexte, dazu, wie oft eine Stelle gemeldet wurde und wann zuerst und zuletzt. Bei einer neuen Stelle geht einmal eine E-Mail an unseren Support, höchstens zwanzig am Tag. ' +
+            'Erledigte Stellen haken wir ab. Die IP-Adresse zählt der Server nur kurz im Arbeitsspeicher, damit ihn niemand überschwemmt; mit einem Neustart des Dienstes ist das fort. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO: das Interesse, die Hilfe dort zu ergänzen, wo sie gebraucht wird.',
+          'Eine Frist, nach der diese Liste von selbst aufgeräumt wird, gibt es noch nicht. Ist ein Hilfetext geschrieben, haken wir die Stelle ab; der Eintrag bleibt dabei stehen. Gemeldet wird überdies nur, was Sie antippen: Wer den Hilfemodus nicht benutzt, schickt nichts.',
+        ],
+      }),
+
+      ds.freitext({
         titel: 'Alleinarbeit: wenn niemand sonst da ist',
         absaetze: [
           'Wer allein in einem Keller, auf einem Dach oder in einem Schacht arbeitet, kann in der App „Alleinarbeit“ beginnen und dabei ein Zeitfenster wählen — 15, 30, 60 oder 120 Minuten. Innerhalb dieser Frist tippt er „Alles in Ordnung“, was die Frist verlängert. Bleibt das aus, wird daraus ein Alarm für die Kollegen. „Notruf an Kollegen“ löst sofort aus, „Beenden“ hebt alles wieder auf.',
