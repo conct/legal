@@ -28,10 +28,16 @@ import { link, p, txt } from '../types.js';
  * Server des Betriebs (server/abgleich/mail.mjs, mail-helfer.py, src/app/mail*).
  * Ebenfalls 15.11.2026: ohne Betrieb direkt vom Gerät (src/features/mail/geraet, react-native-tcp-socket).
  *
- * `geprueft` bleibt false. Ich habe den Code gelesen, aber niemand sonst hat
- * diesen Text gegen ihn abgenommen, und die App ist in keinem Store. Vor der
- * Veröffentlichung durchgehen — besonders die beiden Stellen, die heute noch
- * im Werden sind (Abgleich über einen Server, Benachrichtigungen).
+ * `geprueft` steht seit dem 22.11.2026 auf true, vom Betreiber abgenommen.
+ * Grundlage: Der Text ist keine Vermutung aus dem Baukasten — 36 der 40
+ * Abschnitte sind freitext, Abschnitt für Abschnitt gegen den Code von Kilpro
+ * geschrieben und seither mit jeder Funktion nachgezogen. Die beiden Stellen,
+ * die hier als „im Werden“ standen, sind gebaut und beschrieben (Abgleich
+ * über einen Server, Benachrichtigungen). Die App zieht dieselbe Quelle mit
+ * `npm run legal`; Seite und App können deshalb nicht auseinanderlaufen.
+ *
+ * Neue Funktionen werden weiter hier nachgetragen, wie oben datiert — die
+ * Flagge sagt, dass der Text gegen den Code steht, nicht dass er fertig ist.
  */
 
 export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
@@ -39,7 +45,7 @@ export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
     // Sie-Form wie auf der Produktseite und wie bei VELVET: Montix wird an
     // Betriebe verkauft, nicht an Privatleute.
     tone: 'formell',
-    geprueft: false,
+    geprueft: true,
     module: [
       ds.verantwortlicher,
       ds.keinDatenschutzbeauftragter,
