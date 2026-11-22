@@ -152,6 +152,8 @@ export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
         absaetze: [
           'Nutzt Ihr Betrieb den Abgleich über einen Server, können sich die Mitarbeiter darüber kurze Nachrichten und Sprachnachrichten schicken. Gespeichert werden auf diesem Server Absender, Empfänger — eine Person oder alle —, der Text beziehungsweise die Aufnahme und der Zeitpunkt. Jedes Gerät erhält nur, was an alle, an die jeweilige Person oder von ihr ist.',
           'Die App fragt den Server ab, solange sie offen ist. Haben Sie Benachrichtigungen eingeschaltet, kommt zu einer neuen Nachricht zusätzlich eine Push-Mitteilung mit Ihrem Namen und bis zu 140 Zeichen des Textes — über Expo und Google, siehe den Abschnitt „Benachrichtigungen“. Auf dem Gerät bleiben die Nachrichten der letzten 90 Tage.',
+          'Wer eine Nachricht geschickt hat, kann sie löschen. Dann entfernt der Server Text und Aufnahme sofort, und die Geräte der Empfänger löschen sie beim nächsten Abruf. Eine Nachricht von jemand anderem lässt sich nur vom eigenen Gerät entfernen.',
+          'Nachrichten in einer anderen Sprache übersetzt die App auf Android auf dem Gerät selbst, mit ML Kit von Google. Dafür lädt sie beim ersten Mal ein Sprachpaket von Servern von Google herunter, etwa 30 MB je Sprache; dabei erfährt Google die IP-Adresse des Geräts und welche Sprache geladen wird. Der Text selbst verlässt das Handy nicht. Ohne den Knopf „Übersetzen“ wird nichts geladen.',
           'Auf dem Server gilt dieselbe Frist, allerdings mit einer Einschränkung, die Sie kennen sollten: Gelöscht wird beim Abruf, nicht von selbst. Nachrichten, die älter als 90 Tage sind, verschwinden, sobald jemand das nächste Mal Nachrichten abruft. Ruft niemand mehr ab — etwa weil der Betrieb die App nicht mehr benutzt —, bleiben sie liegen, bis wieder abgerufen oder der Betrieb insgesamt gelöscht wird.',
         ],
       }),
@@ -208,6 +210,47 @@ export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
           'Die App meldet die Position etwa jede Minute, solange sie offen ist; gespeichert wird nur die letzte, kein Verlauf. Eine Ortung im Hintergrund gibt es nicht — schließt der Mitarbeiter die App, bleibt die Seite beim letzten Stand stehen und sagt das auch. Mit „Angekommen“ endet die Fahrt, der Ort wird gelöscht, und vierundzwanzig Stunden später ist die Adresse nicht mehr erreichbar.',
           'Die Entfernung kann die App nur nennen, wenn sie den Ort des Kunden schon kennt — gelernt beim ersten Ankommen dort. Sonst steht auf der Seite nur „Auf dem Weg“.',
           'Im Betrieb sehen die Kollegen im Kalender dasselbe: wer gerade unterwegs ist, zu wem, und wie weit es ungefähr noch ist. Für Sie als Betrieb heißt das: Hier werden Beschäftigte geortet, und zwar sichtbar für Kollegen und für Kunden. Gibt es einen Betriebsrat, ist dessen Mitbestimmung nach § 87 Abs. 1 Nr. 6 BetrVG zu beachten, bevor Sie den Schalter umlegen.',
+        ],
+      }),
+
+      ds.freitext({
+        titel: 'Touren: Fahrer, Disposition und Standort',
+        absaetze: [
+          'Das Modul Touren ist für Speditionen und andere Betriebe mit Fahrzeugen gedacht. Es ist aus, bis der Verwalter es einschaltet, und es gibt es nur im Betrieb mit Abgleich. Die Daten liegen auf dem Server, über den Ihr Betrieb abgleicht — auf unserem oder auf Ihrem eigenen.',
+          'Gespeichert werden die Touren, wie die Disposition sie plant: Datum, Fahrzeug, zuständiger Fahrer und die Stopps mit Name des Empfängers, Anschrift, Ansprechpartner, Telefonnummer und E-Mail-Adresse, soweit eingetragen, dazu Zeitfenster, Sendungsnummer, Packstücke und Hinweise. Was unterwegs geschieht, hält die App als Meldung fest: Start, Ankunft, Beginn und Ende des Ladens, Abfahrt, Pause, Störung und Abweichung — jeweils mit Zeitpunkt, mit dem Ort, an dem getippt wurde, und mit dem Namen der Person, die gemeldet hat. Bei der Quittung kommen der Name der Person, die die Ware annimmt, und ihre Unterschrift dazu, bei einer Abweichung auf Wunsch Fotos, beim Scannen die gelesenen Codes. Touren und Meldungen bleiben, bis der Betrieb sie löscht.',
+          'Während eine Tour läuft, meldet das Handy des Fahrers seinen Standort an den Server: etwa jede Minute, solange die App offen ist, und ab der Fassung mit dem Vordergrunddienst auch bei geschlossener App — dann alle 45 Sekunden oder alle 150 Meter. Dass das geschieht, zeigt eine dauerhafte Mitteilung „Tour läuft“; mit dem Ende der Tour hört die Ortung auf. Außerhalb einer Tour wird nicht geortet. Android fragt dafür eigens nach der Erlaubnis, den Standort immer zu verwenden; ohne sie bleibt es bei der Ortung bei offener App.',
+          'Auf dem Server liegen die letzte Position jeder Tour und ein Verlauf mit höchstens einer Position je Minute, aus dem die Disposition die gefahrene Strecke sieht. Beides löscht der Server dreißig Tage nach der Aufzeichnung. Die Position sehen die Disposition — Verwalter und wer das Recht „Disposition“ hat — und, nur für die eigene Tour, der Fahrer selbst.',
+          'Ist das Fahrzeug weniger als 150 Meter vom nächsten Stopp entfernt, schlägt die App einmal vor, die Ankunft zu melden. Das rechnet das Handy selbst aus, die Mitteilung entsteht auf dem Gerät und geht nicht über Expo; gemeldet wird erst, wenn der Fahrer es bestätigt.',
+          'Für Sie als Betrieb ist das eine Ortung von Beschäftigten, und zwar laufend, solange sie fahren. Rechtsgrundlage ist in der Regel § 26 BDSG in Verbindung mit Art. 88 DSGVO oder eine Betriebsvereinbarung. Gibt es einen Betriebsrat, ist dessen Mitbestimmung nach § 87 Abs. 1 Nr. 6 BetrVG zu beachten, bevor Sie das Modul einschalten. Betreiben wir den Server, verarbeiten wir diese Daten in Ihrem Auftrag nach dem Vertrag zur Auftragsverarbeitung.',
+        ],
+      }),
+
+      ds.freitext({
+        titel: 'Adressen, Fahrzeiten und Karten bei Touren',
+        absaetze: [
+          'Damit der Server Ankunftszeiten schätzen kann, braucht er zu jedem Stopp Koordinaten. Fehlen sie, schickt er die Anschrift — Straße, Postleitzahl, Ort, ohne Namen — an den Dienst Photon der komoot GmbH in Deutschland und merkt sich das Ergebnis. Die Ankunftszeit rechnet er dann selbst aus der Luftlinie.',
+          'Hat der Betreiber des Servers einen Zugang zu openrouteservice eingerichtet (HeiGIT gGmbH, Heidelberg), fragt der Server dort die Lkw-Fahrzeit bis zum nächsten Stopp ab. Dabei gehen nur zwei Koordinatenpaare hinaus: die letzte Position des Fahrzeugs und der Stopp, ohne Namen und ohne Kennung des Fahrzeugs.',
+          'Die Karte der Fahrzeuge für die Disposition im Browser und die Karte auf der Seite für den Empfänger laden ihre Programmbibliothek von unpkg.com und die Kartenbilder von den Servern der OpenStreetMap Foundation (Vereinigtes Königreich). Dabei erfahren diese Dienste die IP-Adresse des Browsers und welchen Kartenausschnitt er lädt — nicht aber, wessen Fahrzeug dort steht. Wir planen, Bibliothek und Kartenbilder selbst bereitzustellen; dann steht es hier.',
+        ],
+      }),
+
+      ds.freitext({
+        titel: 'Der Link für den Empfänger',
+        absaetze: [
+          'Zu jedem Stopp kann die Disposition einen Link erzeugen, unter dem der Empfänger seine Lieferung verfolgt. Den Link gibt sie entweder selbst weiter, über das Teilen-Menü — dann gilt, was oben zur Einladung von Mitarbeitern steht —, oder der Server schickt ihn per E-Mail im Namen Ihres Betriebs an die Adresse, die am Stopp eingetragen ist. Eine eigene Liste der Empfängeradressen führt der Server nicht; die Adresse steht nur am Stopp der Tour.',
+          'Auf der Seite sieht der Empfänger: den Namen Ihres Betriebs, den Namen des Stopps und die Sendungsnummer, den geplanten Tag und das Zeitfenster, wie viele Stopps noch vor ihm liegen, die geschätzte Ankunft und, falls gemeldet, den Grund einer Verzögerung oder dass der Fahrer Pause macht. Läuft eine Sendung über mehrere Abschnitte — Lkw, Bahn, Schiff —, stehen deren Stationen mit Zeit darunter.',
+          'Eine Karte mit der Position des Fahrzeugs erscheint erst, wenn das Fahrzeug als Nächstes zu genau diesem Empfänger fährt, weniger als 25 Kilometer entfernt ist und die Position nicht älter als fünfzehn Minuten ist. Vorher sieht der Empfänger nicht, wo das Fahrzeug ist. Den Namen des Fahrers, das Kennzeichen und die übrigen Stopps zeigt die Seite nie.',
+          'Nach der Zustellung zeigt die Seite einen Zustellnachweis: Datum und Uhrzeit, den Namen der Person, die angenommen hat, und deren Unterschrift. Das sollten Sie wissen, denn es betrifft auch diese Person: Wer den Link hat, sieht Name und Unterschrift. Dreißig Tage nach der Zustellung ist die Seite nicht mehr erreichbar, neunzig Tage nach seiner Erstellung löscht der Server den Link.',
+          'Die Seite verlangt keine Anmeldung und ist von Suchmaschinen ausgenommen. Der Schutz liegt im Link: Er enthält einen zufälligen Schlüssel, und auf dem Server liegt nur dessen Prüfsumme. Wir können einen verlorenen Link also nicht wiederherstellen, und jeder kommt hinein, der ihn hat.',
+        ],
+      }),
+
+      ds.freitext({
+        titel: 'Fremdfahrer und Partnerbetriebe',
+        absaetze: [
+          'Ein Betrieb kann Subunternehmer an seinen Touren beteiligen, ohne dass diese eine eigene Lizenz brauchen. Die Disposition erzeugt dafür einen Code; wer ihn einlöst, bekommt beim Betrieb ein Gastkonto als Fremdfahrer oder als Partnerbetrieb. Dieses Konto sieht nur die Touren, die ihm zugeteilt sind, und als Ansprechpartner nur die Disposition — nicht die übrigen Mitarbeiter, nicht die Kunden, nicht die übrigen Daten des Betriebs. Umgekehrt sieht der Betrieb vom Gast nur, was dieser zu den zugeteilten Touren meldet, samt Standort während der Tour. Die Daten der beiden Firmen bleiben getrennt, auch auf dem Handy.',
+          'Ein Partnerbetrieb kann eine solche Tour in seinen eigenen Betrieb übernehmen und dort einem eigenen Fahrer geben, auch wenn er einen anderen Server benutzt. Dann bewahrt der Server des Partners den Zugang zum Server des auftraggebenden Betriebs auf und schickt ihm jede Minute die Meldungen seines Fahrers zu dieser Tour — mit dessen Namen — und die letzte Position; Änderungen an der Tour holt er von dort ab. Andere Touren und Daten des Partners gehen nicht hinaus.',
+          'Für diese Weitergabe ist jede Firma für ihren Teil selbst verantwortlich. Der Partnerbetrieb entscheidet, die Daten seines Fahrers an den Auftraggeber zu geben; ob die beiden dafür eine Vereinbarung brauchen und wie sie ihre Fahrer informieren, klären sie miteinander. Sperrt die Disposition einen Gast, bekommt dessen Gerät keine Touren mehr.',
         ],
       }),
 
