@@ -374,7 +374,7 @@ export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
         titel: 'Adressvorschläge',
         absaetze: [
           'Beim Tippen in „Straße und Hausnummer“ — beim Kunden, in Ihren Firmendaten und bei Tour-Stopps — schlägt die App ab drei Zeichen passende Anschriften vor. Dafür schickt sie den bis dahin getippten Text an den Server, über den Ihr Betrieb abgleicht, ohne Abgleich an unseren. Der sucht in einem eigenen Adressverzeichnis, das auf demselben Server liegt und aus den Daten von OpenStreetMap erzeugt ist (© OpenStreetMap-Mitwirkende, ODbL). Ein fremder Dienst ist nicht beteiligt; der Text verlässt den Server nicht.',
-          'Unter dem Feld steht außerdem „Aktuelle Position verwenden“. Erst wenn Sie das antippen, fragt die App einmal den Standort ab und schickt ihn, auf etwa zehn Meter gerundet, auf demselben Weg, um die Anschriften in der Nähe zu erfahren.',
+          'Unter dem Feld steht außerdem „Aktuelle Position verwenden“. Erst wenn Sie das antippen, fragt die App einmal den Standort ab und schickt ihn auf demselben Weg an diesen Server, um die Anschriften in der Nähe zu erfahren. Der Server speichert ihn nicht.',
           'Gespeichert wird dabei nichts. Der Server zählt nur im Arbeitsspeicher, wie viele Anfragen am Tag von derselben IP-Adresse kommen, um Missbrauch zu bremsen; das ist mit einem Neustart des Dienstes fort. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO: das Interesse, Anschriften schnell und richtig zu erfassen.',
           'Den Text schickt die App, solange Sie in diesem einen Feld schreiben. Ohne Netz gibt es keine Vorschläge, und das Feld bleibt ein gewöhnliches Eingabefeld. Soll eine Anschrift gar nicht hinausgehen, ist das Netz abzuschalten der sichere Weg.',
         ],
