@@ -109,6 +109,14 @@ if (zurueck) {
   console.log('Nachziehen heisst: Tag setzen, in jedem Produkt die Bindung erhoehen,');
   console.log('neu installieren, abgeleitete Texte erzeugen, ausliefern - und vorher');
   console.log('lesen, was sich am Wortlaut aendert. Es sind Rechtstexte.');
+  console.log();
+  console.log('Gelesen wird dabei nur die Bindung in package.json, nicht der Text,');
+  console.log('den das Produkt wirklich ausliefert. Wer seine Texte mit LEGAL_PATH');
+  console.log('aus einem Checkout erzeugt, haengt hier zurueck und zeigt trotzdem');
+  console.log('einen neueren Wortlaut - bei Kilpro stand am 23.11.2026 die Bindung');
+  console.log('auf 1.16.0, die erzeugte texte.json kam aus einem Stand von 1.24.0.');
+  console.log('Diese Zeilen sind also ein Verdacht und kein Befund: nachsehen,');
+  console.log('woraus die abgeleitete Datei des Produkts erzeugt wurde.');
   process.exit(1);
 }
 console.log('Alle Bindungen sind aktuell.');
