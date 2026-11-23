@@ -435,6 +435,14 @@ export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
       }),
 
       ds.freitext({
+        titel: 'Währungskurse',
+        absaetze: [
+          'Eine Rechnung in fremder Währung kann die Umsatzsteuer zusätzlich in Euro nennen. Den Kurs dafür schlägt Montix aus einer Tabelle vor, die mit dem App-Update auf das Gerät kommt: die amtlichen Umsatzsteuer-Umrechnungskurse des Bundesfinanzministeriums. Das Gerät fragt dafür nichts ab, und es geht dabei nichts hinaus.',
+          'Daneben zeigt Montix im Betrieb mit Server an solchen Rechnungen und bei den offenen Posten einen ungefähren Eurobetrag zur Orientierung. Den Kurs dafür holt der Server, über den Ihr Betrieb abgleicht, höchstens zweimal am Tag bei der Europäischen Zentralbank — eine öffentliche Kursliste, abgerufen ohne Anmeldung. Aus Ihren Daten geht dabei nichts hinaus: Die Europäische Zentralbank erfährt nur, dass dieser Server die Liste geholt hat, und sieht dessen IP-Adresse. Betreiben wir den Server für Sie, ist es unsere. Abschalten lässt sich der Abruf am Server; dann entfällt die Zahl zur Orientierung, sonst nichts.',
+        ],
+      }),
+
+      ds.freitext({
         titel: 'Lizenz und Kauf',
         absaetze: [
           'Der erste Monat ist kostenlos und braucht keinen Schlüssel; gemerkt wird dafür nur der Tag des ersten Starts auf dem Gerät. Die App zählt diesen Monat selbst, ohne Zahlungsdaten und ohne uns zu fragen.',

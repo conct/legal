@@ -2,7 +2,7 @@ import * as ds from '../datenschutz.js';
 import type { Modul } from '../datenschutz.js';
 import type { ImpressumOptions } from '../impressum.js';
 import type { Preset } from '../presets.js';
-import { br, mail, p, txt } from '../types.js';
+import { br, link, mail, p, txt } from '../types.js';
 /**
  * Vorschlag: feif.space an @conct/legal hängen.
  *
@@ -66,12 +66,20 @@ const impressumFeifspace: ImpressumOptions = {
     {
       title: 'Hinweis zu Marken und zum Fanprojekt',
       blocks: [
+        // Wörtlich, auch das gerade Schlusszeichen in „Pip-Boy" (live so;
+        // typografisch richtig wäre „Pip-Boy“). Der Verweis gehört dazu: Das
+        // Projekt lag anfangs auf der Startseite und hat seit einiger Zeit
+        // eine eigene Seite. Stand das hier als Fließtext ohne Verweis, hat
+        // der Sync den von Hand gesetzten Verweis in impressum.html jedes Mal
+        // wieder entfernt -- gefunden am 23.11.2026.
         p(
           txt(
-            // Wörtlich, auch das gerade Schlusszeichen in „Pip-Boy" (live so;
-            // typografisch richtig wäre „Pip-Boy“).
             'Die genannten Produkt- und Firmennamen sowie Marken sind Eigentum ihrer jeweiligen Inhaber. ' +
-              'Das auf der Startseite vorgestellte Projekt „Pip-Boy" ist ein inoffizielles, nicht kommerzielles ' +
+              'Das unter ',
+          ),
+          link('Spiele', '/spiele/pip-boy/'),
+          txt(
+            ' vorgestellte Projekt „Pip-Boy" ist ein inoffizielles, nicht kommerzielles ' +
               'Fanprojekt und steht in keiner Verbindung zu den Rechteinhabern der zugrunde liegenden Marke.',
           ),
         ),
