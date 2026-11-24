@@ -31,6 +31,26 @@ import { toHtml } from '../dist/render/html.js';
 import { toMarkdown } from '../dist/render/text.js';
 
 /**
+ * Die Fassung dieses Pakets, als Vermerk in jede erzeugte HTML-Datei.
+ *
+ * Warum: Am 23.11.2026 habe ich gemeldet, Montix liefere neun Fassungen alten
+ * Datenschutz aus. Gelesen war die Bindung in package.json — der ausgelieferte
+ * Text kam aber aus einem Checkout (LEGAL_PATH) und war neuer. Die Warnung war
+ * falsch, und nachsehen liess sie sich an keiner Datei: Keine abgeleitete Datei
+ * sagte, woraus sie entstanden ist. Jetzt sagt sie es, und zwar dort, wo sie
+ * liegt — eine Zeile im Quelltext der Seite, fuer Leser unsichtbar.
+ *
+ * Nur in HTML. In den Markdown-Zielen (Fibel, Lesestunde) uebersetzt ein
+ * eigener, kleiner Renderer das Ergebnis weiter; ein HTML-Kommentar wuerde dort
+ * womoeglich als Absatz erscheinen. Ein Vermerk, der im Text landet, ist
+ * schlimmer als keiner.
+ */
+const FASSUNG = JSON.parse(
+  readFileSync(new URL('../package.json', import.meta.url), 'utf8'),
+).version;
+const VERMERK = `<!-- Aus @conct/legal ${FASSUNG} erzeugt. Nicht hier aendern, sondern dort und neu erzeugen. -->`;
+
+/**
  * Welche Dateien die jeweilige statische Seite hat. Die Datenschutz-Bausteine
  * stehen in src/presets.ts, nicht hier — sonst gäbe es sie zweimal.
  *
@@ -232,6 +252,9 @@ function einruecken(fragment, tiefe) {
 }
 
 function patchen(pfad, fragment) {
+  // Der Vermerk gehoert in die Datei, nicht in den Renderer: Er beschreibt
+  // nicht den Rechtstext, sondern seine Herkunft.
+  fragment = `${VERMERK}\n${fragment}`;
   const alt = readFileSync(pfad, 'utf8');
   const SECTION = SECTIONS.find((re) => re.test(alt));
   const treffer = SECTION && alt.match(SECTION);

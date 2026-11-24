@@ -167,6 +167,14 @@ lokalen Checkout der Seite; danach wird dort committet und ausgeliefert:
 node scripts/sync-static.mjs ../../feif.space feif.space
 ```
 
+Jede so erzeugte HTML-Datei trägt in der ersten Zeile des Abschnitts einen
+Vermerk: `<!-- Aus @conct/legal 1.26.0 erzeugt. Nicht hier aendern, sondern dort
+und neu erzeugen. -->`. Damit sagt die ausgelieferte Datei selbst, woraus sie
+entstanden ist — und wer sie von Hand anfasst, liest vorher, dass der nächste
+Sync es wieder wegnimmt. In den Markdown-Zielen steht er nicht: Dort übersetzt
+ein eigener kleiner Renderer weiter, und ein Kommentar könnte dort als Absatz
+erscheinen.
+
 Einen GitHub-Workflow, der das bei jedem Release erledigt und Pull Requests
 öffnet, gab es bis zum 06.11.2026. Er ist entfernt: Ausliefern muss man ohnehin
 von Hand, und er brauchte ein Token mit Schreibrecht auf alle Ziel-Repos.
@@ -195,6 +203,21 @@ Apps aus [conct/skeleton-app](https://github.com/conct/skeleton-app) bringen die
 `app.json` unter `expo.extra.legal.site` steht, eine `texte.json` — nur die Abschnitte dieser App.
 Ins Bundle kommen diese Datei und `@conct/legal/react`, nicht `CONCT`. Eine neue App braucht hier
 also nur einen Eintrag in `SITES`, ein Preset und, für die Store-URL, ein Ziel im Sync.
+
+**In die `texte.json` gehört ein Feld `fassung`.** Es nennt die Fassung des Pakets, aus dem die
+Datei erzeugt wurde — und zwar die wirklich geladene, auch wenn das ein Checkout über `LEGAL_PATH`
+war:
+
+```js
+const fassung = JSON.parse(readFileSync(join(wurzel, 'package.json'), 'utf8')).version;
+texte = { fassung, site: key, /* … */ };
+```
+
+Ohne dieses Feld sagt die Bindung in `package.json`, was installiert ist, aber nichts darüber,
+welcher Wortlaut im Bundle liegt. Am 23.11.2026 stand bei Kilpro die Bindung auf 1.16.0, während
+die ausgelieferte `texte.json` aus 1.24.0 erzeugt war; der Bericht aus `scripts/stand.mjs` meldete
+daraufhin einen Rückstand, den es nicht gab. Das Skript liest jetzt dieses Feld und sagt sonst
+ausdrücklich, dass es die Antwort nicht kennt.
 
 feif.space hatte seine Rechtstexte bis zum 06.11.2026 von Hand im Template.
 Seitdem ist `PRESETS['feif.space']` abschnittsweise an den Live-Text angeglichen
@@ -455,6 +478,9 @@ npm version minor && git push --follow-tags
 Danach in jedem Konsumenten die Version in `package.json` anheben und
 `npm install` bzw. `npm run legal`, für die statischen Seiten den Sync laufen
 lassen (siehe oben), committen und ausliefern.
+
+Wer wo steht, sagt `npm run stand` — gelesen wird dafür die erzeugte Datei des
+Produkts, nicht nur seine Bindung.
 
 ## Kein Rechtsrat
 
