@@ -239,6 +239,40 @@ export const SITES = {
   // Schluessel nach der Paket-ID space.feif.farbecho. Eine eigene Domain gibt
   // es nicht: Die Erklaerung liegt unter feif.space/apps-software/farbecho/,
   // wie bei Klarschiff und Sektorix.
+  // Schluessel nach der Paket-ID space.feif.postwaechter. Noch keine Seite auf
+  // feif.space: Die Erklaerung zeigt bisher nur die App selbst (Bildschirm
+  // "Datenschutz"). Kommt die App in den Store, braucht sie eine Adresse im
+  // Netz -- dann kommt ein Eintrag in scripts/sync-static.mjs dazu, wie bei
+  // Klarschiff.
+  'postwaechter.feif.space': {
+    domain: 'feif.space',
+    name: 'Postwächter',
+    art: 'app',
+    // Kein `hoster`: Die App laeuft auf dem Geraet und spricht direkt mit dem
+    // Mailanbieter, den der Nutzer eintraegt. Dieser Anbieter steht NICHT in
+    // `drittdienste` -- er ist kein Auftragsverarbeiter von uns, sondern die
+    // Gegenstelle, die der Nutzer selbst waehlt. Ein Eintrag hier behauptete
+    // einen Art.-28-Vertrag, den es nicht gibt (dieselbe Abwaegung wie bei
+    // Stripe unter montix.feif.space).
+    drittdienste: [
+      { name: 'Expo (650 Industries, Inc.)', zweck: 'App-Aktualisierungen', ort: 'USA' },
+    ],
+  },
+  // Schluessel nach der Paket-ID space.feif.nachlass. Wie bei Postwaechter
+  // bisher ohne Seite im Netz.
+  'nachlass.feif.space': {
+    domain: 'feif.space',
+    name: 'Nachlass',
+    art: 'app',
+    // Kein `hoster`, kein Server, keine Karte. Der Spracherkennungsdienst des
+    // Handys (Google bzw. Apple) steht nicht in `drittdienste`: Er verarbeitet
+    // nicht in unserem Auftrag, sondern ist der Dienst des Geraeteherstellers,
+    // den auch Tastatur und Sprachsuche nutzen. Beschrieben ist er im Preset,
+    // im Abschnitt "Sprechen und Zuhoeren".
+    drittdienste: [
+      { name: 'Expo (650 Industries, Inc.)', zweck: 'App-Aktualisierungen', ort: 'USA' },
+    ],
+  },
   // Schluessel nach der Paket-ID de.conct.montix. Eine eigene Domain gibt es
   // nicht: Die Erklaerung liegt unter feif.space/apps-software/montix/.
   'montix.feif.space': {

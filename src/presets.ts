@@ -9,6 +9,8 @@ import { PRESETS_LESESTUNDE } from './seiten/lesestunde.js';
 import { PRESETS_RECHNUNGSWERK } from './seiten/rechnungswerk.js';
 import { PRESETS_TRADER } from './seiten/trader.js';
 import { PRESETS_MONTIX } from './seiten/montix.js';
+import { PRESETS_NACHLASS } from './seiten/nachlass.js';
+import { PRESETS_POSTWAECHTER } from './seiten/postwaechter.js';
 import { PRESETS_VELVET } from './seiten/velvet.js';
 
 /**
@@ -304,6 +306,15 @@ export const PRESETS: Record<SiteKey, Preset> = {
   ...PRESETS_MONTIX,
   ...PRESETS_LESESTUNDE,
   ...PRESETS_TRADER,
+
+  // Zwei Apps, die bis zum 24.11.2026 einen Entwurf aus den Standardbausteinen
+  // der Vorlage auslieferten, weil es fuer sie kein Preset gab. Der Entwurf
+  // beschrieb eine App, die nichts tut als sich zu aktualisieren -- bei einem
+  // Mailprogramm mit Zugangsdaten und bei einem Spiel mit Standort, Mikrofon
+  // und Kamera ist das zu wenig. Abschnitt fuer Abschnitt am Quelltext
+  // nachgesehen, siehe die Dateien.
+  ...PRESETS_POSTWAECHTER,
+  ...PRESETS_NACHLASS,
 };
 
 /** Alle Seiten, deren Preset noch nicht geprüft wurde. */
