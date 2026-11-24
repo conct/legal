@@ -25,6 +25,10 @@
 // und erfindet keine Auskunft. Liegt keine erzeugte Datei im Baum, rendert das
 // Produkt aus dem installierten Paket, und dann entscheidet die Bindung.
 //
+// Eine alte Bindung heisst uebrigens nicht von selbst alter Text: Ob sich am
+// Wortlaut ueberhaupt etwas geaendert hat, sagt `npm run wortlaut`. Diese
+// Fassungsnummern sind die Frage, nicht die Antwort.
+//
 // Dieses Skript beantwortet genau diese Frage und sonst keine. Es aendert nichts.
 //
 //   node scripts/stand.mjs            # Geschwisterordner neben Zentrale/
@@ -33,130 +37,27 @@
 // Rueckgabe 1, wenn irgendetwas zurueckhaengt - damit es in einer Pruefkette
 // auffaellt und nicht nur auf dem Schirm.
 
-import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
-import { join, dirname, relative, resolve } from 'node:path';
+import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { NAME, lies, produkte } from './produkte.mjs';
 
 const HIER = dirname(fileURLToPath(import.meta.url));
 const PAKET = resolve(HIER, '..');
 const SUCHORT = resolve(process.argv[2] ?? join(PAKET, '..', '..'));
-const NAME = '@conct/legal';
-
-const lies = (p) => { try { return JSON.parse(readFileSync(p, 'utf8')); } catch { return null; } };
 
 const quelle = lies(join(PAKET, 'package.json'))?.version;
-if (!quelle) { console.error('Keine Version in package.json gefunden.'); process.exit(2); }
-
-// package.json-Dateien einsammeln, node_modules und .git ausgelassen.
-function sammle(ordner, tiefe = 0, aus = []) {
-  if (tiefe > 4) return aus;
-  let eintraege;
-  try { eintraege = readdirSync(ordner, { withFileTypes: true }); } catch { return aus; }
-  for (const e of eintraege) {
-    if (e.isDirectory()) {
-      // .claude haelt Arbeitsbaeume - dieselben Produkte ein zweites Mal.
-      if (['node_modules', '.git', 'dist', '.claude'].includes(e.name)) continue;
-      sammle(join(ordner, e.name), tiefe + 1, aus);
-    } else if (e.name === 'package.json') {
-      aus.push(join(ordner, e.name));
-    }
-  }
-  return aus;
+if (!quelle) {
+  console.error('Keine Version in package.json gefunden.');
+  process.exit(2);
 }
 
-// Die installierte Fassung zu einer package.json finden: npm hebt Abhaengigkeiten
-// an die Wurzel des Arbeitsbereichs, also auch dort nachsehen.
-function installiert(pjad) {
-  let d = dirname(pjad);
-  for (let i = 0; i < 5; i++) {
-    const p = join(d, 'node_modules', ...NAME.split('/'), 'package.json');
-    if (existsSync(p)) return lies(p)?.version ?? '?';
-    const hoch = dirname(d);
-    if (hoch === d) break;
-    d = hoch;
-  }
-  return null;
-}
-
-/**
- * Dieselbe Frage in den Arbeitsbaeumen unter .claude/worktrees.
- *
- * Gebaut und ausgeliefert wird oft dort, nicht im Hauptordner - der haelt nur
- * den Stand des Hauptzweigs. Am 24.11.2026 lag im Hauptordner von Kilpro 1.16.0
- * und im Arbeitsbaum, aus dem ausgeliefert wird, 1.26.0; meine Warnung
- * "installiert ist 1.16.0" war also schon wieder eine ueber den falschen
- * Ordner. Die Arbeitsbaeume bleiben aus der Produktliste heraus (sonst stuende
- * jedes Produkt mehrfach da), aber bei der installierten Fassung zaehlen sie.
- */
-function inArbeitsbaeumen(ordner) {
-  const wurzel = join(ordner, '.claude', 'worktrees');
-  let eintraege;
-  try { eintraege = readdirSync(wurzel, { withFileTypes: true }); } catch { return []; }
-  const aus = [];
-  for (const e of eintraege) {
-    if (!e.isDirectory()) continue;
-    const v = lies(join(wurzel, e.name, 'node_modules', ...NAME.split('/'), 'package.json'))?.version;
-    if (v) aus.push({ wo: e.name, fassung: v });
-  }
-  return aus;
-}
-
-/**
- * Die erzeugten Rechtstexte eines Produkts. Der Name ist der aus der
- * App-Vorlage (src/features/legal/texte.json), der Ort nicht: Rechnungswerk
- * legt sie unter src/legal, VELVET unter lib/legal.
- *
- * Der Vertrag ist das Feld "fassung" darin. Es schreibt das erzeugende Skript
- * des Produkts (scripts/legal.mjs) aus der package.json des Pakets, das es
- * geladen hat - auch und gerade dann, wenn das ein Checkout war.
- */
-function erzeugte(ordner, tiefe = 0, aus = []) {
-  if (tiefe > 4) return aus;
-  let eintraege;
-  try { eintraege = readdirSync(ordner, { withFileTypes: true }); } catch { return aus; }
-  for (const e of eintraege) {
-    if (e.isDirectory()) {
-      if (['node_modules', '.git', 'dist', '.claude', 'android', 'ios'].includes(e.name)) continue;
-      erzeugte(join(ordner, e.name), tiefe + 1, aus);
-    } else if (e.name === 'texte.json') {
-      const d = lies(join(ordner, e.name));
-      // Nur was wirklich Rechtstexte sind - "texte.json" heisst anderswo
-      // anderes.
-      if (d && (d.datenschutz || d.impressum)) {
-        aus.push({ datei: join(ordner, e.name), fassung: d.fassung ?? null });
-      }
-    }
-  }
-  return aus;
-}
-
-const zeilen = [];
-for (const pjad of sammle(SUCHORT)) {
-  const d = lies(pjad);
-  if (!d) continue;
-  const gebunden =
-    d.dependencies?.[NAME] ?? d.devDependencies?.[NAME] ?? d.optionalDependencies?.[NAME];
-  if (!gebunden) continue;
-  const tag = /#v?([0-9][0-9.]*)/.exec(gebunden)?.[1] ?? null;
-  zeilen.push({
-    wo: relative(SUCHORT, dirname(pjad)) || '.',
-    gebunden,
-    tag,
-    installiert: installiert(pjad),
-    baeume: inArbeitsbaeumen(dirname(pjad)),
-    erzeugt: erzeugte(dirname(pjad)).map((a) => ({
-      datei: relative(dirname(pjad), a.datei),
-      fassung: a.fassung,
-    })),
-  });
-}
+const zeilen = produkte(SUCHORT);
 
 if (!zeilen.length) {
   console.log(`Keine Bindung an ${NAME} unter ${SUCHORT} gefunden.`);
   process.exit(0);
 }
 
-zeilen.sort((a, b) => a.wo.localeCompare(b.wo));
 const breite = Math.max(...zeilen.map((z) => z.wo.length), 7);
 console.log(`Quelle ${PAKET}: ${quelle}\n`);
 console.log(
@@ -214,6 +115,8 @@ if (zurueck) {
   console.log('Nachziehen heisst: Tag setzen, in jedem Produkt die Bindung erhoehen,');
   console.log('neu installieren, abgeleitete Texte erzeugen, ausliefern - und vorher');
   console.log('lesen, was sich am Wortlaut aendert. Es sind Rechtstexte.');
+  console.log('Was sich aendert, sagt `npm run wortlaut`: Steht dort "gleich",');
+  console.log('aendert das Nachziehen am ausgelieferten Text kein Wort.');
 }
 if (unklar) {
   if (zurueck) console.log();

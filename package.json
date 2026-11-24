@@ -41,7 +41,8 @@
     "check": "tsc -p tsconfig.json --noEmit",
     "smoke": "node scripts/smoke.mjs",
     "sync": "node scripts/sync-static.mjs",
-    "stand": "node scripts/stand.mjs"
+    "stand": "node scripts/stand.mjs",
+    "wortlaut": "node scripts/wortlaut.mjs"
   },
   "peerDependencies": {
     "react": ">=18"

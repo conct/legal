@@ -493,6 +493,15 @@ lassen (siehe oben), committen und ausliefern.
 Wer wo steht, sagt `npm run stand` — gelesen wird dafür die erzeugte Datei des
 Produkts, nicht nur seine Bindung.
 
+**Ob Nachziehen überhaupt etwas ändert, sagt `npm run wortlaut`.** Das Skript
+rendert jede Seite zweimal — einmal aus dem Paket, aus dem das Produkt baut,
+einmal aus diesem Checkout — und vergleicht den Text selbst, mit `--zeigen`
+zeilenweise. Am 24.11.2026 standen drei Produkte auf 1.22.0 bzw. 1.6.0 und
+lieferten trotzdem **Wort für Wort** denselben Text wie 1.26.0: Alles, was
+dazwischen geschah, betraf andere Seiten. Eine alte Bindung ist also ein Grund
+nachzusehen und noch keiner auszuliefern. Steht dort „ANDERS", gehört der Text
+gelesen, bevor die Bindung steigt — es sind Rechtstexte.
+
 ## Kein Rechtsrat
 
 Die Textbausteine sind sorgfältig formuliert, ersetzen aber keine
