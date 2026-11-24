@@ -79,6 +79,29 @@ function installiert(pjad) {
 }
 
 /**
+ * Dieselbe Frage in den Arbeitsbaeumen unter .claude/worktrees.
+ *
+ * Gebaut und ausgeliefert wird oft dort, nicht im Hauptordner - der haelt nur
+ * den Stand des Hauptzweigs. Am 24.11.2026 lag im Hauptordner von Kilpro 1.16.0
+ * und im Arbeitsbaum, aus dem ausgeliefert wird, 1.26.0; meine Warnung
+ * "installiert ist 1.16.0" war also schon wieder eine ueber den falschen
+ * Ordner. Die Arbeitsbaeume bleiben aus der Produktliste heraus (sonst stuende
+ * jedes Produkt mehrfach da), aber bei der installierten Fassung zaehlen sie.
+ */
+function inArbeitsbaeumen(ordner) {
+  const wurzel = join(ordner, '.claude', 'worktrees');
+  let eintraege;
+  try { eintraege = readdirSync(wurzel, { withFileTypes: true }); } catch { return []; }
+  const aus = [];
+  for (const e of eintraege) {
+    if (!e.isDirectory()) continue;
+    const v = lies(join(wurzel, e.name, 'node_modules', ...NAME.split('/'), 'package.json'))?.version;
+    if (v) aus.push({ wo: e.name, fassung: v });
+  }
+  return aus;
+}
+
+/**
  * Die erzeugten Rechtstexte eines Produkts. Der Name ist der aus der
  * App-Vorlage (src/features/legal/texte.json), der Ort nicht: Rechnungswerk
  * legt sie unter src/legal, VELVET unter lib/legal.
@@ -120,6 +143,7 @@ for (const pjad of sammle(SUCHORT)) {
     gebunden,
     tag,
     installiert: installiert(pjad),
+    baeume: inArbeitsbaeumen(dirname(pjad)),
     erzeugt: erzeugte(dirname(pjad)).map((a) => ({
       datei: relative(dirname(pjad), a.datei),
       fassung: a.fassung,
@@ -164,8 +188,21 @@ for (const z of zeilen) {
     if (alt) zurueck++;
     stand = alt ? `liefert ${liefert} aus (Quelle ${quelle})` : 'aktuell, am erzeugten Text gelesen';
   }
-  const abweichend = z.installiert && z.tag && z.installiert !== z.tag
-    ? `  ACHTUNG: installiert ist ${z.installiert}, gebunden ${z.tag}` : '';
+  // Gewarnt wird nur, wenn die Bindung in KEINEM Ordner liegt - im Hauptordner
+  // so wenig wie in einem Arbeitsbaum. Liegt sie in einem Baum, ist das die
+  // Auskunft und keine Abweichung; der Hauptordner hinkt dann absichtlich.
+  const baum = z.tag ? z.baeume.find((x) => x.fassung === z.tag) : null;
+  const orte = [
+    ...(z.installiert ? [`Hauptordner ${z.installiert}`] : []),
+    ...z.baeume.map((x) => `${x.wo} ${x.fassung}`),
+  ];
+  const abweichend = !z.tag || !orte.length
+    ? ''
+    : baum
+      ? `  (${z.tag} liegt im Arbeitsbaum ${baum.wo}${z.installiert && z.installiert !== z.tag ? `, im Hauptordner ${z.installiert}` : ''})`
+      : z.installiert === z.tag
+        ? ''
+        : `  ACHTUNG: installiert ist ${orte.join(', ')}, gebunden ${z.tag}`;
   console.log(
     `${z.wo.padEnd(breite)}  ${(z.tag ?? '-').padEnd(9)} ${(z.installiert ?? '-').padEnd(8)} ${liefert.padEnd(8)} ${stand}${abweichend}`
   );
