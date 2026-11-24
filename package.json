@@ -28,7 +28,8 @@
     "./text": {
       "types": "./dist/render/text.d.ts",
       "default": "./dist/render/text.js"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "files": [
     "dist",

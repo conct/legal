@@ -209,9 +209,20 @@ Datei erzeugt wurde — und zwar die wirklich geladene, auch wenn das ein Checko
 war:
 
 ```js
+// Die Wurzel des Pakets, das wirklich geladen wurde — Checkout oder node_modules.
+const wurzel = process.env.LEGAL_PATH
+  ? resolve(process.env.LEGAL_PATH)
+  : dirname(createRequire(join(root, 'package.json')).resolve('@conct/legal'));
 const fassung = JSON.parse(readFileSync(join(wurzel, 'package.json'), 'utf8')).version;
 texte = { fassung, site: key, /* … */ };
 ```
+
+Der Einstieg liegt in `dist/`, die `package.json` eine Ebene darüber — wer sich
+nicht darauf verlassen will, geht vom Einstieg aufwärts bis zur `package.json`
+mit dem Namen `@conct/legal`, wie Kilpro es tut. Seit dem 24.11.2026 steht
+`"./package.json"` auch in den `exports` des Pakets; `require.resolve`
+(`'@conct/legal/package.json'`) geht damit direkt, aber erst in Fassungen ab
+dieser Zeile — vorher scheitert es mit `ERR_PACKAGE_PATH_NOT_EXPORTED`.
 
 Ohne dieses Feld sagt die Bindung in `package.json`, was installiert ist, aber nichts darüber,
 welcher Wortlaut im Bundle liegt. Am 23.11.2026 stand bei Kilpro die Bindung auf 1.16.0, während
