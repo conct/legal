@@ -154,6 +154,17 @@ export const PRESETS_MONTIX: Record<'montix.feif.space', Preset> = {
       }),
 
       ds.freitext({
+        titel: 'Kollegen anrufen',
+        absaetze: [
+          'Einen Kollegen erreichen Sie auf zwei Wegen. Der eine ist ein gewöhnlicher Anruf über das Telefon: Montix öffnet die Telefon-App Ihres Handys mit seiner Nummer, und alles Weitere geschieht dort, nicht in Montix. Die Nummer pflegt jeder selbst oder der Verwalter; sie liegt wie die übrigen Angaben zur Person auf dem Server Ihres Betriebs und ist für die anderen im Betrieb sichtbar.',
+          'Der andere Weg ist ein Anruf in Montix über das Internet, für den niemand die Nummer des anderen kennen muss. Dafür hält die App, solange sie offen ist, eine Verbindung zum Server Ihres Betriebs. Über sie vermittelt der Server nur den Aufbau des Gesprächs: wer wen anruft, ob angenommen, abgelehnt oder aufgelegt wird, und die technischen Angaben, mit denen sich die beiden Geräte finden. Diese Angaben hält er nur im Arbeitsspeicher, solange der Anruf läuft. Eine Anrufliste führt der Server nicht, und das Gespräch selbst zeichnet niemand auf.',
+          'Der Ton läuft verschlüsselt (DTLS-SRTP) unmittelbar zwischen den beiden Geräten. Wo das nicht geht, etwa weil ein Mobilfunknetz keine direkten Verbindungen zulässt, wird er über einen Weiterleitungsdienst (TURN) von Cloudflare geleitet, Cloudflare, Inc., 101 Townsend St., San Francisco, CA 94107, USA. Cloudflare sieht dabei die IP-Adressen der beiden Geräte und wie viele Daten fließen, aber nicht, was gesprochen wird, denn der Ton bleibt auf dem ganzen Weg verschlüsselt. Die Zugangsdaten dafür holt der Server bei Cloudflare und gibt sie der App für wenige Stunden; Ihr Name oder Ihre Nummer gehen dabei nicht an Cloudflare. Cloudflare ist nach dem EU-US Data Privacy Framework zertifiziert.',
+          'Ist der Angerufene nicht verbunden, schickt der Server ihm eine Push-Mitteilung „… ruft an“, und wenn niemand abnimmt, eine Mitteilung über den verpassten Anruf, beides mit dem Namen des Anrufers, über Expo und Google beziehungsweise Apple, siehe „Benachrichtigungen“.',
+          'Für Anrufe braucht die App das Mikrofon. Es ist dasselbe Recht wie für Sprachnotizen, und die App nutzt es nur, während Sie telefonieren. Während eines Gesprächs schaltet sie den Bildschirm ab, wenn Sie das Handy ans Ohr halten; dazu dient der Näherungssensor, dessen Werte das Gerät nicht verlassen. Anrufen kann man nur Personen im eigenen Betrieb; Fahrer anderer Firmen erreichen nur die Disposition und die Verwalter.',
+        ],
+      }),
+
+      ds.freitext({
         titel: 'Nachrichten zwischen Mitarbeitern',
         absaetze: [
           'Nutzt Ihr Betrieb den Abgleich über einen Server, können sich die Mitarbeiter darüber kurze Nachrichten und Sprachnachrichten schicken. Gespeichert werden auf diesem Server Absender, Empfänger — eine Person oder alle —, der Text beziehungsweise die Aufnahme und der Zeitpunkt. Bei einer Sprachnachricht kommt die Sprache der App des Absenders dazu, zwei Buchstaben wie „pl“; sie dient allein dazu, dass die Spracherkennung beim Empfänger die richtige Sprache wählt, und wird mit der Nachricht gelöscht. Jedes Gerät erhält nur, was an alle, an die jeweilige Person oder von ihr ist.',
