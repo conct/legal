@@ -318,7 +318,7 @@ export const SITES = {
     hoster: 'Uberspace (Jonas Pasche, Kaiserstraße 15, 55116 Mainz)',
   },
   'fibel.uber.space': {
-    domain: 'fibel.uber.space',
+    domain: 'fibel.conct.de',
     name: 'Fibel',
     hoster: 'Uberspace (Jonas Pasche, Kaiserstraße 15, 55116 Mainz)',
     // Kein `drittdienste`, obwohl die Spielwiese Wunsch und Programm an einen
